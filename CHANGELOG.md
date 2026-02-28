@@ -16,7 +16,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - **Environment Support:** Updated `server.ts` to prioritize loading environment variables from `.env.local` as instructed in the README, while maintaining `.env` as a fallback.
 
-## [1.2.1] - 2026-02-15
+## [1.2.1] - 2026-02-27
 
 ### Fixed
 
