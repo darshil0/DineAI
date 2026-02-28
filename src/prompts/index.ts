@@ -16,12 +16,16 @@ Output: {
   "special_occasions": ["date"]
 }`;
 
-export const buildProfilePrompt = (currentProfile: string, history: string, message: string) => `
+export const buildProfilePrompt = (
+  currentProfile: string,
+  history: string,
+  message: string,
+) => `
 Analyze the user's recent messages and the inferred signals from any dining photos.
 Produce a UserTasteProfile object.
 
-Current Taste Profile: ${currentProfile || 'None'}
-Conversation History: ${history || 'None'}
+Current Taste Profile: ${currentProfile || "None"}
+Conversation History: ${history || "None"}
 Latest User Message: "${message}"
 
 Task: Update and refine the user's taste profile based on their latest message.
@@ -77,7 +81,12 @@ CRITICAL RULES:
 EXAMPLE RATIONALE:
 "L'Artusi is a perfect match for your date night. It hits your budget ($$$) and offers the lively, romantic ambiance you're looking for, plus their house-made pasta is legendary."`;
 
-export const buildFinalizerPrompt = (profile: string, message: string, candidates: string, trends: string) => `
+export const buildFinalizerPrompt = (
+  profile: string,
+  message: string,
+  candidates: string,
+  trends: string,
+) => `
 Select the top 3-5 restaurants from the CandidateList.
 For each:
 - Use match_score and trend signals to compute a combined sense of relevance.

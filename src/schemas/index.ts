@@ -1,2 +1,2 @@
-export * from './userTasteProfile.js';
-export * from './recommendation.js';
+export * from "./userTasteProfile.js";
+export * from "./recommendation.js";

@@ -9,11 +9,17 @@ interface ChatMessageProps {
   isLoading?: boolean;
 }
 
-export const ChatMessage: React.FC<ChatMessageProps> = ({ role, content, isLoading }) => {
+export const ChatMessage: React.FC<ChatMessageProps> = ({
+  role,
+  content,
+  isLoading,
+}) => {
   const isUser = role === "user";
 
   return (
-    <div className={`flex gap-4 mb-6 ${isUser ? "justify-end" : "justify-start"}`}>
+    <div
+      className={`flex gap-4 mb-6 ${isUser ? "justify-end" : "justify-start"}`}
+    >
       {!isUser && (
         <div className="w-10 h-10 rounded-full bg-indigo-100 flex items-center justify-center shrink-0">
           <Bot className="w-6 h-6 text-indigo-600" />
@@ -30,12 +36,20 @@ export const ChatMessage: React.FC<ChatMessageProps> = ({ role, content, isLoadi
         {isLoading ? (
           <div className="flex items-center gap-2 text-stone-500">
             <div className="w-2 h-2 rounded-full bg-stone-400 animate-bounce" />
-            <div className="w-2 h-2 rounded-full bg-stone-400 animate-bounce" style={{ animationDelay: "0.2s" }} />
-            <div className="w-2 h-2 rounded-full bg-stone-400 animate-bounce" style={{ animationDelay: "0.4s" }} />
+            <div
+              className="w-2 h-2 rounded-full bg-stone-400 animate-bounce"
+              style={{ animationDelay: "0.2s" }}
+            />
+            <div
+              className="w-2 h-2 rounded-full bg-stone-400 animate-bounce"
+              style={{ animationDelay: "0.4s" }}
+            />
             <span className="ml-2 text-sm italic">{content}</span>
           </div>
         ) : (
-          <div className={`prose prose-sm max-w-none ${isUser ? "prose-invert" : ""}`}>
+          <div
+            className={`prose prose-sm max-w-none ${isUser ? "prose-invert" : ""}`}
+          >
             <ReactMarkdown remarkPlugins={[remarkGfm]}>{content}</ReactMarkdown>
           </div>
         )}
