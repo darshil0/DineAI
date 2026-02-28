@@ -5,75 +5,70 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-## [1.3.1] - 2026-02-28
-
-### Fixed
-- **Ingestion Failure Handling**: Updated `ingestRestaurants.ts` to collect successful records and only upsert if at least one succeeded, preventing broken DB states.
-- **RAG Recommender Accuracy**: Added a minimum similarity threshold (0.1) in `ragRecommender.ts` to filter out unrelated restaurants.
-- **Trend Guardrails**: Explicitly filtered for text parts in `trendAnalyst.ts` response to guard against non-text parts.
-- **Scoring Normalization**: Normalized weights in `scoreRestaurant.ts` so that full heuristic matches reach 1.0.
-- **Empty Profile Check**: Added validation in `profileBuilder.ts` to throw an error if the generated profile is empty.
-- **Startup Integrity**: Added `GEMINI_API_KEY` validation in `server.ts` before server startup.
-- **JSON Parsing**: Fixed `cleanJson` in `utils.ts` to handle varied markdown formatting.
-- **Memory Management**: Fixed potential timer leaks in `ChatInterface.tsx` by properly storing and clearing timer IDs.
-
-### Changed
-- **Input Validation**: Added server-side `zod` validation for chat messages, history, and profiles in `chat.ts`.
-- **Performance Optimization**: Refactored ingestion into concurrent batches (5 restaurants per batch) and optimized Vector DB with pre-normalization and dot product search.
-- **Token Efficiency**: Truncated conversation history to the last 6 messages in `chat.ts`.
-- **Maintainability**: Extracted `GEMINI_MODEL` constant and switched to named re-exports in `schemas/index.ts`.
-- **Observability**: Implemented a structured `logger.ts` and replaced all bare `console` calls.
-- **Express 5 Migration**: Updated `chat.ts` to leverage Express 5's automatic async error forwarding and added a global error handler in `server.ts`.
-- **Stable Dependencies**: Updated all packages to latest stable versions (Vite 7.3.1, Express 5.2.1, React 19.2.4).
-
-### Added
-- `src/lib/utils.test.ts`: Unit tests for JSON cleaning utility.
-- `src/lib/logger.ts`: New structured logging utility.
-- `scripts/reset-db.ts`: Documentation script for DB reset behavior.
-
 ## [1.3.0] - 2026-02-28
 
 ### Added
-- `src/lib/logger.ts`: New structured logging utility replacing bare `console` calls.
-- `src/lib/utils.test.ts`: Unit tests for JSON cleaning utility.
-- `scripts/reset-db.ts`: Script documenting Vector DB reset behavior.
+
+- **`src/lib/logger.ts`** — New structured logging utility. All log output now follows the format `[TIMESTAMP] [LEVEL] [MODULE] message`. Replaced all bare `console.log` / `console.error` calls across agents, services, and scripts.
+- **`src/lib/utils.test.ts`** — Unit tests for the `cleanJson` helper covering standard backtick fences, `\`\`\`json` fences, trailing-newline edge cases, and plain JSON strings.
+- **`scripts/reset-db.ts`** — Documentation script explaining that the Vector DB is in-memory and restarting the server is the only way to clear its state.
 
 ### Fixed
-- **Ingestion Reliability**: Improved `ingestRestaurants.ts` to collect successful records and only upsert if at least one succeeded, preventing broken DB states.
-- **RAG Accuracy**: Added a minimum similarity threshold (0.1) in `ragRecommender.ts` to filter out unrelated restaurants early.
-- **Trend Guardrails**: Added explicit part-type filtering in `trendAnalyst.ts` to handle non-text response parts from Gemini.
-- **Scoring Normalization**: Re-normalized weights in `scoreRestaurant.ts` so that full heuristic matches can reach 1.0 even without vector similarity.
-- **Profile Validation**: Added an empty-profile check in `profileBuilder.ts` to prevent silent failures with generic recommendations.
-- **Startup Reliability**: Added `GEMINI_API_KEY` validation at server startup in `server.ts`.
-- **JSON Parsing**: Fixed `cleanJson` in `src/lib/utils.ts` to handle triple backticks without trailing newlines.
-- **Memory Leaks**: Fixed potential timer leaks in `ChatInterface.tsx` by properly storing and clearing timer IDs.
+
+- **Ingestion partial-failure state** (`ingestRestaurants.ts`) — Successful embedding records are now collected first and only upserted as a batch if at least one succeeded. Previously, a mid-loop failure left the DB empty on the next startup, causing ingestion to re-run and fail again.
+- **RAG similarity threshold** (`ragRecommender.ts`) — Added a minimum cosine similarity threshold of `0.1`. Results below this are discarded before `scoreRestaurant` runs, preventing unrelated restaurants from receiving an inflated match score via the cuisine/price/ambiance bonuses.
+- **Trend Analyst part filtering** (`trendAnalyst.ts`) — Added an explicit guard for non-text part types (`executableCode`, `codeExecutionResult`) in the Gemini response. The filter is now intentional and documented rather than relying on silent nullish coalescing.
+- **Score weight normalization** (`scoreRestaurant.ts`) — Weights are now normalized so that a full heuristic match (cuisine + price + ambiance + dietary) reaches `1.0` even when no vector similarity score is provided. Previously, the maximum without a similarity input was `0.5`.
+- **Empty profile detection** (`profileBuilder.ts`) — Added a post-parse check that throws a descriptive error if the Gemini response produces an empty `{}` profile, preventing the RAG and Finalizer agents from receiving a profile with no fields and returning generic results.
+- **Startup API key check** (`server.ts`) — `getGeminiClient()` is now called before `app.listen()`. If `GEMINI_API_KEY` is missing or invalid, the process exits immediately with a clear error instead of appearing to start successfully and failing on the first request.
+- **`cleanJson` edge case** (`src/lib/utils.ts`) — Fixed handling of triple backticks without a trailing newline before the closing fence. The prior implementation only stripped the closing `` ``` `` when it appeared at the exact end of the trimmed string, missing cases introduced by certain Gemini response formats.
+- **Frontend timer leaks** (`ChatInterface.tsx`) — `setTimeout` IDs for loading-step updates are now stored and cleared in the `finally` block, preventing state updates on unmounted components when a request completes or errors before a timer fires.
+- **Error stack traces** (all agents) — Re-thrown errors now use `new Error(message, { cause: originalError })` instead of `new Error(message)`, preserving the original stack trace for Node 18+ debugging.
 
 ### Changed
-- **API Security**: Added `zod` validation for `message`, `history`, and `currentProfile` in the chat endpoint.
-- **Efficiency**: Refactored `ingestRestaurants.ts` for concurrent batch processing (batches of 5), reducing startup time.
-- **Performance**: Optimized Vector DB by pre-normalizing embeddings on upsert and using dot product search for queries.
-- **Token Optimization**: Truncated conversation history to the last 6 messages in `chat.ts` before passing to agents.
-- **Maintainability**: Extracted `GEMINI_MODEL` constant to `src/lib/geminiClient.ts` and updated all agents/skills.
-- **Code Quality**: Switched to named re-exports in `src/schemas/index.ts` and improved error re-throwing with the `cause` property.
-- **Dependencies**: Updated all packages to latest stable versions:
-  - `express`: `^4.21.2` -> `^5.2.1` (Migrated to Express 5 async error handling)
-  - `vite`: `^6.2.0` -> `^7.3.1`
-  - `react`/`react-dom`: `^19.0.0` -> `^19.2.4`
-  - `@tailwindcss/vite`/`tailwindcss`: `^4.1.14` -> `^4.2.1`
-  - `lucide-react`: `^0.546.0` -> `^0.575.0`
-  - `dotenv`: `^17.2.3` -> `^17.3.1`
-  - `zod`: Added `^3.24.2`
+
+- **Input validation** (`src/api/chat.ts`) — Added `zod` validation for `message`, `history`, and `currentProfile` at the route boundary. Malformed or missing fields now return a `400` response before reaching any agent.
+- **Conversation history truncation** (`src/api/chat.ts`) — History passed to the Profile Builder Agent is now capped at the last 6 messages, preventing unbounded token usage during long conversations.
+- **Concurrent ingestion batching** (`ingestRestaurants.ts`) — Restaurants are now embedded in concurrent batches of 5 with a 200ms delay between batches, reducing first-startup ingestion time by approximately 5×. Each batch also retries up to 3 times with exponential backoff on transient API failures.
+- **Vector DB pre-normalization** (`src/lib/vectorDb.ts`) — Embeddings are normalized on `upsert` so that query time requires only a dot product, eliminating per-query norm computation. Cosine similarity is preserved by construction.
+- **Model name constant** (`src/lib/geminiClient.ts`) — `"gemini-2.0-flash"` is now exported as `GEMINI_MODEL` and referenced from all six agent and skill files. Previously hard-coded in each file independently.
+- **Express 5 async error handling** (`src/api/chat.ts`, `server.ts`) — Removed the per-route `try/catch` block in the chat route in favor of Express 5's automatic async error forwarding. A global error handler is now registered in `server.ts`.
+- **Named re-exports** (`src/schemas/index.ts`) — Switched from `export *` to explicit named re-exports for `UserTasteProfile`, `UserTasteProfileSchema`, `Recommendation`, and `FinalRecommendationsSchema`.
+- **Package scripts** (`package.json`) — `lint` now runs `eslint src/`; TypeScript type-checking is exposed separately as `typecheck` (`tsc --noEmit`).
+- **Environment file naming** — `.env.example` renamed to `.env.local.example` to match the `cp` command documented in the README.
+- **Dependencies updated to latest stable:**
+
+  | Package | From | To | Notes |
+  |---|---|---|---|
+  | `express` | `^4.21.2` | `^5.2.1` | Migrated to Express 5 async error handling |
+  | `@types/express` | `^4.17.21` | `^5.0.x` | Matched to Express 5 |
+  | `vite` | `^6.2.0` | `^7.3.1` | |
+  | `react` / `react-dom` | `^19.0.0` | `^19.2.4` | |
+  | `tailwindcss` / `@tailwindcss/vite` | `^4.1.14` | `^4.2.1` | |
+  | `lucide-react` | `^0.546.0` | `^0.575.0` | |
+  | `dotenv` | `^17.2.3` | `^17.3.1` | |
+  | `zod` | — | `^3.24.2` | New dependency for API input validation |
+
+---
 
 ## [1.2.2] - 2026-02-28
 
-### Changed
-
-- **README Overhaul:** Completely rewritten `README.md` to include DineAI project name, comprehensive feature list from PRD, and verified technology stack (React, Tailwind, Express, Gemini 2.0 Flash).
-- **Documentation:** Updated project documentation to reflect current architecture and capabilities.
-
 ### Fixed
 
-- **Environment Support:** Updated `server.ts` to prioritize loading environment variables from `.env.local` as instructed in the README, while maintaining `.env` as a fallback.
+- **Environment loading** (`server.ts`) — Server now loads `.env.local` first and falls back to `.env`, matching the setup instructions in the README. Previously only `.env` was loaded by default, causing `GEMINI_API_KEY` to be silently undefined in local development.
+- **`vite.config.ts` ESM compatibility** — `__dirname` is undefined in ESM projects (`"type": "module"` in `package.json`). Fixed by deriving it from `import.meta.url` via `fileURLToPath`.
+- **`package.json` start script** — Changed `"start": "node server.ts"` to `"start": "tsx server.ts"` since Node cannot execute TypeScript directly.
+- **`@google/genai` version** — Bumped from `^1.29.0` to `^1.43.0` to match the SDK version required by the `systemInstruction` object/parts syntax used throughout the codebase.
+- **Fallback RAG response schema** — Added a `responseSchema` to the LLM fallback path in `ragRecommender.ts`. Without it the model could return a wrapped object or prose string, causing downstream JSON parse failures.
+- **Ingestion rate limiting** (`ingestRestaurants.ts`) — Added a 200ms sleep between sequential embedding calls to avoid burst rate-limit rejections across 120 restaurants.
+- **Trend Analyst multi-part response** (`trendAnalyst.ts`) — Changed `parts[0].text` to `parts.map(p => p.text).join("")` so the full text is captured when Google Search grounding returns multiple parts.
+- **Removed unused dependency** — Removed `better-sqlite3` from `package.json`; it was listed as a dependency but never imported anywhere in the codebase.
+
+### Changed
+
+- **`README.md` overhaul** — Rewritten to include the DineAI project name, feature descriptions, verified tech stack, and corrected setup instructions.
+
+---
 
 ## [1.2.1] - 2026-02-27
 
