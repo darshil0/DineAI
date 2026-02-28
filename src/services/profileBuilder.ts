@@ -1,5 +1,6 @@
-import { getGeminiClient } from "../lib/geminiClient.js";
+import { getGeminiClient, GEMINI_MODEL } from "../lib/geminiClient.js";
 import { cleanJson } from "../lib/utils.js";
+import { logger } from "../lib/logger.js";
 import { UserTasteProfileSchema, UserTasteProfile } from "../schemas/index.js";
 import {
   PROFILE_BUILDER_SYSTEM,
@@ -22,7 +23,7 @@ export async function buildProfile(
   imageFile?: Express.Multer.File,
 ): Promise<UserTasteProfile> {
   const ai = getGeminiClient();
-  console.log("Running Profile Builder Agent...");
+  logger.info("ProfileBuilder", "Running Profile Builder Agent...");
 
   // 1. Run Skills in parallel to gather insights
   const extractCuisines = getSkill<ExtractCuisinesInput, ExtractCuisinesOutput>(
@@ -71,7 +72,7 @@ export async function buildProfile(
 
   try {
     const profileResponse = await ai.models.generateContent({
-      model: "gemini-2.0-flash",
+      model: GEMINI_MODEL,
       contents: [{ parts: profileParts }],
       config: {
         responseMimeType: "application/json",
@@ -87,10 +88,22 @@ export async function buildProfile(
         profileResponse.candidates?.[0]?.content?.parts?.[0]?.text || "{}",
       ),
     );
-    console.log("Taste Profile:", userTasteProfile);
+
+    const hasMeaningfulFields =
+      (userTasteProfile.cuisines && userTasteProfile.cuisines.length > 0) ||
+      userTasteProfile.price_range ||
+      (userTasteProfile.ambiance && userTasteProfile.ambiance.length > 0) ||
+      (userTasteProfile.dietary_notes && userTasteProfile.dietary_notes.toLowerCase() !== "none") ||
+      (userTasteProfile.special_occasions && userTasteProfile.special_occasions.length > 0);
+
+    if (!hasMeaningfulFields) {
+      throw new Error("Could not extract any meaningful dining preferences. Please try again with more details.");
+    }
+
+    logger.info("ProfileBuilder", "Taste Profile generated successfully.");
     return userTasteProfile;
   } catch (error: any) {
-    console.error("Error in Profile Builder Agent:", error);
-    throw new Error(`Profile Builder failed: ${error.message}`);
+    logger.error("ProfileBuilder", "Error in Profile Builder Agent:", error);
+    throw new Error(`Profile Builder failed: ${error.message}`, { cause: error });
   }
 }

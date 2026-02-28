@@ -1,5 +1,6 @@
-import { getGeminiClient } from "../lib/geminiClient.js";
+import { getGeminiClient, GEMINI_MODEL } from "../lib/geminiClient.js";
 import { cleanJson } from "../lib/utils.js";
+import { logger } from "../lib/logger.js";
 import { UserTasteProfile } from "../schemas/index.js";
 import { restaurants, Restaurant } from "../data/restaurants.js";
 import { RAG_RECOMMENDER_SYSTEM, buildRagPrompt } from "../prompts/index.js";
@@ -13,7 +14,7 @@ import { vectorDb } from "../lib/vectorDb.js";
 export async function recommendCandidates(
   profile: UserTasteProfile,
 ): Promise<Restaurant[]> {
-  console.log("Running RAG Recommender Agent...");
+  logger.info("RagRecommender", "Running RAG Recommender Agent...");
 
   try {
     // 1. Try Vector DB approach first
@@ -31,7 +32,7 @@ export async function recommendCandidates(
     >("scoreRestaurant");
 
     if (generateEmbedding && scoreRestaurant && (await vectorDb.count()) > 0) {
-      console.log("Using Vector DB for semantic search...");
+      logger.info("RagRecommender", "Using Vector DB for semantic search...");
 
       const queryText = `
         User wants:
@@ -65,24 +66,19 @@ export async function recommendCandidates(
       const sorted = scored.sort((a, b) => b.match_score - a.match_score);
       const candidates = sorted.slice(0, 10);
 
-      console.log(
-        `Found ${candidates.length} candidates via Vector DB and scoreRestaurant skill.`,
-      );
+      logger.info("RagRecommender", `Found ${candidates.length} candidates via Vector DB and scoreRestaurant skill.`);
       return candidates;
     }
   } catch (error) {
-    console.warn(
-      "Vector DB search failed, falling back to static filtering...",
-      error,
-    );
+    logger.warn("RagRecommender", "Vector DB search failed, falling back to static filtering...", error);
   }
 
   // 2. Fallback to static JSON filtering via LLM
-  console.log("Using fallback LLM filtering...");
+  logger.info("RagRecommender", "Using fallback LLM filtering...");
   const ai = getGeminiClient();
   try {
     const ragResponse = await ai.models.generateContent({
-      model: "gemini-2.0-flash",
+      model: GEMINI_MODEL,
       contents: [
         {
           parts: [
@@ -106,10 +102,10 @@ export async function recommendCandidates(
     const candidateList = JSON.parse(
       cleanJson(ragResponse.candidates?.[0]?.content?.parts?.[0]?.text || "[]"),
     );
-    console.log(`Found ${candidateList.length} candidates via fallback.`);
+    logger.info("RagRecommender", `Found ${candidateList.length} candidates via fallback.`);
     return candidateList;
   } catch (error: any) {
-    console.error("Error in Coarse RAG Recommender Agent:", error);
+    logger.error("RagRecommender", "Error in Coarse RAG Recommender Agent:", error);
     throw new Error(`RAG Recommender failed: ${error.message}`);
   }
 }
