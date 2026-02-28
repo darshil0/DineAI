@@ -10,11 +10,14 @@ View your app in AI Studio: https://ai.studio/apps/6991651b-a322-44dd-b708-0413e
 
 ## Run Locally
 
-**Prerequisites:**  Node.js
-
+**Prerequisites:** Node.js
 
 1. Install dependencies:
    `npm install`
 2. Set the `GEMINI_API_KEY` in [.env.local](.env.local) to your Gemini API key
 3. Run the app:
    `npm run dev`
+
+## Notes
+
+- **AI SDK & Model:** This project is optimized for the `@google/genai` (SDK 1.43.0+) using the `gemini-2.0-flash` model. Request and response structures are standardized for this version pairing.

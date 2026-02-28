@@ -14,12 +14,17 @@ router.post("/", upload.single("image"), async (req, res) => {
     const imageFile = req.file;
 
     // 1. Profile Builder Agent
-    const userTasteProfile = await buildProfile(message, history, currentProfile, imageFile);
+    const userTasteProfile = await buildProfile(
+      message,
+      history,
+      currentProfile,
+      imageFile,
+    );
 
     // 2 & 3. Run RAG Recommender and Trend Analyst in parallel
     const [candidateList, trendReportText] = await Promise.all([
       recommendCandidates(userTasteProfile),
-      analyzeTrends(userTasteProfile)
+      analyzeTrends(userTasteProfile),
     ]);
 
     // 4. Recommendation Finalizer Agent
@@ -27,7 +32,7 @@ router.post("/", upload.single("image"), async (req, res) => {
       userTasteProfile,
       message,
       candidateList,
-      trendReportText
+      trendReportText,
     );
 
     res.json({
@@ -35,7 +40,6 @@ router.post("/", upload.single("image"), async (req, res) => {
       trends: trendReportText,
       recommendations: finalRecommendations,
     });
-
   } catch (error: any) {
     console.error("Error in chat endpoint:", error);
     res.status(500).json({ error: error.message || "An error occurred" });

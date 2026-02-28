@@ -6,8 +6,11 @@ interface RecommendationCardProps {
   recommendation: Recommendation;
 }
 
-export const RecommendationCard: React.FC<RecommendationCardProps> = ({ recommendation }) => {
-  const { rank, name, rationale, match_score, trend_relevance } = recommendation;
+export const RecommendationCard: React.FC<RecommendationCardProps> = ({
+  recommendation,
+}) => {
+  const { rank, name, rationale, match_score, trend_relevance } =
+    recommendation;
   const matchPercentage = Math.round(match_score * 100);
 
   return (
@@ -26,19 +29,20 @@ export const RecommendationCard: React.FC<RecommendationCardProps> = ({ recommen
           </div>
         </div>
       </div>
-      
-      <p className="text-stone-600 text-sm leading-relaxed mb-4">
-        {rationale}
-      </p>
 
-      {trend_relevance && trend_relevance.trim() !== "" && trend_relevance.toLowerCase() !== "none" && (
-        <div className="bg-amber-50 border border-amber-100 rounded-lg p-3 flex items-start gap-2">
-          <TrendingUp className="w-4 h-4 text-amber-600 mt-0.5 shrink-0" />
-          <p className="text-xs text-amber-800 leading-relaxed">
-            <span className="font-semibold">Trend Alert:</span> {trend_relevance}
-          </p>
-        </div>
-      )}
+      <p className="text-stone-600 text-sm leading-relaxed mb-4">{rationale}</p>
+
+      {trend_relevance &&
+        trend_relevance.trim() !== "" &&
+        trend_relevance.toLowerCase() !== "none" && (
+          <div className="bg-amber-50 border border-amber-100 rounded-lg p-3 flex items-start gap-2">
+            <TrendingUp className="w-4 h-4 text-amber-600 mt-0.5 shrink-0" />
+            <p className="text-xs text-amber-800 leading-relaxed">
+              <span className="font-semibold">Trend Alert:</span>{" "}
+              {trend_relevance}
+            </p>
+          </div>
+        )}
     </div>
   );
 };

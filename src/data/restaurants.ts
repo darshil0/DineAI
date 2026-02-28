@@ -17,8 +17,9 @@ export const restaurants: Restaurant[] = [
     price_tier: "$$$",
     neighborhood: "West Village",
     rating: 4.8,
-    description: "Bustling, bi-level space for elevated Italian comfort food & a long wine list.",
-    tags: ["date night", "pasta", "wine", "lively ambiance"]
+    description:
+      "Bustling, bi-level space for elevated Italian comfort food & a long wine list.",
+    tags: ["date night", "pasta", "wine", "lively ambiance"],
   },
   {
     id: "2",
@@ -27,8 +28,9 @@ export const restaurants: Restaurant[] = [
     price_tier: "$$",
     neighborhood: "Lower East Side",
     rating: 4.7,
-    description: "No-frills deli with theatrically cranky service serving mile-high sandwiches since 1888.",
-    tags: ["casual", "historic", "pastrami", "touristy"]
+    description:
+      "No-frills deli with theatrically cranky service serving mile-high sandwiches since 1888.",
+    tags: ["casual", "historic", "pastrami", "touristy"],
   },
   {
     id: "3",
@@ -37,8 +39,9 @@ export const restaurants: Restaurant[] = [
     price_tier: "$$$$",
     neighborhood: "Midtown",
     rating: 4.9,
-    description: "Elite French restaurant offering exquisitely prepared seafood in an elegant, formal setting.",
-    tags: ["fine dining", "special occasion", "seafood", "formal"]
+    description:
+      "Elite French restaurant offering exquisitely prepared seafood in an elegant, formal setting.",
+    tags: ["fine dining", "special occasion", "seafood", "formal"],
   },
   {
     id: "4",
@@ -47,8 +50,9 @@ export const restaurants: Restaurant[] = [
     price_tier: "$",
     neighborhood: "Chelsea",
     rating: 4.8,
-    description: "Bustling taqueria serving authentic tacos, quesadillas & aguas frescas.",
-    tags: ["quick bite", "casual", "tacos", "cheap eats"]
+    description:
+      "Bustling taqueria serving authentic tacos, quesadillas & aguas frescas.",
+    tags: ["quick bite", "casual", "tacos", "cheap eats"],
   },
   {
     id: "5",
@@ -57,8 +61,9 @@ export const restaurants: Restaurant[] = [
     price_tier: "$$$",
     neighborhood: "SoHo",
     rating: 4.6,
-    description: "Iconic French brasserie serving steak frites, fresh seafood & fresh-baked bread.",
-    tags: ["brunch", "lively", "classic", "french"]
+    description:
+      "Iconic French brasserie serving steak frites, fresh seafood & fresh-baked bread.",
+    tags: ["brunch", "lively", "classic", "french"],
   },
   {
     id: "6",
@@ -68,7 +73,7 @@ export const restaurants: Restaurant[] = [
     neighborhood: "Greenwich Village",
     rating: 4.7,
     description: "High-end Italian-American dining in a retro-glam space.",
-    tags: ["special occasion", "spicy rigatoni", "hard to get", "glamorous"]
+    tags: ["special occasion", "spicy rigatoni", "hard to get", "glamorous"],
   },
   {
     id: "7",
@@ -77,8 +82,9 @@ export const restaurants: Restaurant[] = [
     price_tier: "$",
     neighborhood: "Multiple Locations",
     rating: 4.5,
-    description: "Casual chain serving spicy, hand-pulled noodles and cumin lamb burgers.",
-    tags: ["spicy", "casual", "quick bite", "noodles"]
+    description:
+      "Casual chain serving spicy, hand-pulled noodles and cumin lamb burgers.",
+    tags: ["spicy", "casual", "quick bite", "noodles"],
   },
   {
     id: "8",
@@ -87,8 +93,9 @@ export const restaurants: Restaurant[] = [
     price_tier: "$$$$",
     neighborhood: "Williamsburg",
     rating: 4.4,
-    description: "Old-school steakhouse serving dry-aged beef in a beer-hall setting.",
-    tags: ["steak", "classic", "cash only", "group dining"]
+    description:
+      "Old-school steakhouse serving dry-aged beef in a beer-hall setting.",
+    tags: ["steak", "classic", "cash only", "group dining"],
   },
   {
     id: "9",
@@ -97,8 +104,9 @@ export const restaurants: Restaurant[] = [
     price_tier: "$$$",
     neighborhood: "West Village",
     rating: 4.7,
-    description: "Charming, rustic Italian trattoria known for its cacio e pepe and seasonal vegetables.",
-    tags: ["date night", "cozy", "pasta", "no reservations"]
+    description:
+      "Charming, rustic Italian trattoria known for its cacio e pepe and seasonal vegetables.",
+    tags: ["date night", "cozy", "pasta", "no reservations"],
   },
   {
     id: "10",
@@ -107,8 +115,9 @@ export const restaurants: Restaurant[] = [
     price_tier: "$$$",
     neighborhood: "Prospect Heights",
     rating: 4.6,
-    description: "Creative, seasonal American menu with ingredients from the backyard garden.",
-    tags: ["farm-to-table", "creative", "garden seating", "date night"]
+    description:
+      "Creative, seasonal American menu with ingredients from the backyard garden.",
+    tags: ["farm-to-table", "creative", "garden seating", "date night"],
   },
   {
     id: "11",
@@ -117,8 +126,9 @@ export const restaurants: Restaurant[] = [
     price_tier: "$$$",
     neighborhood: "Williamsburg",
     rating: 4.7,
-    description: "Sleek spot focusing on handmade pasta and vegetable antipasti.",
-    tags: ["pasta", "modern", "lively", "brooklyn"]
+    description:
+      "Sleek spot focusing on handmade pasta and vegetable antipasti.",
+    tags: ["pasta", "modern", "lively", "brooklyn"],
   },
   {
     id: "12",
@@ -127,8 +137,9 @@ export const restaurants: Restaurant[] = [
     price_tier: "$$",
     neighborhood: "Carroll Gardens",
     rating: 4.8,
-    description: "Legendary neighborhood pizzeria serving thin-crust pies and calzones.",
-    tags: ["pizza", "byob", "cash only", "long wait"]
+    description:
+      "Legendary neighborhood pizzeria serving thin-crust pies and calzones.",
+    tags: ["pizza", "byob", "cash only", "long wait"],
   },
   {
     id: "13",
@@ -137,8 +148,9 @@ export const restaurants: Restaurant[] = [
     price_tier: "$$$$",
     neighborhood: "Flatiron",
     rating: 4.7,
-    description: "Sleek, contemporary Mexican restaurant known for its duck carnitas and corn husk meringue.",
-    tags: ["modern mexican", "upscale", "creative", "date night"]
+    description:
+      "Sleek, contemporary Mexican restaurant known for its duck carnitas and corn husk meringue.",
+    tags: ["modern mexican", "upscale", "creative", "date night"],
   },
   {
     id: "14",
@@ -147,8 +159,9 @@ export const restaurants: Restaurant[] = [
     price_tier: "$$",
     neighborhood: "West Village",
     rating: 4.6,
-    description: "Michelin-starred spot for Korean ramyun and creative appetizers.",
-    tags: ["noodles", "korean", "michelin", "cozy"]
+    description:
+      "Michelin-starred spot for Korean ramyun and creative appetizers.",
+    tags: ["noodles", "korean", "michelin", "cozy"],
   },
   {
     id: "15",
@@ -157,8 +170,9 @@ export const restaurants: Restaurant[] = [
     price_tier: "$$",
     neighborhood: "Nolita",
     rating: 4.6,
-    description: "Cozy spot famous for its vodka sauce pizza and classic Italian-American dishes.",
-    tags: ["pizza", "casual", "family friendly", "vodka sauce"]
+    description:
+      "Cozy spot famous for its vodka sauce pizza and classic Italian-American dishes.",
+    tags: ["pizza", "casual", "family friendly", "vodka sauce"],
   },
   {
     id: "16",
@@ -168,7 +182,7 @@ export const restaurants: Restaurant[] = [
     neighborhood: "NoMad",
     rating: 4.9,
     description: "Innovative Korean tasting menu served at a U-shaped counter.",
-    tags: ["fine dining", "tasting menu", "korean", "exclusive"]
+    tags: ["fine dining", "tasting menu", "korean", "exclusive"],
   },
   {
     id: "17",
@@ -177,8 +191,9 @@ export const restaurants: Restaurant[] = [
     price_tier: "$$$",
     neighborhood: "Williamsburg",
     rating: 4.7,
-    description: "Airy, converted auto-body shop serving wood-fired seafood and handmade pastas.",
-    tags: ["pasta", "wood-fired", "hard to get", "brooklyn"]
+    description:
+      "Airy, converted auto-body shop serving wood-fired seafood and handmade pastas.",
+    tags: ["pasta", "wood-fired", "hard to get", "brooklyn"],
   },
   {
     id: "18",
@@ -187,8 +202,9 @@ export const restaurants: Restaurant[] = [
     price_tier: "$$$$",
     neighborhood: "West Village",
     rating: 4.7,
-    description: "High-end omakase experience from a Jiro Dreams of Sushi alum.",
-    tags: ["sushi", "omakase", "fine dining", "special occasion"]
+    description:
+      "High-end omakase experience from a Jiro Dreams of Sushi alum.",
+    tags: ["sushi", "omakase", "fine dining", "special occasion"],
   },
   {
     id: "19",
@@ -197,8 +213,9 @@ export const restaurants: Restaurant[] = [
     price_tier: "$",
     neighborhood: "East Village",
     rating: 4.5,
-    description: "24-hour Ukrainian diner serving pierogi, borscht, and comfort food.",
-    tags: ["late night", "comfort food", "casual", "pierogi"]
+    description:
+      "24-hour Ukrainian diner serving pierogi, borscht, and comfort food.",
+    tags: ["late night", "comfort food", "casual", "pierogi"],
   },
   {
     id: "20",
@@ -207,8 +224,9 @@ export const restaurants: Restaurant[] = [
     price_tier: "$$$",
     neighborhood: "West Village",
     rating: 4.8,
-    description: "Inventive Italian-American dishes, famous for their pinwheel lasagna.",
-    tags: ["creative", "lasagna", "date night", "hard to get"]
+    description:
+      "Inventive Italian-American dishes, famous for their pinwheel lasagna.",
+    tags: ["creative", "lasagna", "date night", "hard to get"],
   },
   {
     id: "21",
@@ -217,8 +235,9 @@ export const restaurants: Restaurant[] = [
     price_tier: "$$$$",
     neighborhood: "Flatiron",
     rating: 4.8,
-    description: "Michelin-starred Korean BBQ meets classic American steakhouse.",
-    tags: ["steak", "korean bbq", "michelin", "lively"]
+    description:
+      "Michelin-starred Korean BBQ meets classic American steakhouse.",
+    tags: ["steak", "korean bbq", "michelin", "lively"],
   },
   {
     id: "22",
@@ -227,8 +246,9 @@ export const restaurants: Restaurant[] = [
     price_tier: "$",
     neighborhood: "Greenwich Village",
     rating: 4.6,
-    description: "Classic New York slice joint serving up thin-crust pies since 1975.",
-    tags: ["pizza", "quick bite", "late night", "classic ny"]
+    description:
+      "Classic New York slice joint serving up thin-crust pies since 1975.",
+    tags: ["pizza", "quick bite", "late night", "classic ny"],
   },
   {
     id: "23",
@@ -237,8 +257,9 @@ export const restaurants: Restaurant[] = [
     price_tier: "$$$",
     neighborhood: "Flatiron",
     rating: 4.7,
-    description: "Rustic pasta dishes from the Emilia-Romagna region in a cozy setting.",
-    tags: ["pasta", "authentic", "michelin", "cozy"]
+    description:
+      "Rustic pasta dishes from the Emilia-Romagna region in a cozy setting.",
+    tags: ["pasta", "authentic", "michelin", "cozy"],
   },
   {
     id: "24",
@@ -247,8 +268,9 @@ export const restaurants: Restaurant[] = [
     price_tier: "$$$",
     neighborhood: "West Village",
     rating: 4.8,
-    description: "Unapologetically authentic South Indian cuisine with bold flavors.",
-    tags: ["indian", "spicy", "michelin", "hard to get"]
+    description:
+      "Unapologetically authentic South Indian cuisine with bold flavors.",
+    tags: ["indian", "spicy", "michelin", "hard to get"],
   },
   {
     id: "25",
@@ -257,8 +279,9 @@ export const restaurants: Restaurant[] = [
     price_tier: "$$$$",
     neighborhood: "Greenwich Village",
     rating: 4.6,
-    description: "Historic tavern known for its Black Label Burger and classic steakhouse fare.",
-    tags: ["burger", "historic", "steak", "lively"]
+    description:
+      "Historic tavern known for its Black Label Burger and classic steakhouse fare.",
+    tags: ["burger", "historic", "steak", "lively"],
   },
   {
     id: "26",
@@ -267,8 +290,9 @@ export const restaurants: Restaurant[] = [
     price_tier: "$",
     neighborhood: "Chelsea",
     rating: 4.7,
-    description: "Hidden spot in Chelsea Market serving excellent fish tacos and ceviche.",
-    tags: ["seafood", "tacos", "casual", "quick bite"]
+    description:
+      "Hidden spot in Chelsea Market serving excellent fish tacos and ceviche.",
+    tags: ["seafood", "tacos", "casual", "quick bite"],
   },
   {
     id: "27",
@@ -277,8 +301,9 @@ export const restaurants: Restaurant[] = [
     price_tier: "$$$$",
     neighborhood: "Gramercy",
     rating: 4.8,
-    description: "Danny Meyer's iconic restaurant offering seasonal American cuisine and impeccable service.",
-    tags: ["fine dining", "classic", "hospitality", "special occasion"]
+    description:
+      "Danny Meyer's iconic restaurant offering seasonal American cuisine and impeccable service.",
+    tags: ["fine dining", "classic", "hospitality", "special occasion"],
   },
   {
     id: "28",
@@ -287,8 +312,9 @@ export const restaurants: Restaurant[] = [
     price_tier: "$$$",
     neighborhood: "Chelsea",
     rating: 4.7,
-    description: "Lively spot serving vibrant Middle Eastern dips, breads, and grilled meats.",
-    tags: ["middle eastern", "lively", "sharing plates", "fun"]
+    description:
+      "Lively spot serving vibrant Middle Eastern dips, breads, and grilled meats.",
+    tags: ["middle eastern", "lively", "sharing plates", "fun"],
   },
   {
     id: "29",
@@ -297,8 +323,9 @@ export const restaurants: Restaurant[] = [
     price_tier: "$$$",
     neighborhood: "Williamsburg",
     rating: 4.6,
-    description: "Rooftop skewer house with sweeping city views and endless salatim.",
-    tags: ["rooftop", "views", "israeli", "group dining"]
+    description:
+      "Rooftop skewer house with sweeping city views and endless salatim.",
+    tags: ["rooftop", "views", "israeli", "group dining"],
   },
   {
     id: "30",
@@ -307,8 +334,9 @@ export const restaurants: Restaurant[] = [
     price_tier: "$$$",
     neighborhood: "Nolita",
     rating: 4.7,
-    description: "Inventive, Mediterranean-leaning small plates in a bustling, intimate space.",
-    tags: ["small plates", "creative", "wine", "date night"]
+    description:
+      "Inventive, Mediterranean-leaning small plates in a bustling, intimate space.",
+    tags: ["small plates", "creative", "wine", "date night"],
   },
   {
     id: "31",
@@ -317,8 +345,9 @@ export const restaurants: Restaurant[] = [
     price_tier: "$",
     neighborhood: "Greenwich Village",
     rating: 4.5,
-    description: "Long-standing late-night staple for cheap, delicious falafel and shawarma.",
-    tags: ["falafel", "cheap eats", "late night", "casual"]
+    description:
+      "Long-standing late-night staple for cheap, delicious falafel and shawarma.",
+    tags: ["falafel", "cheap eats", "late night", "casual"],
   },
   {
     id: "32",
@@ -327,8 +356,9 @@ export const restaurants: Restaurant[] = [
     price_tier: "$$$",
     neighborhood: "West Village",
     rating: 4.6,
-    description: "Trendy spot famous for its fish and chips and creative seafood dishes.",
-    tags: ["seafood", "trendy", "fish and chips", "hard to get"]
+    description:
+      "Trendy spot famous for its fish and chips and creative seafood dishes.",
+    tags: ["seafood", "trendy", "fish and chips", "hard to get"],
   },
   {
     id: "33",
@@ -337,8 +367,9 @@ export const restaurants: Restaurant[] = [
     price_tier: "$$$$",
     neighborhood: "West Village",
     rating: 4.8,
-    description: "Intimate, clubby supper club serving prime rib and decadent burgers.",
-    tags: ["prime rib", "exclusive", "cozy", "burger"]
+    description:
+      "Intimate, clubby supper club serving prime rib and decadent burgers.",
+    tags: ["prime rib", "exclusive", "cozy", "burger"],
   },
   {
     id: "34",
@@ -347,8 +378,9 @@ export const restaurants: Restaurant[] = [
     price_tier: "$$",
     neighborhood: "Nolita",
     rating: 4.7,
-    description: "Kitschy-cool diner serving excellent Thai comfort food and creative cocktails.",
-    tags: ["thai", "fun", "casual", "brunch"]
+    description:
+      "Kitschy-cool diner serving excellent Thai comfort food and creative cocktails.",
+    tags: ["thai", "fun", "casual", "brunch"],
   },
   {
     id: "35",
@@ -357,8 +389,9 @@ export const restaurants: Restaurant[] = [
     price_tier: "$$",
     neighborhood: "Midtown",
     rating: 4.5,
-    description: "Art Deco-inspired cafe in Rockefeller Center serving excellent pastries and aperitivo.",
-    tags: ["cafe", "pastries", "aperitivo", "midtown"]
+    description:
+      "Art Deco-inspired cafe in Rockefeller Center serving excellent pastries and aperitivo.",
+    tags: ["cafe", "pastries", "aperitivo", "midtown"],
   },
   {
     id: "36",
@@ -367,8 +400,9 @@ export const restaurants: Restaurant[] = [
     price_tier: "$$$",
     neighborhood: "Greenpoint",
     rating: 4.6,
-    description: "Spacious industrial spot serving Japanese comfort food and sake.",
-    tags: ["japanese", "brooklyn", "group dining", "sake"]
+    description:
+      "Spacious industrial spot serving Japanese comfort food and sake.",
+    tags: ["japanese", "brooklyn", "group dining", "sake"],
   },
   {
     id: "37",
@@ -377,8 +411,9 @@ export const restaurants: Restaurant[] = [
     price_tier: "$",
     neighborhood: "Chinatown",
     rating: 4.7,
-    description: "Tiny storefront with long lines for incredibly cheap, delicious roast pork over rice.",
-    tags: ["cheap eats", "roast pork", "quick bite", "chinatown"]
+    description:
+      "Tiny storefront with long lines for incredibly cheap, delicious roast pork over rice.",
+    tags: ["cheap eats", "roast pork", "quick bite", "chinatown"],
   },
   {
     id: "38",
@@ -387,8 +422,9 @@ export const restaurants: Restaurant[] = [
     price_tier: "$$$",
     neighborhood: "Upper West Side",
     rating: 4.8,
-    description: "Vibrant, critically acclaimed restaurant celebrating Afro-Caribbean and New York flavors.",
-    tags: ["creative", "trendy", "lincoln center", "flavorful"]
+    description:
+      "Vibrant, critically acclaimed restaurant celebrating Afro-Caribbean and New York flavors.",
+    tags: ["creative", "trendy", "lincoln center", "flavorful"],
   },
   {
     id: "39",
@@ -397,8 +433,9 @@ export const restaurants: Restaurant[] = [
     price_tier: "$$$$",
     neighborhood: "Midtown",
     rating: 4.7,
-    description: "Historic steakhouse famous for its mutton chop and ceiling covered in clay pipes.",
-    tags: ["historic", "steak", "mutton", "classic"]
+    description:
+      "Historic steakhouse famous for its mutton chop and ceiling covered in clay pipes.",
+    tags: ["historic", "steak", "mutton", "classic"],
   },
   {
     id: "40",
@@ -407,8 +444,9 @@ export const restaurants: Restaurant[] = [
     price_tier: "$$$",
     neighborhood: "Ridgewood",
     rating: 4.7,
-    description: "Neighborhood gem known for wood-fired cooking and excellent baked goods.",
-    tags: ["wood-fired", "neighborhood", "queens", "bakery"]
+    description:
+      "Neighborhood gem known for wood-fired cooking and excellent baked goods.",
+    tags: ["wood-fired", "neighborhood", "queens", "bakery"],
   },
   {
     id: "41",
@@ -417,8 +455,9 @@ export const restaurants: Restaurant[] = [
     price_tier: "$",
     neighborhood: "Chinatown",
     rating: 4.6,
-    description: "Hole-in-the-wall spot famous for its Big Tray Chicken and hand-pulled noodles.",
-    tags: ["spicy", "casual", "byob", "chinatown"]
+    description:
+      "Hole-in-the-wall spot famous for its Big Tray Chicken and hand-pulled noodles.",
+    tags: ["spicy", "casual", "byob", "chinatown"],
   },
   {
     id: "42",
@@ -427,8 +466,9 @@ export const restaurants: Restaurant[] = [
     price_tier: "$$$$",
     neighborhood: "Financial District",
     rating: 4.7,
-    description: "Elegant, high-ceilinged restaurant serving elevated American cuisine in an Art Deco building.",
-    tags: ["fine dining", "fidi", "elegant", "special occasion"]
+    description:
+      "Elegant, high-ceilinged restaurant serving elevated American cuisine in an Art Deco building.",
+    tags: ["fine dining", "fidi", "elegant", "special occasion"],
   },
   {
     id: "43",
@@ -437,8 +477,9 @@ export const restaurants: Restaurant[] = [
     price_tier: "$$",
     neighborhood: "East Williamsburg",
     rating: 4.6,
-    description: "Bustling corner spot serving creative, comforting Taiwanese-American dishes.",
-    tags: ["taiwanese", "casual", "fun", "brooklyn"]
+    description:
+      "Bustling corner spot serving creative, comforting Taiwanese-American dishes.",
+    tags: ["taiwanese", "casual", "fun", "brooklyn"],
   },
   {
     id: "44",
@@ -447,8 +488,9 @@ export const restaurants: Restaurant[] = [
     price_tier: "$$$",
     neighborhood: "Tribeca",
     rating: 4.5,
-    description: "Classic 80s brasserie that remains a stylish neighborhood staple.",
-    tags: ["classic", "brasserie", "tribeca", "martinis"]
+    description:
+      "Classic 80s brasserie that remains a stylish neighborhood staple.",
+    tags: ["classic", "brasserie", "tribeca", "martinis"],
   },
   {
     id: "45",
@@ -457,8 +499,9 @@ export const restaurants: Restaurant[] = [
     price_tier: "$$",
     neighborhood: "East Village",
     rating: 4.7,
-    description: "Quirky, beloved diner serving inventive vegetarian and vegan comfort food.",
-    tags: ["vegetarian", "vegan", "diner", "quirky"]
+    description:
+      "Quirky, beloved diner serving inventive vegetarian and vegan comfort food.",
+    tags: ["vegetarian", "vegan", "diner", "quirky"],
   },
   {
     id: "46",
@@ -467,8 +510,9 @@ export const restaurants: Restaurant[] = [
     price_tier: "$$$$",
     neighborhood: "Columbus Circle",
     rating: 4.8,
-    description: "One of the most expensive and exclusive sushi omakase experiences in the country.",
-    tags: ["sushi", "omakase", "ultra fine dining", "exclusive"]
+    description:
+      "One of the most expensive and exclusive sushi omakase experiences in the country.",
+    tags: ["sushi", "omakase", "ultra fine dining", "exclusive"],
   },
   {
     id: "47",
@@ -477,8 +521,9 @@ export const restaurants: Restaurant[] = [
     price_tier: "$",
     neighborhood: "Greenpoint",
     rating: 4.7,
-    description: "Authentic Mexico City-style taco stand specializing in suadero and al pastor.",
-    tags: ["tacos", "authentic", "quick bite", "brooklyn"]
+    description:
+      "Authentic Mexico City-style taco stand specializing in suadero and al pastor.",
+    tags: ["tacos", "authentic", "quick bite", "brooklyn"],
   },
   {
     id: "48",
@@ -487,8 +532,9 @@ export const restaurants: Restaurant[] = [
     price_tier: "$$$",
     neighborhood: "Greenwich Village",
     rating: 4.6,
-    description: "Airy, stylish restaurant focusing on seasonal, vegetable-forward dishes and wood-fired pizzas.",
-    tags: ["vegetable-forward", "healthy-ish", "date night", "wood-fired"]
+    description:
+      "Airy, stylish restaurant focusing on seasonal, vegetable-forward dishes and wood-fired pizzas.",
+    tags: ["vegetable-forward", "healthy-ish", "date night", "wood-fired"],
   },
   {
     id: "49",
@@ -497,8 +543,9 @@ export const restaurants: Restaurant[] = [
     price_tier: "$",
     neighborhood: "Lower East Side",
     rating: 4.6,
-    description: "Cozy cafe serving authentic Malaysian coffeehouse fare like kaya toast and nasi lemak.",
-    tags: ["malaysian", "cafe", "casual", "breakfast"]
+    description:
+      "Cozy cafe serving authentic Malaysian coffeehouse fare like kaya toast and nasi lemak.",
+    tags: ["malaysian", "cafe", "casual", "breakfast"],
   },
   {
     id: "50",
@@ -507,8 +554,9 @@ export const restaurants: Restaurant[] = [
     price_tier: "$$$",
     neighborhood: "Tribeca",
     rating: 4.6,
-    description: "Bustling, modern French brasserie known for its natural wine list and excellent roast chicken.",
-    tags: ["french", "natural wine", "brasserie", "trendy"]
+    description:
+      "Bustling, modern French brasserie known for its natural wine list and excellent roast chicken.",
+    tags: ["french", "natural wine", "brasserie", "trendy"],
   },
   {
     id: "51",
@@ -517,8 +565,9 @@ export const restaurants: Restaurant[] = [
     price_tier: "$$",
     neighborhood: "Red Hook",
     rating: 4.7,
-    description: "Massive rustic space serving some of the best Texas-style BBQ in the city.",
-    tags: ["bbq", "meat", "casual", "brooklyn"]
+    description:
+      "Massive rustic space serving some of the best Texas-style BBQ in the city.",
+    tags: ["bbq", "meat", "casual", "brooklyn"],
   },
   {
     id: "52",
@@ -527,8 +576,9 @@ export const restaurants: Restaurant[] = [
     price_tier: "$$$$",
     neighborhood: "Financial District",
     rating: 4.8,
-    description: "Luxurious tasting menu with breathtaking views from the 63rd floor of an Art Deco tower.",
-    tags: ["views", "fine dining", "tasting menu", "special occasion"]
+    description:
+      "Luxurious tasting menu with breathtaking views from the 63rd floor of an Art Deco tower.",
+    tags: ["views", "fine dining", "tasting menu", "special occasion"],
   },
   {
     id: "53",
@@ -537,8 +587,9 @@ export const restaurants: Restaurant[] = [
     price_tier: "$",
     neighborhood: "SoHo",
     rating: 4.5,
-    description: "Historic green storefront serving excellent Italian sandwiches and baked goods.",
-    tags: ["sandwiches", "historic", "quick bite", "lunch"]
+    description:
+      "Historic green storefront serving excellent Italian sandwiches and baked goods.",
+    tags: ["sandwiches", "historic", "quick bite", "lunch"],
   },
   {
     id: "54",
@@ -547,8 +598,9 @@ export const restaurants: Restaurant[] = [
     price_tier: "$$$",
     neighborhood: "Bushwick",
     rating: 4.7,
-    description: "Modern Iranian restaurant serving vibrant dips, stews, and grilled meats.",
-    tags: ["persian", "trendy", "brooklyn", "flavorful"]
+    description:
+      "Modern Iranian restaurant serving vibrant dips, stews, and grilled meats.",
+    tags: ["persian", "trendy", "brooklyn", "flavorful"],
   },
   {
     id: "55",
@@ -557,8 +609,9 @@ export const restaurants: Restaurant[] = [
     price_tier: "$$$",
     neighborhood: "West Village",
     rating: 4.6,
-    description: "Incredibly charming, cramped Parisian-style gastrotheque perfect for brunch or a late-night bite.",
-    tags: ["french", "cozy", "brunch", "romantic"]
+    description:
+      "Incredibly charming, cramped Parisian-style gastrotheque perfect for brunch or a late-night bite.",
+    tags: ["french", "cozy", "brunch", "romantic"],
   },
   {
     id: "56",
@@ -567,8 +620,9 @@ export const restaurants: Restaurant[] = [
     price_tier: "$$$",
     neighborhood: "Lower East Side",
     rating: 4.7,
-    description: "Pioneering vegetarian restaurant offering a creative, playful tasting menu.",
-    tags: ["vegetarian", "tasting menu", "creative", "fun"]
+    description:
+      "Pioneering vegetarian restaurant offering a creative, playful tasting menu.",
+    tags: ["vegetarian", "tasting menu", "creative", "fun"],
   },
   {
     id: "57",
@@ -577,8 +631,9 @@ export const restaurants: Restaurant[] = [
     price_tier: "$",
     neighborhood: "Lower East Side",
     rating: 4.7,
-    description: "Retro-styled pizzeria milling its own flour for exceptional NY slices.",
-    tags: ["pizza", "retro", "casual", "slice"]
+    description:
+      "Retro-styled pizzeria milling its own flour for exceptional NY slices.",
+    tags: ["pizza", "retro", "casual", "slice"],
   },
   {
     id: "58",
@@ -587,8 +642,9 @@ export const restaurants: Restaurant[] = [
     price_tier: "$$$$",
     neighborhood: "Downtown Brooklyn",
     rating: 4.7,
-    description: "Beautifully restored historic oyster and chop house with elegant, old-school service.",
-    tags: ["historic", "steak", "seafood", "elegant"]
+    description:
+      "Beautifully restored historic oyster and chop house with elegant, old-school service.",
+    tags: ["historic", "steak", "seafood", "elegant"],
   },
   {
     id: "59",
@@ -597,8 +653,9 @@ export const restaurants: Restaurant[] = [
     price_tier: "$$",
     neighborhood: "Elmhurst",
     rating: 4.7,
-    description: "Unassuming Queens spot serving some of the most authentic and spicy Thai food in NYC.",
-    tags: ["thai", "spicy", "authentic", "queens"]
+    description:
+      "Unassuming Queens spot serving some of the most authentic and spicy Thai food in NYC.",
+    tags: ["thai", "spicy", "authentic", "queens"],
   },
   {
     id: "60",
@@ -607,8 +664,9 @@ export const restaurants: Restaurant[] = [
     price_tier: "$$$$",
     neighborhood: "SoHo",
     rating: 4.7,
-    description: "Gorgeous, high-ceilinged space serving refined, classic French cuisine.",
-    tags: ["french", "elegant", "fine dining", "romantic"]
+    description:
+      "Gorgeous, high-ceilinged space serving refined, classic French cuisine.",
+    tags: ["french", "elegant", "fine dining", "romantic"],
   },
   {
     id: "61",
@@ -617,8 +675,9 @@ export const restaurants: Restaurant[] = [
     price_tier: "$",
     neighborhood: "East Village",
     rating: 4.6,
-    description: "Tiny spot serving incredibly spicy, flavorful Indian-spiced fried chicken.",
-    tags: ["fried chicken", "spicy", "quick bite", "casual"]
+    description:
+      "Tiny spot serving incredibly spicy, flavorful Indian-spiced fried chicken.",
+    tags: ["fried chicken", "spicy", "quick bite", "casual"],
   },
   {
     id: "62",
@@ -628,7 +687,7 @@ export const restaurants: Restaurant[] = [
     neighborhood: "Chinatown",
     rating: 4.5,
     description: "Bustling, rustic Greek taverna hidden behind a Chinese sign.",
-    tags: ["greek", "lively", "casual", "group dining"]
+    tags: ["greek", "lively", "casual", "group dining"],
   },
   {
     id: "63",
@@ -637,8 +696,9 @@ export const restaurants: Restaurant[] = [
     price_tier: "$$$$",
     neighborhood: "Midtown",
     rating: 4.7,
-    description: "Elegant, long-standing restaurant serving refined, Michelin-starred Nordic cuisine.",
-    tags: ["nordic", "fine dining", "elegant", "michelin"]
+    description:
+      "Elegant, long-standing restaurant serving refined, Michelin-starred Nordic cuisine.",
+    tags: ["nordic", "fine dining", "elegant", "michelin"],
   },
   {
     id: "64",
@@ -647,8 +707,9 @@ export const restaurants: Restaurant[] = [
     price_tier: "$$$",
     neighborhood: "Lower East Side",
     rating: 4.6,
-    description: "Cozy, bustling spot serving Iberian-inspired seafood and natural wine.",
-    tags: ["seafood", "natural wine", "cozy", "date night"]
+    description:
+      "Cozy, bustling spot serving Iberian-inspired seafood and natural wine.",
+    tags: ["seafood", "natural wine", "cozy", "date night"],
   },
   {
     id: "65",
@@ -657,8 +718,9 @@ export const restaurants: Restaurant[] = [
     price_tier: "$",
     neighborhood: "Flushing",
     rating: 4.6,
-    description: "Small bakery specializing in light, airy cream puffs with various Asian-inspired flavors.",
-    tags: ["dessert", "bakery", "sweet", "queens"]
+    description:
+      "Small bakery specializing in light, airy cream puffs with various Asian-inspired flavors.",
+    tags: ["dessert", "bakery", "sweet", "queens"],
   },
   {
     id: "66",
@@ -667,8 +729,9 @@ export const restaurants: Restaurant[] = [
     price_tier: "$$$$",
     neighborhood: "Midtown",
     rating: 4.7,
-    description: "Glamorous, retro-chic chophouse in the iconic Seagram Building.",
-    tags: ["glamorous", "steak", "classic", "expensive"]
+    description:
+      "Glamorous, retro-chic chophouse in the iconic Seagram Building.",
+    tags: ["glamorous", "steak", "classic", "expensive"],
   },
   {
     id: "67",
@@ -677,8 +740,9 @@ export const restaurants: Restaurant[] = [
     price_tier: "$$$",
     neighborhood: "Greenpoint",
     rating: 4.6,
-    description: "Beautiful, airy space serving wood-fired dishes with Indian and Middle Eastern influences.",
-    tags: ["wood-fired", "beautiful space", "brooklyn", "date night"]
+    description:
+      "Beautiful, airy space serving wood-fired dishes with Indian and Middle Eastern influences.",
+    tags: ["wood-fired", "beautiful space", "brooklyn", "date night"],
   },
   {
     id: "68",
@@ -687,8 +751,9 @@ export const restaurants: Restaurant[] = [
     price_tier: "$",
     neighborhood: "Sunset Park",
     rating: 4.7,
-    description: "Beloved taco truck and restaurant serving generous, authentic tacos.",
-    tags: ["tacos", "authentic", "cheap eats", "brooklyn"]
+    description:
+      "Beloved taco truck and restaurant serving generous, authentic tacos.",
+    tags: ["tacos", "authentic", "cheap eats", "brooklyn"],
   },
   {
     id: "69",
@@ -697,8 +762,9 @@ export const restaurants: Restaurant[] = [
     price_tier: "$$$",
     neighborhood: "West Village",
     rating: 4.7,
-    description: "Intimate, classic Tuscan restaurant famous for its lasagna and negronis.",
-    tags: ["tuscan", "pasta", "intimate", "hard to get"]
+    description:
+      "Intimate, classic Tuscan restaurant famous for its lasagna and negronis.",
+    tags: ["tuscan", "pasta", "intimate", "hard to get"],
   },
   {
     id: "70",
@@ -707,8 +773,9 @@ export const restaurants: Restaurant[] = [
     price_tier: "$$$",
     neighborhood: "Midtown",
     rating: 4.6,
-    description: "Upscale, inventive Mexican cuisine in a sleek, spacious Midtown setting.",
-    tags: ["modern mexican", "upscale", "midtown", "margaritas"]
+    description:
+      "Upscale, inventive Mexican cuisine in a sleek, spacious Midtown setting.",
+    tags: ["modern mexican", "upscale", "midtown", "margaritas"],
   },
   {
     id: "71",
@@ -717,8 +784,9 @@ export const restaurants: Restaurant[] = [
     price_tier: "$",
     neighborhood: "Midtown",
     rating: 4.4,
-    description: "Famous street cart serving legendary chicken and gyro over rice with white sauce.",
-    tags: ["street food", "cheap eats", "late night", "halal"]
+    description:
+      "Famous street cart serving legendary chicken and gyro over rice with white sauce.",
+    tags: ["street food", "cheap eats", "late night", "halal"],
   },
   {
     id: "72",
@@ -727,8 +795,9 @@ export const restaurants: Restaurant[] = [
     price_tier: "$$",
     neighborhood: "Nolita",
     rating: 4.3,
-    description: "Recognized as America's first pizzeria, serving coal-fired, thin-crust Neapolitan pies.",
-    tags: ["pizza", "historic", "coal-fired", "touristy"]
+    description:
+      "Recognized as America's first pizzeria, serving coal-fired, thin-crust Neapolitan pies.",
+    tags: ["pizza", "historic", "coal-fired", "touristy"],
   },
   {
     id: "73",
@@ -737,8 +806,9 @@ export const restaurants: Restaurant[] = [
     price_tier: "$$",
     neighborhood: "NoHo",
     rating: 4.6,
-    description: "Vibrant, colorful spot serving unapologetically spicy and authentic Thai seafood.",
-    tags: ["thai", "seafood", "spicy", "lively"]
+    description:
+      "Vibrant, colorful spot serving unapologetically spicy and authentic Thai seafood.",
+    tags: ["thai", "seafood", "spicy", "lively"],
   },
   {
     id: "74",
@@ -747,8 +817,9 @@ export const restaurants: Restaurant[] = [
     price_tier: "$$$$",
     neighborhood: "Midtown",
     rating: 4.7,
-    description: "Ralph Lauren's clubby, ultra-exclusive restaurant serving classic American fare.",
-    tags: ["exclusive", "classic american", "glamorous", "hard to get"]
+    description:
+      "Ralph Lauren's clubby, ultra-exclusive restaurant serving classic American fare.",
+    tags: ["exclusive", "classic american", "glamorous", "hard to get"],
   },
   {
     id: "75",
@@ -757,8 +828,9 @@ export const restaurants: Restaurant[] = [
     price_tier: "$$",
     neighborhood: "East Village",
     rating: 4.7,
-    description: "Cozy, minimalist spot specializing in exquisite udon noodle soups.",
-    tags: ["udon", "japanese", "cozy", "comfort food"]
+    description:
+      "Cozy, minimalist spot specializing in exquisite udon noodle soups.",
+    tags: ["udon", "japanese", "cozy", "comfort food"],
   },
   {
     id: "76",
@@ -767,8 +839,9 @@ export const restaurants: Restaurant[] = [
     price_tier: "$$$$",
     neighborhood: "Central Park South",
     rating: 4.7,
-    description: "High-end Italian seafood and housemade pastas in a chic setting near Central Park.",
-    tags: ["fine dining", "seafood", "pasta", "special occasion"]
+    description:
+      "High-end Italian seafood and housemade pastas in a chic setting near Central Park.",
+    tags: ["fine dining", "seafood", "pasta", "special occasion"],
   },
   {
     id: "77",
@@ -777,8 +850,9 @@ export const restaurants: Restaurant[] = [
     price_tier: "$$$",
     neighborhood: "Flatiron",
     rating: 4.6,
-    description: "Bustling brasserie offering a California-inspired take on rustic Italian food.",
-    tags: ["brasserie", "pasta", "lively", "brunch"]
+    description:
+      "Bustling brasserie offering a California-inspired take on rustic Italian food.",
+    tags: ["brasserie", "pasta", "lively", "brunch"],
   },
   {
     id: "78",
@@ -787,8 +861,9 @@ export const restaurants: Restaurant[] = [
     price_tier: "$$",
     neighborhood: "SoHo",
     rating: 4.6,
-    description: "Famed bakery known for inventing the Cronut and other creative French pastries.",
-    tags: ["bakery", "pastries", "dessert", "touristy"]
+    description:
+      "Famed bakery known for inventing the Cronut and other creative French pastries.",
+    tags: ["bakery", "pastries", "dessert", "touristy"],
   },
   {
     id: "79",
@@ -797,8 +872,9 @@ export const restaurants: Restaurant[] = [
     price_tier: "$",
     neighborhood: "Upper West Side",
     rating: 4.8,
-    description: "Iconic bakery famous for its massive, gooey, six-ounce chocolate chip walnut cookies.",
-    tags: ["bakery", "cookies", "dessert", "casual"]
+    description:
+      "Iconic bakery famous for its massive, gooey, six-ounce chocolate chip walnut cookies.",
+    tags: ["bakery", "cookies", "dessert", "casual"],
   },
   {
     id: "80",
@@ -807,8 +883,9 @@ export const restaurants: Restaurant[] = [
     price_tier: "$$$",
     neighborhood: "Meatpacking District",
     rating: 4.6,
-    description: "Revived classic French brasserie offering steak frites and a lively scene.",
-    tags: ["french", "brasserie", "lively", "brunch"]
+    description:
+      "Revived classic French brasserie offering steak frites and a lively scene.",
+    tags: ["french", "brasserie", "lively", "brunch"],
   },
   {
     id: "81",
@@ -817,8 +894,9 @@ export const restaurants: Restaurant[] = [
     price_tier: "$$$",
     neighborhood: "Harlem",
     rating: 4.5,
-    description: "Marcus Samuelsson's vibrant celebration of American comfort food and Harlem culture.",
-    tags: ["southern", "comfort food", "lively", "music"]
+    description:
+      "Marcus Samuelsson's vibrant celebration of American comfort food and Harlem culture.",
+    tags: ["southern", "comfort food", "lively", "music"],
   },
   {
     id: "82",
@@ -827,8 +905,9 @@ export const restaurants: Restaurant[] = [
     price_tier: "$$",
     neighborhood: "Harlem",
     rating: 4.4,
-    description: "Historic Harlem institution known as the 'Queen of Soul Food'.",
-    tags: ["soul food", "historic", "comfort food", "brunch"]
+    description:
+      "Historic Harlem institution known as the 'Queen of Soul Food'.",
+    tags: ["soul food", "historic", "comfort food", "brunch"],
   },
   {
     id: "83",
@@ -837,8 +916,9 @@ export const restaurants: Restaurant[] = [
     price_tier: "$$$$",
     neighborhood: "East Harlem",
     rating: 4.6,
-    description: "Legendary, nearly impossible-to-book Italian restaurant with a club-like atmosphere.",
-    tags: ["exclusive", "italian-american", "historic", "hard to get"]
+    description:
+      "Legendary, nearly impossible-to-book Italian restaurant with a club-like atmosphere.",
+    tags: ["exclusive", "italian-american", "historic", "hard to get"],
   },
   {
     id: "84",
@@ -847,8 +927,9 @@ export const restaurants: Restaurant[] = [
     price_tier: "$$",
     neighborhood: "East Harlem",
     rating: 4.5,
-    description: "Old-school, coal-oven pizzeria serving classic thin-crust slices since 1933.",
-    tags: ["pizza", "historic", "coal-fired", "casual"]
+    description:
+      "Old-school, coal-oven pizzeria serving classic thin-crust slices since 1933.",
+    tags: ["pizza", "historic", "coal-fired", "casual"],
   },
   {
     id: "85",
@@ -857,8 +938,9 @@ export const restaurants: Restaurant[] = [
     price_tier: "$$",
     neighborhood: "West Village",
     rating: 4.7,
-    description: "No-slices, coal-fired brick oven pizza in a classic, graffiti-carved setting.",
-    tags: ["pizza", "coal-fired", "classic ny", "casual"]
+    description:
+      "No-slices, coal-fired brick oven pizza in a classic, graffiti-carved setting.",
+    tags: ["pizza", "coal-fired", "classic ny", "casual"],
   },
   {
     id: "86",
@@ -867,8 +949,9 @@ export const restaurants: Restaurant[] = [
     price_tier: "$$",
     neighborhood: "Coney Island",
     rating: 4.6,
-    description: "Historic Coney Island pizzeria known for its exceptional coal-fired pies.",
-    tags: ["pizza", "historic", "coal-fired", "brooklyn"]
+    description:
+      "Historic Coney Island pizzeria known for its exceptional coal-fired pies.",
+    tags: ["pizza", "historic", "coal-fired", "brooklyn"],
   },
   {
     id: "87",
@@ -877,8 +960,9 @@ export const restaurants: Restaurant[] = [
     price_tier: "$$",
     neighborhood: "Bushwick",
     rating: 4.6,
-    description: "Hip, industrial-chic spot famous for its wood-fired Neapolitan-style pizzas.",
-    tags: ["pizza", "wood-fired", "hipster", "brooklyn"]
+    description:
+      "Hip, industrial-chic spot famous for its wood-fired Neapolitan-style pizzas.",
+    tags: ["pizza", "wood-fired", "hipster", "brooklyn"],
   },
   {
     id: "88",
@@ -887,8 +971,9 @@ export const restaurants: Restaurant[] = [
     price_tier: "$$",
     neighborhood: "Greenpoint",
     rating: 4.7,
-    description: "Rustic-chic eatery serving creative wood-fired pizzas, including great vegan options.",
-    tags: ["pizza", "wood-fired", "vegan options", "brooklyn"]
+    description:
+      "Rustic-chic eatery serving creative wood-fired pizzas, including great vegan options.",
+    tags: ["pizza", "wood-fired", "vegan options", "brooklyn"],
   },
   {
     id: "89",
@@ -897,8 +982,9 @@ export const restaurants: Restaurant[] = [
     price_tier: "$",
     neighborhood: "Bensonhurst",
     rating: 4.7,
-    description: "Iconic Brooklyn spot famous for its thick, saucy Sicilian squares and spumoni.",
-    tags: ["pizza", "sicilian", "historic", "brooklyn"]
+    description:
+      "Iconic Brooklyn spot famous for its thick, saucy Sicilian squares and spumoni.",
+    tags: ["pizza", "sicilian", "historic", "brooklyn"],
   },
   {
     id: "90",
@@ -907,8 +993,9 @@ export const restaurants: Restaurant[] = [
     price_tier: "$",
     neighborhood: "Red Hook",
     rating: 4.7,
-    description: "Old-school Brooklyn institution serving massive, classic Italian hero sandwiches.",
-    tags: ["sandwiches", "italian", "historic", "lunch"]
+    description:
+      "Old-school Brooklyn institution serving massive, classic Italian hero sandwiches.",
+    tags: ["sandwiches", "italian", "historic", "lunch"],
   },
   {
     id: "91",
@@ -917,8 +1004,9 @@ export const restaurants: Restaurant[] = [
     price_tier: "$$",
     neighborhood: "West Village",
     rating: 4.8,
-    description: "Classic Italian deli crafting enormous, meat-packed hero sandwiches.",
-    tags: ["sandwiches", "deli", "italian", "lunch"]
+    description:
+      "Classic Italian deli crafting enormous, meat-packed hero sandwiches.",
+    tags: ["sandwiches", "deli", "italian", "lunch"],
   },
   {
     id: "92",
@@ -927,8 +1015,9 @@ export const restaurants: Restaurant[] = [
     price_tier: "$$",
     neighborhood: "SoHo",
     rating: 4.6,
-    description: "Popular spot for authentic, high-quality Italian sandwiches with strict ordering rules.",
-    tags: ["sandwiches", "italian", "quick bite", "lunch"]
+    description:
+      "Popular spot for authentic, high-quality Italian sandwiches with strict ordering rules.",
+    tags: ["sandwiches", "italian", "quick bite", "lunch"],
   },
   {
     id: "93",
@@ -937,8 +1026,9 @@ export const restaurants: Restaurant[] = [
     price_tier: "$$",
     neighborhood: "Little Italy",
     rating: 4.5,
-    description: "Casual diner-style spot serving elevated versions of Italian-American classics.",
-    tags: ["italian-american", "casual", "sandwiches", "comfort food"]
+    description:
+      "Casual diner-style spot serving elevated versions of Italian-American classics.",
+    tags: ["italian-american", "casual", "sandwiches", "comfort food"],
   },
   {
     id: "94",
@@ -947,8 +1037,9 @@ export const restaurants: Restaurant[] = [
     price_tier: "$$$",
     neighborhood: "Nolita",
     rating: 4.6,
-    description: "Old-school, celebrity-favorite Italian joint serving classic red-sauce dishes.",
-    tags: ["italian", "red sauce", "historic", "cozy"]
+    description:
+      "Old-school, celebrity-favorite Italian joint serving classic red-sauce dishes.",
+    tags: ["italian", "red sauce", "historic", "cozy"],
   },
   {
     id: "95",
@@ -957,8 +1048,9 @@ export const restaurants: Restaurant[] = [
     price_tier: "$$$",
     neighborhood: "Nolita",
     rating: 4.6,
-    description: "Rustic, candlelit space focusing on wood-fired Italian cooking and wine.",
-    tags: ["italian", "wood-fired", "romantic", "date night"]
+    description:
+      "Rustic, candlelit space focusing on wood-fired Italian cooking and wine.",
+    tags: ["italian", "wood-fired", "romantic", "date night"],
   },
   {
     id: "96",
@@ -967,8 +1059,9 @@ export const restaurants: Restaurant[] = [
     price_tier: "$$$",
     neighborhood: "NoHo",
     rating: 4.6,
-    description: "Charming, rustic restaurant with a famous wine cellar and Mediterranean-Italian fare.",
-    tags: ["italian", "rustic", "wine", "romantic"]
+    description:
+      "Charming, rustic restaurant with a famous wine cellar and Mediterranean-Italian fare.",
+    tags: ["italian", "rustic", "wine", "romantic"],
   },
   {
     id: "97",
@@ -977,8 +1070,9 @@ export const restaurants: Restaurant[] = [
     price_tier: "$$$",
     neighborhood: "NoHo",
     rating: 4.5,
-    description: "Grand, bustling French brasserie and bakery known for its vibrant atmosphere.",
-    tags: ["french", "brasserie", "bakery", "brunch"]
+    description:
+      "Grand, bustling French brasserie and bakery known for its vibrant atmosphere.",
+    tags: ["french", "brasserie", "bakery", "brunch"],
   },
   {
     id: "98",
@@ -987,8 +1081,9 @@ export const restaurants: Restaurant[] = [
     price_tier: "$$$",
     neighborhood: "West Village",
     rating: 4.6,
-    description: "Spacious, elegant French brasserie serving steaks, absinthe, and classic dishes.",
-    tags: ["french", "brasserie", "elegant", "steak"]
+    description:
+      "Spacious, elegant French brasserie serving steaks, absinthe, and classic dishes.",
+    tags: ["french", "brasserie", "elegant", "steak"],
   },
   {
     id: "99",
@@ -997,8 +1092,9 @@ export const restaurants: Restaurant[] = [
     price_tier: "$$$",
     neighborhood: "SoHo",
     rating: 4.7,
-    description: "Classic, lively SoHo bistro famous for its steak au poivre and burger.",
-    tags: ["french", "bistro", "classic", "lively"]
+    description:
+      "Classic, lively SoHo bistro famous for its steak au poivre and burger.",
+    tags: ["french", "bistro", "classic", "lively"],
   },
   {
     id: "100",
@@ -1007,8 +1103,9 @@ export const restaurants: Restaurant[] = [
     price_tier: "$$$",
     neighborhood: "East Village",
     rating: 4.4,
-    description: "Cozy, quintessential East Village French bistro with a bohemian vibe.",
-    tags: ["french", "bistro", "cozy", "classic"]
+    description:
+      "Cozy, quintessential East Village French bistro with a bohemian vibe.",
+    tags: ["french", "bistro", "cozy", "classic"],
   },
   {
     id: "101",
@@ -1017,8 +1114,9 @@ export const restaurants: Restaurant[] = [
     price_tier: "$$",
     neighborhood: "Lower East Side",
     rating: 4.8,
-    description: "Legendary shop serving the city's best smoked fish, caviar, and bagels since 1914.",
-    tags: ["bagels", "smoked fish", "historic", "breakfast"]
+    description:
+      "Legendary shop serving the city's best smoked fish, caviar, and bagels since 1914.",
+    tags: ["bagels", "smoked fish", "historic", "breakfast"],
   },
   {
     id: "102",
@@ -1027,8 +1125,9 @@ export const restaurants: Restaurant[] = [
     price_tier: "$$",
     neighborhood: "Upper West Side",
     rating: 4.6,
-    description: "The 'Sturgeon King', a classic Jewish deli serving smoked fish and bagels since 1908.",
-    tags: ["deli", "smoked fish", "historic", "breakfast"]
+    description:
+      "The 'Sturgeon King', a classic Jewish deli serving smoked fish and bagels since 1908.",
+    tags: ["deli", "smoked fish", "historic", "breakfast"],
   },
   {
     id: "103",
@@ -1037,8 +1136,9 @@ export const restaurants: Restaurant[] = [
     price_tier: "$$",
     neighborhood: "Murray Hill",
     rating: 4.4,
-    description: "Classic, 24-hour Jewish deli known for massive pastrami sandwiches and matzo ball soup.",
-    tags: ["deli", "late night", "pastrami", "comfort food"]
+    description:
+      "Classic, 24-hour Jewish deli known for massive pastrami sandwiches and matzo ball soup.",
+    tags: ["deli", "late night", "pastrami", "comfort food"],
   },
   {
     id: "104",
@@ -1047,8 +1147,9 @@ export const restaurants: Restaurant[] = [
     price_tier: "$$",
     neighborhood: "Upper East Side",
     rating: 4.5,
-    description: "Cozy, no-frills spot serving some of the best pastrami sandwiches in the city.",
-    tags: ["deli", "pastrami", "kosher", "casual"]
+    description:
+      "Cozy, no-frills spot serving some of the best pastrami sandwiches in the city.",
+    tags: ["deli", "pastrami", "kosher", "casual"],
   },
   {
     id: "105",
@@ -1057,8 +1158,9 @@ export const restaurants: Restaurant[] = [
     price_tier: "$$",
     neighborhood: "East Village",
     rating: 4.5,
-    description: "Fast-casual spot serving excellent Texas-style smoked meats and creative sides.",
-    tags: ["bbq", "casual", "quick bite", "meat"]
+    description:
+      "Fast-casual spot serving excellent Texas-style smoked meats and creative sides.",
+    tags: ["bbq", "casual", "quick bite", "meat"],
   },
   {
     id: "106",
@@ -1067,8 +1169,9 @@ export const restaurants: Restaurant[] = [
     price_tier: "$$",
     neighborhood: "Williamsburg",
     rating: 4.5,
-    description: "Rustic, garage-like space serving dry-rubbed BBQ by the pound and craft beer.",
-    tags: ["bbq", "casual", "beer", "brooklyn"]
+    description:
+      "Rustic, garage-like space serving dry-rubbed BBQ by the pound and craft beer.",
+    tags: ["bbq", "casual", "beer", "brooklyn"],
   },
   {
     id: "107",
@@ -1077,8 +1180,9 @@ export const restaurants: Restaurant[] = [
     price_tier: "$$",
     neighborhood: "Harlem",
     rating: 4.5,
-    description: "Lively, roadhouse-style joint serving up hearty portions of Southern-style BBQ.",
-    tags: ["bbq", "lively", "southern", "casual"]
+    description:
+      "Lively, roadhouse-style joint serving up hearty portions of Southern-style BBQ.",
+    tags: ["bbq", "lively", "southern", "casual"],
   },
   {
     id: "108",
@@ -1087,8 +1191,9 @@ export const restaurants: Restaurant[] = [
     price_tier: "$$$",
     neighborhood: "Prospect Heights",
     rating: 4.7,
-    description: "Michelin-starred spot offering an affordable, inventive seasonal tasting menu.",
-    tags: ["tasting menu", "michelin", "creative", "brooklyn"]
+    description:
+      "Michelin-starred spot offering an affordable, inventive seasonal tasting menu.",
+    tags: ["tasting menu", "michelin", "creative", "brooklyn"],
   },
   {
     id: "109",
@@ -1097,8 +1202,9 @@ export const restaurants: Restaurant[] = [
     price_tier: "$$$",
     neighborhood: "Gowanus",
     rating: 4.6,
-    description: "Oaxacan-inspired dishes and mezcal served in a space with a beautiful backyard patio.",
-    tags: ["mexican", "oaxacan", "patio", "brooklyn"]
+    description:
+      "Oaxacan-inspired dishes and mezcal served in a space with a beautiful backyard patio.",
+    tags: ["mexican", "oaxacan", "patio", "brooklyn"],
   },
   {
     id: "110",
@@ -1107,8 +1213,9 @@ export const restaurants: Restaurant[] = [
     price_tier: "$$$",
     neighborhood: "Greenpoint",
     rating: 4.7,
-    description: "Airy, Michelin-starred spot serving wood-fired Mexican dishes and great cocktails.",
-    tags: ["mexican", "wood-fired", "michelin", "brooklyn"]
+    description:
+      "Airy, Michelin-starred spot serving wood-fired Mexican dishes and great cocktails.",
+    tags: ["mexican", "wood-fired", "michelin", "brooklyn"],
   },
   {
     id: "111",
@@ -1117,8 +1224,9 @@ export const restaurants: Restaurant[] = [
     price_tier: "$$",
     neighborhood: "Long Island City",
     rating: 4.7,
-    description: "Michelin-starred Mexican restaurant known for its exceptional mole and traditional dishes.",
-    tags: ["mexican", "michelin", "authentic", "queens"]
+    description:
+      "Michelin-starred Mexican restaurant known for its exceptional mole and traditional dishes.",
+    tags: ["mexican", "michelin", "authentic", "queens"],
   },
   {
     id: "112",
@@ -1127,8 +1235,9 @@ export const restaurants: Restaurant[] = [
     price_tier: "$$",
     neighborhood: "NoHo",
     rating: 4.5,
-    description: "Sleek, all-day cafe serving healthy-ish, modern Mexican fare from the Cosme team.",
-    tags: ["mexican", "cafe", "healthy-ish", "brunch"]
+    description:
+      "Sleek, all-day cafe serving healthy-ish, modern Mexican fare from the Cosme team.",
+    tags: ["mexican", "cafe", "healthy-ish", "brunch"],
   },
   {
     id: "113",
@@ -1137,8 +1246,9 @@ export const restaurants: Restaurant[] = [
     price_tier: "$",
     neighborhood: "Nolita",
     rating: 4.4,
-    description: "Fun, casual spot serving tacos out of a vintage VW bus in a garage-like space.",
-    tags: ["tacos", "casual", "fun", "quick bite"]
+    description:
+      "Fun, casual spot serving tacos out of a vintage VW bus in a garage-like space.",
+    tags: ["tacos", "casual", "fun", "quick bite"],
   },
   {
     id: "114",
@@ -1148,7 +1258,7 @@ export const restaurants: Restaurant[] = [
     neighborhood: "Lower East Side",
     rating: 4.6,
     description: "Vibrant, plant-based Mexican street food and tequila bar.",
-    tags: ["vegan", "mexican", "lively", "plant-based"]
+    tags: ["vegan", "mexican", "lively", "plant-based"],
   },
   {
     id: "115",
@@ -1157,8 +1267,9 @@ export const restaurants: Restaurant[] = [
     price_tier: "$$$",
     neighborhood: "East Village",
     rating: 4.7,
-    description: "Intimate, upscale vegan restaurant serving beautifully plated, vegetable-forward dishes.",
-    tags: ["vegan", "upscale", "date night", "vegetable-forward"]
+    description:
+      "Intimate, upscale vegan restaurant serving beautifully plated, vegetable-forward dishes.",
+    tags: ["vegan", "upscale", "date night", "vegetable-forward"],
   },
   {
     id: "116",
@@ -1167,8 +1278,9 @@ export const restaurants: Restaurant[] = [
     price_tier: "$$$",
     neighborhood: "Koreatown",
     rating: 4.6,
-    description: "Tranquil, shoe-free environment offering refined vegetarian and vegan Korean cuisine.",
-    tags: ["vegan", "korean", "tranquil", "healthy"]
+    description:
+      "Tranquil, shoe-free environment offering refined vegetarian and vegan Korean cuisine.",
+    tags: ["vegan", "korean", "tranquil", "healthy"],
   },
   {
     id: "117",
@@ -1177,8 +1289,9 @@ export const restaurants: Restaurant[] = [
     price_tier: "$$",
     neighborhood: "Koreatown",
     rating: 4.6,
-    description: "Bustling, retro-themed Korean BBQ joint known for its high-quality meats.",
-    tags: ["korean bbq", "meat", "lively", "group dining"]
+    description:
+      "Bustling, retro-themed Korean BBQ joint known for its high-quality meats.",
+    tags: ["korean bbq", "meat", "lively", "group dining"],
   },
   {
     id: "118",
@@ -1187,8 +1300,9 @@ export const restaurants: Restaurant[] = [
     price_tier: "$$$",
     neighborhood: "NoMad",
     rating: 4.7,
-    description: "Modern Korean tasting menu featuring creative, refined small plates.",
-    tags: ["korean", "tasting menu", "modern", "date night"]
+    description:
+      "Modern Korean tasting menu featuring creative, refined small plates.",
+    tags: ["korean", "tasting menu", "modern", "date night"],
   },
   {
     id: "119",
@@ -1197,8 +1311,9 @@ export const restaurants: Restaurant[] = [
     price_tier: "$$",
     neighborhood: "East Village",
     rating: 4.5,
-    description: "David Chang's original spot, famous for its pork buns and inventive ramen.",
-    tags: ["ramen", "pork buns", "casual", "lively"]
+    description:
+      "David Chang's original spot, famous for its pork buns and inventive ramen.",
+    tags: ["ramen", "pork buns", "casual", "lively"],
   },
   {
     id: "120",
@@ -1207,7 +1322,8 @@ export const restaurants: Restaurant[] = [
     price_tier: "$$",
     neighborhood: "Lower East Side",
     rating: 4.5,
-    description: "Creative, New York-influenced ramen from a chef who made it big in Tokyo.",
-    tags: ["ramen", "creative", "casual", "noodles"]
-  }
+    description:
+      "Creative, New York-influenced ramen from a chef who made it big in Tokyo.",
+    tags: ["ramen", "creative", "casual", "noodles"],
+  },
 ];

@@ -10,7 +10,7 @@ class LocalVectorDB {
 
   async upsert(records: VectorRecord[]) {
     for (const record of records) {
-      const existingIdx = this.records.findIndex(r => r.id === record.id);
+      const existingIdx = this.records.findIndex((r) => r.id === record.id);
       if (existingIdx >= 0) {
         this.records[existingIdx] = record;
       } else {
@@ -20,11 +20,11 @@ class LocalVectorDB {
   }
 
   async query(queryEmbedding: number[], topK: number = 10) {
-    const scored = this.records.map(record => {
+    const scored = this.records.map((record) => {
       const score = this.cosineSimilarity(queryEmbedding, record.embedding);
       return { ...record, score };
     });
-    
+
     // Sort descending by similarity score
     scored.sort((a, b) => b.score - a.score);
     return scored.slice(0, topK);
@@ -42,7 +42,7 @@ class LocalVectorDB {
     if (normA === 0 || normB === 0) return 0;
     return dotProduct / (Math.sqrt(normA) * Math.sqrt(normB));
   }
-  
+
   async count() {
     return this.records.length;
   }

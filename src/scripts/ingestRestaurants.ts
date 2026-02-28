@@ -4,39 +4,44 @@ import { vectorDb, VectorRecord } from "../lib/vectorDb.js";
 
 export async function ingestRestaurants() {
   console.log("Starting restaurant ingestion into Vector DB...");
-  
+
   const existingCount = await vectorDb.count();
   if (existingCount > 0) {
-    console.log(`Vector DB already has ${existingCount} records. Skipping ingestion.`);
+    console.log(
+      `Vector DB already has ${existingCount} records. Skipping ingestion.`,
+    );
     return;
   }
 
   const records: VectorRecord[] = [];
-  
+
   for (const r of restaurants) {
     const textToEmbed = `
       Name: ${r.name}
       Cuisine: ${r.cuisine}
       Price Tier: ${r.price_tier}
       Neighborhood: ${r.neighborhood}
-      Ambiance: ${r.ambiance?.join(", ") || "None"}
-      Dietary Options: ${r.dietary_options?.join(", ") || "None"}
+      Tags: ${r.tags?.join(", ") || "None"}
       Description: ${r.description}
     `.trim();
 
     try {
-      const { embedding } = await generateEmbeddingSkill.run({ text: textToEmbed });
+      const { embedding } = await generateEmbeddingSkill.run({
+        text: textToEmbed,
+      });
       records.push({
-        id: r.id || r.name.toLowerCase().replace(/\s+/g, '-'),
+        id: r.id || r.name.toLowerCase().replace(/\s+/g, "-"),
         embedding,
-        metadata: r
+        metadata: r,
       });
       console.log(`Embedded: ${r.name}`);
     } catch (e) {
       console.error(`Failed to embed ${r.name}`, e);
     }
   }
-  
+
   await vectorDb.upsert(records);
-  console.log(`Ingestion complete. Total records in Vector DB: ${await vectorDb.count()}`);
+  console.log(
+    `Ingestion complete. Total records in Vector DB: ${await vectorDb.count()}`,
+  );
 }
