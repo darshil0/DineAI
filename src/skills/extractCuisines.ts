@@ -1,5 +1,5 @@
 import { AgentSkill } from "./types.js";
-import { getGeminiClient } from "../lib/geminiClient.js";
+import { getGeminiClient, GEMINI_MODEL } from "../lib/geminiClient.js";
 import { cleanJson } from "../lib/utils.js";
 import { Type } from "@google/genai";
 
@@ -26,7 +26,7 @@ User text:
 ${text}`;
 
     const result = await ai.models.generateContent({
-      model: "gemini-2.0-flash",
+      model: GEMINI_MODEL,
       contents: [{ parts: [{ text: prompt }] }],
       config: {
         responseMimeType: "application/json",

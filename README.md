@@ -29,7 +29,7 @@ View your app in AI Studio: https://ai.studio/apps/6991651b-a322-44dd-b708-0413e
 
 ## Run Locally
 
-**Prerequisites:** Node.js
+**Prerequisites:** Node.js (v18+)
 
 1. **Install dependencies:**
    ```bash
@@ -39,7 +39,7 @@ View your app in AI Studio: https://ai.studio/apps/6991651b-a322-44dd-b708-0413e
 2. **Configure environment variables:**
    Copy the environment template:
    ```bash
-   cp .env.example .env.local
+   cp .env.local.example .env.local
    ```
    Then open `.env.local` and set `GEMINI_API_KEY` to your Gemini API key.
 
@@ -56,3 +56,5 @@ The system leverages a custom Express/Node.js agent orchestrator with a modular 
 
 - **AI SDK & Model:** This project is optimized for the `@google/genai` (SDK 1.43.0+) using the `gemini-2.0-flash` model. Request and response structures are standardized for this version pairing.
 - **Environment:** The server loads environment variables from `.env.local` first, falling back to `.env`.
+- **Vector DB:** The Vector DB is an in-memory implementation. Restarting the server will clear its state.
+- **Vector DB:** The Vector DB is an in-memory implementation. Restarting the server will clear its state.

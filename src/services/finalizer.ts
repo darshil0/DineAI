@@ -1,5 +1,6 @@
-import { getGeminiClient } from "../lib/geminiClient.js";
+import { getGeminiClient, GEMINI_MODEL } from "../lib/geminiClient.js";
 import { cleanJson } from "../lib/utils.js";
+import { logger } from "../lib/logger.js";
 import {
   UserTasteProfile,
   Recommendation,
@@ -15,11 +16,11 @@ export async function finalizeRecommendations(
   trendReport: string,
 ): Promise<Recommendation[]> {
   const ai = getGeminiClient();
-  console.log("Running Recommendation Finalizer Agent...");
+  logger.info("Finalizer", "Running Recommendation Finalizer Agent...");
 
   try {
     const finalizerResponse = await ai.models.generateContent({
-      model: "gemini-2.0-flash",
+      model: GEMINI_MODEL,
       contents: [
         {
           parts: [
@@ -49,12 +50,10 @@ export async function finalizeRecommendations(
       ),
     );
     const finalRecommendations = finalData.recommendations || [];
-    console.log(
-      `Generated ${finalRecommendations.length} final recommendations.`,
-    );
+    logger.info("Finalizer", `Generated ${finalRecommendations.length} final recommendations.`);
     return finalRecommendations;
   } catch (error: any) {
-    console.error("Error in Recommendation Finalizer Agent:", error);
-    throw new Error(`Recommendation Finalizer failed: ${error.message}`);
+    logger.error("Finalizer", "Error in Recommendation Finalizer Agent:", error);
+    throw new Error(`Recommendation Finalizer failed: ${error.message}`, { cause: error });
   }
 }

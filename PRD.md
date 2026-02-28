@@ -1,4 +1,4 @@
-# DineAI Product Requirements Document (PRD) v1.2 - Node/Gemini Edition
+# DineAI Product Requirements Document (PRD) v1.3 - Node/Gemini Edition
 
 **Date:** February 2026
 
@@ -46,12 +46,13 @@ DineAI comprises four coordinated layers that can operate sequentially or in par
 | Data Ingestion      | Restaurant knowledge base    | Local in-memory Vector DB (`vectorDb.ts`)                    |
 | Agent Orchestration | Multi-agent coordination     | Express.js custom orchestrator                               |
 | Agent Capabilities  | Modular Agent Skills         | Composable TypeScript functions (`/src/skills`)              |
-| Retrieval           | Semantic similarity search   | Gemini Embeddings (`text-embedding-004`) + Cosine Similarity |
+| Retrieval           | Semantic similarity search   | Gemini Embeddings (`text-embedding-004`) + Dot Product Search |
 | Trend Analysis      | Real-time web search         | Gemini Google Search Tool                                    |
 | Vision Analysis     | Dining photo interpretation  | Gemini Multimodal (`analyzeFoodPhoto` skill)                 |
 | Output Validation   | Structured agent responses   | Gemini `responseSchema`                                      |
 | User Interface      | Conversational chatbot       | React + Tailwind CSS (`ChatMessage`, `RecommendationCard`)   |
 | LLM Backend         | Agent reasoning & generation | Google Gemini API (`@google/genai`) - Gemini 2.0 Flash       |
+| Observability       | Structured Logging           | Custom Logger (`src/lib/logger.ts`)                          |
 
 ## Agent Design
 
@@ -102,7 +103,7 @@ All agents are defined via centralized system instructions (`/src/prompts/index.
 
 | ID    | Requirement                                                                                   | Priority |
 | ----- | --------------------------------------------------------------------------------------------- | -------- |
-| FR-01 | System shall accept user input through the React chat interface (free text).                  | P0       |
+| FR-01 | System shall validate and sanitize all chat inputs server-side using `zod`.                   | P0       |
 | FR-02 | Profile Builder Agent shall produce a valid `UserTasteProfile` using modular skills.          | P0       |
 | FR-03 | RAG Agent shall return top candidates using semantic search and explicit scoring.             | P0       |
 | FR-04 | Food Trend Agent shall return trending items per query using Google Search.                   | P0       |
@@ -115,23 +116,26 @@ All agents are defined via centralized system instructions (`/src/prompts/index.
 
 ## Technology Stack
 
-| Category            | Technology                  | Version / Notes                    |
-| ------------------- | --------------------------- | ---------------------------------- |
-| Agent Framework     | Custom Express Orchestrator | Node.js with Agent Skills Registry |
-| LLM (Text & Vision) | Google Gemini API           | `@google/genai` SDK                |
-| Embeddings          | Gemini `text-embedding-004` | Used for semantic search           |
-| Vector DB           | Custom In-Memory DB         | Mimics Pinecone/Qdrant API         |
-| Web Search          | Gemini Google Search Tool   | Built-in tool                      |
-| Output Validation   | Gemini `responseSchema`     | Type.OBJECT, Type.ARRAY            |
-| UI                  | React + Tailwind CSS        | Vite build system                  |
-| Language            | TypeScript                  | Strict mode                        |
+| Category            | Technology                  | Version / Notes                             |
+| ------------------- | --------------------------- | ------------------------------------------- |
+| Agent Framework     | Custom Express Orchestrator | Node.js with Agent Skills Registry          |
+| LLM (Text & Vision) | Google Gemini API           | `@google/genai` SDK v1.43.0                 |
+| Embeddings          | Gemini `text-embedding-004` | Used for semantic search                    |
+| Vector DB           | Custom In-Memory DB         | Pre-normalized embeddings, dot product      |
+| Web Search          | Gemini Google Search Tool   | Built-in tool                               |
+| Output Validation   | Gemini `responseSchema`     | Type.OBJECT, Type.ARRAY                     |
+| UI                  | React + Tailwind CSS        | Vite build system v7.3.1                    |
+| Backend             | Express.js                  | v5.2.1 with async error handling            |
+| Language            | TypeScript                  | Strict mode v5.8.3                          |
+| Observability       | Structured Logging          | Custom Logger (`src/lib/logger.ts`)         |
 
 ## Risks & Mitigations
 
-| Risk                     | Likelihood | Impact | Mitigation                                            |
-| ------------------------ | ---------- | ------ | ----------------------------------------------------- |
-| Gemini API quota limits  | Medium     | High   | Implement graceful error handling and retries         |
-| Vector DB failure        | Low        | High   | Fallback to static JSON filtering via LLM             |
-| Search tool failures     | Low        | Medium | Catch errors and continue pipeline without trend data |
-| Low Vision LLM relevance | Medium     | Low    | Make photo upload optional                            |
-| JSON parsing errors      | Medium     | High   | Use robust `cleanJson` helper and try-catch blocks    |
+| Risks & Mitigations | Likelihood | Impact | Mitigation                                              |
+| ------------------- | ---------- | ------ | ------------------------------------------------------- |
+| Gemini API quota limits  | Medium     | High   | Implement exponential backoff retries for embeddings    |
+| Vector DB failure        | Low        | High   | Fallback to static JSON filtering via LLM               |
+| Search tool failures     | Low        | Medium | Catch errors and continue pipeline without trend data   |
+| Low Vision LLM relevance | Medium     | Low    | Make photo upload optional                              |
+| JSON parsing errors      | Medium     | High   | Use robust `cleanJson` helper and schema validation     |
+| Partial ingestion loss   | Medium     | Medium | Collective upsert only on partial success in ingestion  |

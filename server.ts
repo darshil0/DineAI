@@ -30,6 +30,12 @@ async function startServer() {
 
   app.use("/api/chat", chatRouter);
 
+  // Global Error Handler for Express 5
+  app.use((err: any, req: express.Request, res: express.Response, next: express.NextFunction) => {
+    console.error("Express Error:", err);
+    res.status(500).json({ error: err.message || "Internal Server Error" });
+  });
+
   // Vite middleware for development
   if (process.env.NODE_ENV !== "production") {
     const vite = await createViteServer({

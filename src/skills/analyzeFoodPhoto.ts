@@ -1,5 +1,5 @@
 import { AgentSkill } from "./types.js";
-import { getGeminiClient } from "../lib/geminiClient.js";
+import { getGeminiClient, GEMINI_MODEL } from "../lib/geminiClient.js";
 import { cleanJson } from "../lib/utils.js";
 import { Type } from "@google/genai";
 
@@ -27,7 +27,7 @@ export const analyzeFoodPhotoSkill: AgentSkill<
 Extract the most likely cuisines it represents, the ambiance or vibe it suggests (e.g., casual, fine-dining, cozy), and provide a brief 1-sentence description of the dish.`;
 
     const result = await ai.models.generateContent({
-      model: "gemini-2.0-flash",
+      model: GEMINI_MODEL,
       contents: [
         {
           parts: [{ inlineData: { mimeType, data } }, { text: prompt }],
