@@ -57,4 +57,3 @@ The system leverages a custom Express/Node.js agent orchestrator with a modular 
 - **AI SDK & Model:** This project is optimized for the `@google/genai` (SDK 1.43.0+) using the `gemini-2.0-flash` model. Request and response structures are standardized for this version pairing.
 - **Environment:** The server loads environment variables from `.env.local` first, falling back to `.env`.
 - **Vector DB:** The Vector DB is an in-memory implementation. Restarting the server will clear its state.
-- **Vector DB:** The Vector DB is an in-memory implementation. Restarting the server will clear its state.
