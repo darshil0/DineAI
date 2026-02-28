@@ -5,7 +5,11 @@ import chatRouter from "./src/api/chat.js";
 import { bootstrapSkills } from "./src/skills/bootstrap.js";
 import { ingestRestaurants } from "./src/scripts/ingestRestaurants.js";
 
-dotenv.config();
+// Fix: README instructs users to create .env.local, but dotenv.config() only
+// loads .env by default. Load .env.local first, then fall back to .env so the
+// GEMINI_API_KEY is actually found in both development and production setups.
+dotenv.config({ path: ".env.local" });
+dotenv.config(); // fallback to .env if a key wasn't already set
 
 async function startServer() {
   const app = express();
