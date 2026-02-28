@@ -1,0 +1,1213 @@
+export interface Restaurant {
+  id: string;
+  name: string;
+  cuisine: string;
+  price_tier: "$" | "$$" | "$$$" | "$$$$";
+  neighborhood: string;
+  rating: number;
+  description: string;
+  tags: string[];
+}
+
+export const restaurants: Restaurant[] = [
+  {
+    id: "1",
+    name: "L'Artusi",
+    cuisine: "Italian",
+    price_tier: "$$$",
+    neighborhood: "West Village",
+    rating: 4.8,
+    description: "Bustling, bi-level space for elevated Italian comfort food & a long wine list.",
+    tags: ["date night", "pasta", "wine", "lively ambiance"]
+  },
+  {
+    id: "2",
+    name: "Katz's Delicatessen",
+    cuisine: "Deli",
+    price_tier: "$$",
+    neighborhood: "Lower East Side",
+    rating: 4.7,
+    description: "No-frills deli with theatrically cranky service serving mile-high sandwiches since 1888.",
+    tags: ["casual", "historic", "pastrami", "touristy"]
+  },
+  {
+    id: "3",
+    name: "Le Bernardin",
+    cuisine: "French Seafood",
+    price_tier: "$$$$",
+    neighborhood: "Midtown",
+    rating: 4.9,
+    description: "Elite French restaurant offering exquisitely prepared seafood in an elegant, formal setting.",
+    tags: ["fine dining", "special occasion", "seafood", "formal"]
+  },
+  {
+    id: "4",
+    name: "Los Tacos No. 1",
+    cuisine: "Mexican",
+    price_tier: "$",
+    neighborhood: "Chelsea",
+    rating: 4.8,
+    description: "Bustling taqueria serving authentic tacos, quesadillas & aguas frescas.",
+    tags: ["quick bite", "casual", "tacos", "cheap eats"]
+  },
+  {
+    id: "5",
+    name: "Balthazar",
+    cuisine: "French",
+    price_tier: "$$$",
+    neighborhood: "SoHo",
+    rating: 4.6,
+    description: "Iconic French brasserie serving steak frites, fresh seafood & fresh-baked bread.",
+    tags: ["brunch", "lively", "classic", "french"]
+  },
+  {
+    id: "6",
+    name: "Carbone",
+    cuisine: "Italian-American",
+    price_tier: "$$$$",
+    neighborhood: "Greenwich Village",
+    rating: 4.7,
+    description: "High-end Italian-American dining in a retro-glam space.",
+    tags: ["special occasion", "spicy rigatoni", "hard to get", "glamorous"]
+  },
+  {
+    id: "7",
+    name: "Xi'an Famous Foods",
+    cuisine: "Chinese",
+    price_tier: "$",
+    neighborhood: "Multiple Locations",
+    rating: 4.5,
+    description: "Casual chain serving spicy, hand-pulled noodles and cumin lamb burgers.",
+    tags: ["spicy", "casual", "quick bite", "noodles"]
+  },
+  {
+    id: "8",
+    name: "Peter Luger Steak House",
+    cuisine: "Steakhouse",
+    price_tier: "$$$$",
+    neighborhood: "Williamsburg",
+    rating: 4.4,
+    description: "Old-school steakhouse serving dry-aged beef in a beer-hall setting.",
+    tags: ["steak", "classic", "cash only", "group dining"]
+  },
+  {
+    id: "9",
+    name: "Via Carota",
+    cuisine: "Italian",
+    price_tier: "$$$",
+    neighborhood: "West Village",
+    rating: 4.7,
+    description: "Charming, rustic Italian trattoria known for its cacio e pepe and seasonal vegetables.",
+    tags: ["date night", "cozy", "pasta", "no reservations"]
+  },
+  {
+    id: "10",
+    name: "Olmsted",
+    cuisine: "New American",
+    price_tier: "$$$",
+    neighborhood: "Prospect Heights",
+    rating: 4.6,
+    description: "Creative, seasonal American menu with ingredients from the backyard garden.",
+    tags: ["farm-to-table", "creative", "garden seating", "date night"]
+  },
+  {
+    id: "11",
+    name: "Misi",
+    cuisine: "Italian",
+    price_tier: "$$$",
+    neighborhood: "Williamsburg",
+    rating: 4.7,
+    description: "Sleek spot focusing on handmade pasta and vegetable antipasti.",
+    tags: ["pasta", "modern", "lively", "brooklyn"]
+  },
+  {
+    id: "12",
+    name: "Lucali",
+    cuisine: "Pizza",
+    price_tier: "$$",
+    neighborhood: "Carroll Gardens",
+    rating: 4.8,
+    description: "Legendary neighborhood pizzeria serving thin-crust pies and calzones.",
+    tags: ["pizza", "byob", "cash only", "long wait"]
+  },
+  {
+    id: "13",
+    name: "Cosme",
+    cuisine: "Modern Mexican",
+    price_tier: "$$$$",
+    neighborhood: "Flatiron",
+    rating: 4.7,
+    description: "Sleek, contemporary Mexican restaurant known for its duck carnitas and corn husk meringue.",
+    tags: ["modern mexican", "upscale", "creative", "date night"]
+  },
+  {
+    id: "14",
+    name: "Jeju Noodle Bar",
+    cuisine: "Korean",
+    price_tier: "$$",
+    neighborhood: "West Village",
+    rating: 4.6,
+    description: "Michelin-starred spot for Korean ramyun and creative appetizers.",
+    tags: ["noodles", "korean", "michelin", "cozy"]
+  },
+  {
+    id: "15",
+    name: "Rubirosa",
+    cuisine: "Italian",
+    price_tier: "$$",
+    neighborhood: "Nolita",
+    rating: 4.6,
+    description: "Cozy spot famous for its vodka sauce pizza and classic Italian-American dishes.",
+    tags: ["pizza", "casual", "family friendly", "vodka sauce"]
+  },
+  {
+    id: "16",
+    name: "Atomix",
+    cuisine: "Korean Tasting Menu",
+    price_tier: "$$$$",
+    neighborhood: "NoMad",
+    rating: 4.9,
+    description: "Innovative Korean tasting menu served at a U-shaped counter.",
+    tags: ["fine dining", "tasting menu", "korean", "exclusive"]
+  },
+  {
+    id: "17",
+    name: "Lilia",
+    cuisine: "Italian",
+    price_tier: "$$$",
+    neighborhood: "Williamsburg",
+    rating: 4.7,
+    description: "Airy, converted auto-body shop serving wood-fired seafood and handmade pastas.",
+    tags: ["pasta", "wood-fired", "hard to get", "brooklyn"]
+  },
+  {
+    id: "18",
+    name: "Sushi Nakazawa",
+    cuisine: "Sushi",
+    price_tier: "$$$$",
+    neighborhood: "West Village",
+    rating: 4.7,
+    description: "High-end omakase experience from a Jiro Dreams of Sushi alum.",
+    tags: ["sushi", "omakase", "fine dining", "special occasion"]
+  },
+  {
+    id: "19",
+    name: "Veselka",
+    cuisine: "Ukrainian",
+    price_tier: "$",
+    neighborhood: "East Village",
+    rating: 4.5,
+    description: "24-hour Ukrainian diner serving pierogi, borscht, and comfort food.",
+    tags: ["late night", "comfort food", "casual", "pierogi"]
+  },
+  {
+    id: "20",
+    name: "Don Angie",
+    cuisine: "Modern Italian-American",
+    price_tier: "$$$",
+    neighborhood: "West Village",
+    rating: 4.8,
+    description: "Inventive Italian-American dishes, famous for their pinwheel lasagna.",
+    tags: ["creative", "lasagna", "date night", "hard to get"]
+  },
+  {
+    id: "21",
+    name: "Cote",
+    cuisine: "Korean Steakhouse",
+    price_tier: "$$$$",
+    neighborhood: "Flatiron",
+    rating: 4.8,
+    description: "Michelin-starred Korean BBQ meets classic American steakhouse.",
+    tags: ["steak", "korean bbq", "michelin", "lively"]
+  },
+  {
+    id: "22",
+    name: "Joe's Pizza",
+    cuisine: "Pizza",
+    price_tier: "$",
+    neighborhood: "Greenwich Village",
+    rating: 4.6,
+    description: "Classic New York slice joint serving up thin-crust pies since 1975.",
+    tags: ["pizza", "quick bite", "late night", "classic ny"]
+  },
+  {
+    id: "23",
+    name: "Rezdôra",
+    cuisine: "Italian",
+    price_tier: "$$$",
+    neighborhood: "Flatiron",
+    rating: 4.7,
+    description: "Rustic pasta dishes from the Emilia-Romagna region in a cozy setting.",
+    tags: ["pasta", "authentic", "michelin", "cozy"]
+  },
+  {
+    id: "24",
+    name: "Semma",
+    cuisine: "South Indian",
+    price_tier: "$$$",
+    neighborhood: "West Village",
+    rating: 4.8,
+    description: "Unapologetically authentic South Indian cuisine with bold flavors.",
+    tags: ["indian", "spicy", "michelin", "hard to get"]
+  },
+  {
+    id: "25",
+    name: "Minetta Tavern",
+    cuisine: "French/Steakhouse",
+    price_tier: "$$$$",
+    neighborhood: "Greenwich Village",
+    rating: 4.6,
+    description: "Historic tavern known for its Black Label Burger and classic steakhouse fare.",
+    tags: ["burger", "historic", "steak", "lively"]
+  },
+  {
+    id: "26",
+    name: "Los Mariscos",
+    cuisine: "Mexican Seafood",
+    price_tier: "$",
+    neighborhood: "Chelsea",
+    rating: 4.7,
+    description: "Hidden spot in Chelsea Market serving excellent fish tacos and ceviche.",
+    tags: ["seafood", "tacos", "casual", "quick bite"]
+  },
+  {
+    id: "27",
+    name: "Gramercy Tavern",
+    cuisine: "New American",
+    price_tier: "$$$$",
+    neighborhood: "Gramercy",
+    rating: 4.8,
+    description: "Danny Meyer's iconic restaurant offering seasonal American cuisine and impeccable service.",
+    tags: ["fine dining", "classic", "hospitality", "special occasion"]
+  },
+  {
+    id: "28",
+    name: "Shukette",
+    cuisine: "Middle Eastern",
+    price_tier: "$$$",
+    neighborhood: "Chelsea",
+    rating: 4.7,
+    description: "Lively spot serving vibrant Middle Eastern dips, breads, and grilled meats.",
+    tags: ["middle eastern", "lively", "sharing plates", "fun"]
+  },
+  {
+    id: "29",
+    name: "Laser Wolf",
+    cuisine: "Israeli",
+    price_tier: "$$$",
+    neighborhood: "Williamsburg",
+    rating: 4.6,
+    description: "Rooftop skewer house with sweeping city views and endless salatim.",
+    tags: ["rooftop", "views", "israeli", "group dining"]
+  },
+  {
+    id: "30",
+    name: "Estela",
+    cuisine: "New American",
+    price_tier: "$$$",
+    neighborhood: "Nolita",
+    rating: 4.7,
+    description: "Inventive, Mediterranean-leaning small plates in a bustling, intimate space.",
+    tags: ["small plates", "creative", "wine", "date night"]
+  },
+  {
+    id: "31",
+    name: "Mamoun's Falafel",
+    cuisine: "Middle Eastern",
+    price_tier: "$",
+    neighborhood: "Greenwich Village",
+    rating: 4.5,
+    description: "Long-standing late-night staple for cheap, delicious falafel and shawarma.",
+    tags: ["falafel", "cheap eats", "late night", "casual"]
+  },
+  {
+    id: "32",
+    name: "Dame",
+    cuisine: "English Seafood",
+    price_tier: "$$$",
+    neighborhood: "West Village",
+    rating: 4.6,
+    description: "Trendy spot famous for its fish and chips and creative seafood dishes.",
+    tags: ["seafood", "trendy", "fish and chips", "hard to get"]
+  },
+  {
+    id: "33",
+    name: "Four Charles Prime Rib",
+    cuisine: "Steakhouse",
+    price_tier: "$$$$",
+    neighborhood: "West Village",
+    rating: 4.8,
+    description: "Intimate, clubby supper club serving prime rib and decadent burgers.",
+    tags: ["prime rib", "exclusive", "cozy", "burger"]
+  },
+  {
+    id: "34",
+    name: "Thai Diner",
+    cuisine: "Thai",
+    price_tier: "$$",
+    neighborhood: "Nolita",
+    rating: 4.7,
+    description: "Kitschy-cool diner serving excellent Thai comfort food and creative cocktails.",
+    tags: ["thai", "fun", "casual", "brunch"]
+  },
+  {
+    id: "35",
+    name: "Lodi",
+    cuisine: "Italian Bakery/Cafe",
+    price_tier: "$$",
+    neighborhood: "Midtown",
+    rating: 4.5,
+    description: "Art Deco-inspired cafe in Rockefeller Center serving excellent pastries and aperitivo.",
+    tags: ["cafe", "pastries", "aperitivo", "midtown"]
+  },
+  {
+    id: "36",
+    name: "Rule of Thirds",
+    cuisine: "Japanese",
+    price_tier: "$$$",
+    neighborhood: "Greenpoint",
+    rating: 4.6,
+    description: "Spacious industrial spot serving Japanese comfort food and sake.",
+    tags: ["japanese", "brooklyn", "group dining", "sake"]
+  },
+  {
+    id: "37",
+    name: "Wah Fung No 1",
+    cuisine: "Chinese",
+    price_tier: "$",
+    neighborhood: "Chinatown",
+    rating: 4.7,
+    description: "Tiny storefront with long lines for incredibly cheap, delicious roast pork over rice.",
+    tags: ["cheap eats", "roast pork", "quick bite", "chinatown"]
+  },
+  {
+    id: "38",
+    name: "Tatiana by Kwame Onwuachi",
+    cuisine: "Afro-Caribbean",
+    price_tier: "$$$",
+    neighborhood: "Upper West Side",
+    rating: 4.8,
+    description: "Vibrant, critically acclaimed restaurant celebrating Afro-Caribbean and New York flavors.",
+    tags: ["creative", "trendy", "lincoln center", "flavorful"]
+  },
+  {
+    id: "39",
+    name: "Keens Steakhouse",
+    cuisine: "Steakhouse",
+    price_tier: "$$$$",
+    neighborhood: "Midtown",
+    rating: 4.7,
+    description: "Historic steakhouse famous for its mutton chop and ceiling covered in clay pipes.",
+    tags: ["historic", "steak", "mutton", "classic"]
+  },
+  {
+    id: "40",
+    name: "Rolo's",
+    cuisine: "New American",
+    price_tier: "$$$",
+    neighborhood: "Ridgewood",
+    rating: 4.7,
+    description: "Neighborhood gem known for wood-fired cooking and excellent baked goods.",
+    tags: ["wood-fired", "neighborhood", "queens", "bakery"]
+  },
+  {
+    id: "41",
+    name: "Spicy Village",
+    cuisine: "Chinese",
+    price_tier: "$",
+    neighborhood: "Chinatown",
+    rating: 4.6,
+    description: "Hole-in-the-wall spot famous for its Big Tray Chicken and hand-pulled noodles.",
+    tags: ["spicy", "casual", "byob", "chinatown"]
+  },
+  {
+    id: "42",
+    name: "Crown Shy",
+    cuisine: "New American",
+    price_tier: "$$$$",
+    neighborhood: "Financial District",
+    rating: 4.7,
+    description: "Elegant, high-ceilinged restaurant serving elevated American cuisine in an Art Deco building.",
+    tags: ["fine dining", "fidi", "elegant", "special occasion"]
+  },
+  {
+    id: "43",
+    name: "Win Son",
+    cuisine: "Taiwanese-American",
+    price_tier: "$$",
+    neighborhood: "East Williamsburg",
+    rating: 4.6,
+    description: "Bustling corner spot serving creative, comforting Taiwanese-American dishes.",
+    tags: ["taiwanese", "casual", "fun", "brooklyn"]
+  },
+  {
+    id: "44",
+    name: "Odeon",
+    cuisine: "French-American",
+    price_tier: "$$$",
+    neighborhood: "Tribeca",
+    rating: 4.5,
+    description: "Classic 80s brasserie that remains a stylish neighborhood staple.",
+    tags: ["classic", "brasserie", "tribeca", "martinis"]
+  },
+  {
+    id: "45",
+    name: "Superiority Burger",
+    cuisine: "Vegetarian",
+    price_tier: "$$",
+    neighborhood: "East Village",
+    rating: 4.7,
+    description: "Quirky, beloved diner serving inventive vegetarian and vegan comfort food.",
+    tags: ["vegetarian", "vegan", "diner", "quirky"]
+  },
+  {
+    id: "46",
+    name: "Masa",
+    cuisine: "Sushi",
+    price_tier: "$$$$",
+    neighborhood: "Columbus Circle",
+    rating: 4.8,
+    description: "One of the most expensive and exclusive sushi omakase experiences in the country.",
+    tags: ["sushi", "omakase", "ultra fine dining", "exclusive"]
+  },
+  {
+    id: "47",
+    name: "Taqueria Ramirez",
+    cuisine: "Mexican",
+    price_tier: "$",
+    neighborhood: "Greenpoint",
+    rating: 4.7,
+    description: "Authentic Mexico City-style taco stand specializing in suadero and al pastor.",
+    tags: ["tacos", "authentic", "quick bite", "brooklyn"]
+  },
+  {
+    id: "48",
+    name: "Loring Place",
+    cuisine: "New American",
+    price_tier: "$$$",
+    neighborhood: "Greenwich Village",
+    rating: 4.6,
+    description: "Airy, stylish restaurant focusing on seasonal, vegetable-forward dishes and wood-fired pizzas.",
+    tags: ["vegetable-forward", "healthy-ish", "date night", "wood-fired"]
+  },
+  {
+    id: "49",
+    name: "Kopitiam",
+    cuisine: "Malaysian",
+    price_tier: "$",
+    neighborhood: "Lower East Side",
+    rating: 4.6,
+    description: "Cozy cafe serving authentic Malaysian coffeehouse fare like kaya toast and nasi lemak.",
+    tags: ["malaysian", "cafe", "casual", "breakfast"]
+  },
+  {
+    id: "50",
+    name: "Frenchette",
+    cuisine: "French",
+    price_tier: "$$$",
+    neighborhood: "Tribeca",
+    rating: 4.6,
+    description: "Bustling, modern French brasserie known for its natural wine list and excellent roast chicken.",
+    tags: ["french", "natural wine", "brasserie", "trendy"]
+  },
+  {
+    id: "51",
+    name: "Hometown Bar-B-Que",
+    cuisine: "BBQ",
+    price_tier: "$$",
+    neighborhood: "Red Hook",
+    rating: 4.7,
+    description: "Massive rustic space serving some of the best Texas-style BBQ in the city.",
+    tags: ["bbq", "meat", "casual", "brooklyn"]
+  },
+  {
+    id: "52",
+    name: "SAGA",
+    cuisine: "Contemporary",
+    price_tier: "$$$$",
+    neighborhood: "Financial District",
+    rating: 4.8,
+    description: "Luxurious tasting menu with breathtaking views from the 63rd floor of an Art Deco tower.",
+    tags: ["views", "fine dining", "tasting menu", "special occasion"]
+  },
+  {
+    id: "53",
+    name: "Vesuvio Bakery",
+    cuisine: "Bakery/Sandwiches",
+    price_tier: "$",
+    neighborhood: "SoHo",
+    rating: 4.5,
+    description: "Historic green storefront serving excellent Italian sandwiches and baked goods.",
+    tags: ["sandwiches", "historic", "quick bite", "lunch"]
+  },
+  {
+    id: "54",
+    name: "Eyval",
+    cuisine: "Persian",
+    price_tier: "$$$",
+    neighborhood: "Bushwick",
+    rating: 4.7,
+    description: "Modern Iranian restaurant serving vibrant dips, stews, and grilled meats.",
+    tags: ["persian", "trendy", "brooklyn", "flavorful"]
+  },
+  {
+    id: "55",
+    name: "Buvette",
+    cuisine: "French",
+    price_tier: "$$$",
+    neighborhood: "West Village",
+    rating: 4.6,
+    description: "Incredibly charming, cramped Parisian-style gastrotheque perfect for brunch or a late-night bite.",
+    tags: ["french", "cozy", "brunch", "romantic"]
+  },
+  {
+    id: "56",
+    name: "Dirt Candy",
+    cuisine: "Vegetarian",
+    price_tier: "$$$",
+    neighborhood: "Lower East Side",
+    rating: 4.7,
+    description: "Pioneering vegetarian restaurant offering a creative, playful tasting menu.",
+    tags: ["vegetarian", "tasting menu", "creative", "fun"]
+  },
+  {
+    id: "57",
+    name: "Scarr's Pizza",
+    cuisine: "Pizza",
+    price_tier: "$",
+    neighborhood: "Lower East Side",
+    rating: 4.7,
+    description: "Retro-styled pizzeria milling its own flour for exceptional NY slices.",
+    tags: ["pizza", "retro", "casual", "slice"]
+  },
+  {
+    id: "58",
+    name: "Gage & Tollner",
+    cuisine: "Steakhouse/Seafood",
+    price_tier: "$$$$",
+    neighborhood: "Downtown Brooklyn",
+    rating: 4.7,
+    description: "Beautifully restored historic oyster and chop house with elegant, old-school service.",
+    tags: ["historic", "steak", "seafood", "elegant"]
+  },
+  {
+    id: "59",
+    name: "Ayada",
+    cuisine: "Thai",
+    price_tier: "$$",
+    neighborhood: "Elmhurst",
+    rating: 4.7,
+    description: "Unassuming Queens spot serving some of the most authentic and spicy Thai food in NYC.",
+    tags: ["thai", "spicy", "authentic", "queens"]
+  },
+  {
+    id: "60",
+    name: "Le Coucou",
+    cuisine: "French",
+    price_tier: "$$$$",
+    neighborhood: "SoHo",
+    rating: 4.7,
+    description: "Gorgeous, high-ceilinged space serving refined, classic French cuisine.",
+    tags: ["french", "elegant", "fine dining", "romantic"]
+  },
+  {
+    id: "61",
+    name: "Rowdy Rooster",
+    cuisine: "Indian Fried Chicken",
+    price_tier: "$",
+    neighborhood: "East Village",
+    rating: 4.6,
+    description: "Tiny spot serving incredibly spicy, flavorful Indian-spiced fried chicken.",
+    tags: ["fried chicken", "spicy", "quick bite", "casual"]
+  },
+  {
+    id: "62",
+    name: "Kiki's",
+    cuisine: "Greek",
+    price_tier: "$$",
+    neighborhood: "Chinatown",
+    rating: 4.5,
+    description: "Bustling, rustic Greek taverna hidden behind a Chinese sign.",
+    tags: ["greek", "lively", "casual", "group dining"]
+  },
+  {
+    id: "63",
+    name: "Aquavit",
+    cuisine: "Nordic",
+    price_tier: "$$$$",
+    neighborhood: "Midtown",
+    rating: 4.7,
+    description: "Elegant, long-standing restaurant serving refined, Michelin-starred Nordic cuisine.",
+    tags: ["nordic", "fine dining", "elegant", "michelin"]
+  },
+  {
+    id: "64",
+    name: "Cervo's",
+    cuisine: "Spanish/Portuguese Seafood",
+    price_tier: "$$$",
+    neighborhood: "Lower East Side",
+    rating: 4.6,
+    description: "Cozy, bustling spot serving Iberian-inspired seafood and natural wine.",
+    tags: ["seafood", "natural wine", "cozy", "date night"]
+  },
+  {
+    id: "65",
+    name: "Puff House",
+    cuisine: "Dessert/Bakery",
+    price_tier: "$",
+    neighborhood: "Flushing",
+    rating: 4.6,
+    description: "Small bakery specializing in light, airy cream puffs with various Asian-inspired flavors.",
+    tags: ["dessert", "bakery", "sweet", "queens"]
+  },
+  {
+    id: "66",
+    name: "The Grill",
+    cuisine: "Midcentury American",
+    price_tier: "$$$$",
+    neighborhood: "Midtown",
+    rating: 4.7,
+    description: "Glamorous, retro-chic chophouse in the iconic Seagram Building.",
+    tags: ["glamorous", "steak", "classic", "expensive"]
+  },
+  {
+    id: "67",
+    name: "Nura",
+    cuisine: "New American/Middle Eastern",
+    price_tier: "$$$",
+    neighborhood: "Greenpoint",
+    rating: 4.6,
+    description: "Beautiful, airy space serving wood-fired dishes with Indian and Middle Eastern influences.",
+    tags: ["wood-fired", "beautiful space", "brooklyn", "date night"]
+  },
+  {
+    id: "68",
+    name: "Tacos El Bronco",
+    cuisine: "Mexican",
+    price_tier: "$",
+    neighborhood: "Sunset Park",
+    rating: 4.7,
+    description: "Beloved taco truck and restaurant serving generous, authentic tacos.",
+    tags: ["tacos", "authentic", "cheap eats", "brooklyn"]
+  },
+  {
+    id: "69",
+    name: "I Sodi",
+    cuisine: "Italian",
+    price_tier: "$$$",
+    neighborhood: "West Village",
+    rating: 4.7,
+    description: "Intimate, classic Tuscan restaurant famous for its lasagna and negronis.",
+    tags: ["tuscan", "pasta", "intimate", "hard to get"]
+  },
+  {
+    id: "70",
+    name: "Empellón",
+    cuisine: "Modern Mexican",
+    price_tier: "$$$",
+    neighborhood: "Midtown",
+    rating: 4.6,
+    description: "Upscale, inventive Mexican cuisine in a sleek, spacious Midtown setting.",
+    tags: ["modern mexican", "upscale", "midtown", "margaritas"]
+  },
+  {
+    id: "71",
+    name: "The Halal Guys",
+    cuisine: "Middle Eastern",
+    price_tier: "$",
+    neighborhood: "Midtown",
+    rating: 4.4,
+    description: "Famous street cart serving legendary chicken and gyro over rice with white sauce.",
+    tags: ["street food", "cheap eats", "late night", "halal"]
+  },
+  {
+    id: "72",
+    name: "Lombardi's",
+    cuisine: "Pizza",
+    price_tier: "$$",
+    neighborhood: "Nolita",
+    rating: 4.3,
+    description: "Recognized as America's first pizzeria, serving coal-fired, thin-crust Neapolitan pies.",
+    tags: ["pizza", "historic", "coal-fired", "touristy"]
+  },
+  {
+    id: "73",
+    name: "Fish Cheeks",
+    cuisine: "Thai Seafood",
+    price_tier: "$$",
+    neighborhood: "NoHo",
+    rating: 4.6,
+    description: "Vibrant, colorful spot serving unapologetically spicy and authentic Thai seafood.",
+    tags: ["thai", "seafood", "spicy", "lively"]
+  },
+  {
+    id: "74",
+    name: "The Polo Bar",
+    cuisine: "American",
+    price_tier: "$$$$",
+    neighborhood: "Midtown",
+    rating: 4.7,
+    description: "Ralph Lauren's clubby, ultra-exclusive restaurant serving classic American fare.",
+    tags: ["exclusive", "classic american", "glamorous", "hard to get"]
+  },
+  {
+    id: "75",
+    name: "Raku",
+    cuisine: "Japanese",
+    price_tier: "$$",
+    neighborhood: "East Village",
+    rating: 4.7,
+    description: "Cozy, minimalist spot specializing in exquisite udon noodle soups.",
+    tags: ["udon", "japanese", "cozy", "comfort food"]
+  },
+  {
+    id: "76",
+    name: "Marea",
+    cuisine: "Italian Seafood",
+    price_tier: "$$$$",
+    neighborhood: "Central Park South",
+    rating: 4.7,
+    description: "High-end Italian seafood and housemade pastas in a chic setting near Central Park.",
+    tags: ["fine dining", "seafood", "pasta", "special occasion"]
+  },
+  {
+    id: "77",
+    name: "Upland",
+    cuisine: "Californian/Italian",
+    price_tier: "$$$",
+    neighborhood: "Flatiron",
+    rating: 4.6,
+    description: "Bustling brasserie offering a California-inspired take on rustic Italian food.",
+    tags: ["brasserie", "pasta", "lively", "brunch"]
+  },
+  {
+    id: "78",
+    name: "Dominique Ansel Bakery",
+    cuisine: "Bakery",
+    price_tier: "$$",
+    neighborhood: "SoHo",
+    rating: 4.6,
+    description: "Famed bakery known for inventing the Cronut and other creative French pastries.",
+    tags: ["bakery", "pastries", "dessert", "touristy"]
+  },
+  {
+    id: "79",
+    name: "Levain Bakery",
+    cuisine: "Bakery",
+    price_tier: "$",
+    neighborhood: "Upper West Side",
+    rating: 4.8,
+    description: "Iconic bakery famous for its massive, gooey, six-ounce chocolate chip walnut cookies.",
+    tags: ["bakery", "cookies", "dessert", "casual"]
+  },
+  {
+    id: "80",
+    name: "Pastis",
+    cuisine: "French",
+    price_tier: "$$$",
+    neighborhood: "Meatpacking District",
+    rating: 4.6,
+    description: "Revived classic French brasserie offering steak frites and a lively scene.",
+    tags: ["french", "brasserie", "lively", "brunch"]
+  },
+  {
+    id: "81",
+    name: "Red Rooster",
+    cuisine: "Southern/American",
+    price_tier: "$$$",
+    neighborhood: "Harlem",
+    rating: 4.5,
+    description: "Marcus Samuelsson's vibrant celebration of American comfort food and Harlem culture.",
+    tags: ["southern", "comfort food", "lively", "music"]
+  },
+  {
+    id: "82",
+    name: "Sylvia's",
+    cuisine: "Soul Food",
+    price_tier: "$$",
+    neighborhood: "Harlem",
+    rating: 4.4,
+    description: "Historic Harlem institution known as the 'Queen of Soul Food'.",
+    tags: ["soul food", "historic", "comfort food", "brunch"]
+  },
+  {
+    id: "83",
+    name: "Rao's",
+    cuisine: "Italian-American",
+    price_tier: "$$$$",
+    neighborhood: "East Harlem",
+    rating: 4.6,
+    description: "Legendary, nearly impossible-to-book Italian restaurant with a club-like atmosphere.",
+    tags: ["exclusive", "italian-american", "historic", "hard to get"]
+  },
+  {
+    id: "84",
+    name: "Patsy's Pizzeria",
+    cuisine: "Pizza",
+    price_tier: "$$",
+    neighborhood: "East Harlem",
+    rating: 4.5,
+    description: "Old-school, coal-oven pizzeria serving classic thin-crust slices since 1933.",
+    tags: ["pizza", "historic", "coal-fired", "casual"]
+  },
+  {
+    id: "85",
+    name: "John's of Bleecker Street",
+    cuisine: "Pizza",
+    price_tier: "$$",
+    neighborhood: "West Village",
+    rating: 4.7,
+    description: "No-slices, coal-fired brick oven pizza in a classic, graffiti-carved setting.",
+    tags: ["pizza", "coal-fired", "classic ny", "casual"]
+  },
+  {
+    id: "86",
+    name: "Totonno's",
+    cuisine: "Pizza",
+    price_tier: "$$",
+    neighborhood: "Coney Island",
+    rating: 4.6,
+    description: "Historic Coney Island pizzeria known for its exceptional coal-fired pies.",
+    tags: ["pizza", "historic", "coal-fired", "brooklyn"]
+  },
+  {
+    id: "87",
+    name: "Roberta's",
+    cuisine: "Pizza",
+    price_tier: "$$",
+    neighborhood: "Bushwick",
+    rating: 4.6,
+    description: "Hip, industrial-chic spot famous for its wood-fired Neapolitan-style pizzas.",
+    tags: ["pizza", "wood-fired", "hipster", "brooklyn"]
+  },
+  {
+    id: "88",
+    name: "Paulie Gee's",
+    cuisine: "Pizza",
+    price_tier: "$$",
+    neighborhood: "Greenpoint",
+    rating: 4.7,
+    description: "Rustic-chic eatery serving creative wood-fired pizzas, including great vegan options.",
+    tags: ["pizza", "wood-fired", "vegan options", "brooklyn"]
+  },
+  {
+    id: "89",
+    name: "L&B Spumoni Gardens",
+    cuisine: "Pizza/Italian",
+    price_tier: "$",
+    neighborhood: "Bensonhurst",
+    rating: 4.7,
+    description: "Iconic Brooklyn spot famous for its thick, saucy Sicilian squares and spumoni.",
+    tags: ["pizza", "sicilian", "historic", "brooklyn"]
+  },
+  {
+    id: "90",
+    name: "Defonte's",
+    cuisine: "Sandwiches",
+    price_tier: "$",
+    neighborhood: "Red Hook",
+    rating: 4.7,
+    description: "Old-school Brooklyn institution serving massive, classic Italian hero sandwiches.",
+    tags: ["sandwiches", "italian", "historic", "lunch"]
+  },
+  {
+    id: "91",
+    name: "Faicco's Italian Specialties",
+    cuisine: "Sandwiches",
+    price_tier: "$$",
+    neighborhood: "West Village",
+    rating: 4.8,
+    description: "Classic Italian deli crafting enormous, meat-packed hero sandwiches.",
+    tags: ["sandwiches", "deli", "italian", "lunch"]
+  },
+  {
+    id: "92",
+    name: "Alidoro",
+    cuisine: "Sandwiches",
+    price_tier: "$$",
+    neighborhood: "SoHo",
+    rating: 4.6,
+    description: "Popular spot for authentic, high-quality Italian sandwiches with strict ordering rules.",
+    tags: ["sandwiches", "italian", "quick bite", "lunch"]
+  },
+  {
+    id: "93",
+    name: "Parm",
+    cuisine: "Italian-American",
+    price_tier: "$$",
+    neighborhood: "Little Italy",
+    rating: 4.5,
+    description: "Casual diner-style spot serving elevated versions of Italian-American classics.",
+    tags: ["italian-american", "casual", "sandwiches", "comfort food"]
+  },
+  {
+    id: "94",
+    name: "Emilio's Ballato",
+    cuisine: "Italian",
+    price_tier: "$$$",
+    neighborhood: "Nolita",
+    rating: 4.6,
+    description: "Old-school, celebrity-favorite Italian joint serving classic red-sauce dishes.",
+    tags: ["italian", "red sauce", "historic", "cozy"]
+  },
+  {
+    id: "95",
+    name: "Peasant",
+    cuisine: "Italian",
+    price_tier: "$$$",
+    neighborhood: "Nolita",
+    rating: 4.6,
+    description: "Rustic, candlelit space focusing on wood-fired Italian cooking and wine.",
+    tags: ["italian", "wood-fired", "romantic", "date night"]
+  },
+  {
+    id: "96",
+    name: "Il Buco",
+    cuisine: "Italian/Mediterranean",
+    price_tier: "$$$",
+    neighborhood: "NoHo",
+    rating: 4.6,
+    description: "Charming, rustic restaurant with a famous wine cellar and Mediterranean-Italian fare.",
+    tags: ["italian", "rustic", "wine", "romantic"]
+  },
+  {
+    id: "97",
+    name: "Lafayette",
+    cuisine: "French",
+    price_tier: "$$$",
+    neighborhood: "NoHo",
+    rating: 4.5,
+    description: "Grand, bustling French brasserie and bakery known for its vibrant atmosphere.",
+    tags: ["french", "brasserie", "bakery", "brunch"]
+  },
+  {
+    id: "98",
+    name: "Boucherie",
+    cuisine: "French",
+    price_tier: "$$$",
+    neighborhood: "West Village",
+    rating: 4.6,
+    description: "Spacious, elegant French brasserie serving steaks, absinthe, and classic dishes.",
+    tags: ["french", "brasserie", "elegant", "steak"]
+  },
+  {
+    id: "99",
+    name: "Raoul's",
+    cuisine: "French",
+    price_tier: "$$$",
+    neighborhood: "SoHo",
+    rating: 4.7,
+    description: "Classic, lively SoHo bistro famous for its steak au poivre and burger.",
+    tags: ["french", "bistro", "classic", "lively"]
+  },
+  {
+    id: "100",
+    name: "Lucien",
+    cuisine: "French",
+    price_tier: "$$$",
+    neighborhood: "East Village",
+    rating: 4.4,
+    description: "Cozy, quintessential East Village French bistro with a bohemian vibe.",
+    tags: ["french", "bistro", "cozy", "classic"]
+  },
+  {
+    id: "101",
+    name: "Russ & Daughters",
+    cuisine: "Appetizing",
+    price_tier: "$$",
+    neighborhood: "Lower East Side",
+    rating: 4.8,
+    description: "Legendary shop serving the city's best smoked fish, caviar, and bagels since 1914.",
+    tags: ["bagels", "smoked fish", "historic", "breakfast"]
+  },
+  {
+    id: "102",
+    name: "Barney Greengrass",
+    cuisine: "Appetizing/Deli",
+    price_tier: "$$",
+    neighborhood: "Upper West Side",
+    rating: 4.6,
+    description: "The 'Sturgeon King', a classic Jewish deli serving smoked fish and bagels since 1908.",
+    tags: ["deli", "smoked fish", "historic", "breakfast"]
+  },
+  {
+    id: "103",
+    name: "Sarge's Delicatessen",
+    cuisine: "Deli",
+    price_tier: "$$",
+    neighborhood: "Murray Hill",
+    rating: 4.4,
+    description: "Classic, 24-hour Jewish deli known for massive pastrami sandwiches and matzo ball soup.",
+    tags: ["deli", "late night", "pastrami", "comfort food"]
+  },
+  {
+    id: "104",
+    name: "Pastrami Queen",
+    cuisine: "Deli",
+    price_tier: "$$",
+    neighborhood: "Upper East Side",
+    rating: 4.5,
+    description: "Cozy, no-frills spot serving some of the best pastrami sandwiches in the city.",
+    tags: ["deli", "pastrami", "kosher", "casual"]
+  },
+  {
+    id: "105",
+    name: "Mighty Quinn's",
+    cuisine: "BBQ",
+    price_tier: "$$",
+    neighborhood: "East Village",
+    rating: 4.5,
+    description: "Fast-casual spot serving excellent Texas-style smoked meats and creative sides.",
+    tags: ["bbq", "casual", "quick bite", "meat"]
+  },
+  {
+    id: "106",
+    name: "Fette Sau",
+    cuisine: "BBQ",
+    price_tier: "$$",
+    neighborhood: "Williamsburg",
+    rating: 4.5,
+    description: "Rustic, garage-like space serving dry-rubbed BBQ by the pound and craft beer.",
+    tags: ["bbq", "casual", "beer", "brooklyn"]
+  },
+  {
+    id: "107",
+    name: "Dinosaur Bar-B-Que",
+    cuisine: "BBQ",
+    price_tier: "$$",
+    neighborhood: "Harlem",
+    rating: 4.5,
+    description: "Lively, roadhouse-style joint serving up hearty portions of Southern-style BBQ.",
+    tags: ["bbq", "lively", "southern", "casual"]
+  },
+  {
+    id: "108",
+    name: "Oxalis",
+    cuisine: "New American",
+    price_tier: "$$$",
+    neighborhood: "Prospect Heights",
+    rating: 4.7,
+    description: "Michelin-starred spot offering an affordable, inventive seasonal tasting menu.",
+    tags: ["tasting menu", "michelin", "creative", "brooklyn"]
+  },
+  {
+    id: "109",
+    name: "Claro",
+    cuisine: "Mexican",
+    price_tier: "$$$",
+    neighborhood: "Gowanus",
+    rating: 4.6,
+    description: "Oaxacan-inspired dishes and mezcal served in a space with a beautiful backyard patio.",
+    tags: ["mexican", "oaxacan", "patio", "brooklyn"]
+  },
+  {
+    id: "110",
+    name: "Oxomoco",
+    cuisine: "Mexican",
+    price_tier: "$$$",
+    neighborhood: "Greenpoint",
+    rating: 4.7,
+    description: "Airy, Michelin-starred spot serving wood-fired Mexican dishes and great cocktails.",
+    tags: ["mexican", "wood-fired", "michelin", "brooklyn"]
+  },
+  {
+    id: "111",
+    name: "Casa Enrique",
+    cuisine: "Mexican",
+    price_tier: "$$",
+    neighborhood: "Long Island City",
+    rating: 4.7,
+    description: "Michelin-starred Mexican restaurant known for its exceptional mole and traditional dishes.",
+    tags: ["mexican", "michelin", "authentic", "queens"]
+  },
+  {
+    id: "112",
+    name: "Atla",
+    cuisine: "Mexican",
+    price_tier: "$$",
+    neighborhood: "NoHo",
+    rating: 4.5,
+    description: "Sleek, all-day cafe serving healthy-ish, modern Mexican fare from the Cosme team.",
+    tags: ["mexican", "cafe", "healthy-ish", "brunch"]
+  },
+  {
+    id: "113",
+    name: "Tacombi",
+    cuisine: "Mexican",
+    price_tier: "$",
+    neighborhood: "Nolita",
+    rating: 4.4,
+    description: "Fun, casual spot serving tacos out of a vintage VW bus in a garage-like space.",
+    tags: ["tacos", "casual", "fun", "quick bite"]
+  },
+  {
+    id: "114",
+    name: "Jajaja",
+    cuisine: "Vegan Mexican",
+    price_tier: "$$",
+    neighborhood: "Lower East Side",
+    rating: 4.6,
+    description: "Vibrant, plant-based Mexican street food and tequila bar.",
+    tags: ["vegan", "mexican", "lively", "plant-based"]
+  },
+  {
+    id: "115",
+    name: "Avant Garden",
+    cuisine: "Vegan",
+    price_tier: "$$$",
+    neighborhood: "East Village",
+    rating: 4.7,
+    description: "Intimate, upscale vegan restaurant serving beautifully plated, vegetable-forward dishes.",
+    tags: ["vegan", "upscale", "date night", "vegetable-forward"]
+  },
+  {
+    id: "116",
+    name: "Hangawi",
+    cuisine: "Vegan Korean",
+    price_tier: "$$$",
+    neighborhood: "Koreatown",
+    rating: 4.6,
+    description: "Tranquil, shoe-free environment offering refined vegetarian and vegan Korean cuisine.",
+    tags: ["vegan", "korean", "tranquil", "healthy"]
+  },
+  {
+    id: "117",
+    name: "Jongro BBQ",
+    cuisine: "Korean BBQ",
+    price_tier: "$$",
+    neighborhood: "Koreatown",
+    rating: 4.6,
+    description: "Bustling, retro-themed Korean BBQ joint known for its high-quality meats.",
+    tags: ["korean bbq", "meat", "lively", "group dining"]
+  },
+  {
+    id: "118",
+    name: "Atoboy",
+    cuisine: "Korean",
+    price_tier: "$$$",
+    neighborhood: "NoMad",
+    rating: 4.7,
+    description: "Modern Korean tasting menu featuring creative, refined small plates.",
+    tags: ["korean", "tasting menu", "modern", "date night"]
+  },
+  {
+    id: "119",
+    name: "Momofuku Noodle Bar",
+    cuisine: "Asian American",
+    price_tier: "$$",
+    neighborhood: "East Village",
+    rating: 4.5,
+    description: "David Chang's original spot, famous for its pork buns and inventive ramen.",
+    tags: ["ramen", "pork buns", "casual", "lively"]
+  },
+  {
+    id: "120",
+    name: "Ivan Ramen",
+    cuisine: "Ramen",
+    price_tier: "$$",
+    neighborhood: "Lower East Side",
+    rating: 4.5,
+    description: "Creative, New York-influenced ramen from a chef who made it big in Tokyo.",
+    tags: ["ramen", "creative", "casual", "noodles"]
+  }
+];

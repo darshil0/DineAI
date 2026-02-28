@@ -1,0 +1,5 @@
+{
+  "name": "DineAI",
+  "description": "Multi-Agent Restaurant Recommendation Chatbot using RAG and Gemini",
+  "requestFramePermissions": []
+}
