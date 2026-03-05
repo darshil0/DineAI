@@ -4,6 +4,7 @@ import { listSkills, getSkill } from "./skills/registry.js";
 import { logger } from "./lib/logger.js";
 import { vectorDb } from "./lib/vectorDb.js";
 import { GenerateEmbeddingInput, GenerateEmbeddingOutput } from "./skills/generateEmbedding.js";
+import { ingestRestaurants } from "./ingestRestaurants.js";
 
 // Load environment variables
 dotenv.config({ path: ".env.local" });
