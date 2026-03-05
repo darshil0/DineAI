@@ -12,6 +12,7 @@
 [![React](https://img.shields.io/badge/React-19.2-61DAFB?logo=react&logoColor=black)](https://react.dev/)
 [![Gemini](https://img.shields.io/badge/Gemini-2.0%20Flash-4285F4?logo=google&logoColor=white)](https://ai.google.dev/)
 [![Express](https://img.shields.io/badge/Express-5.2-000000?logo=express&logoColor=white)](https://expressjs.com/)
+[![Version](https://img.shields.io/badge/version-1.3.2-brightgreen)](./CHANGELOG.md)
 
 [View in AI Studio](https://ai.studio/apps/6991651b-a322-44dd-b708-0413e783338e)
 
@@ -187,3 +188,12 @@ The server loads `.env.local` first and falls back to `.env`, so local developme
 **Rate limiting during ingestion** — restaurant embeddings are generated in concurrent batches of 5 with a 200ms delay between batches. If you hit API quota errors during startup, increase the delay in `src/scripts/ingestRestaurants.ts`.
 
 **Express 5 error handling** — this project uses Express 5, which automatically forwards errors thrown in async route handlers to the error middleware. The global error handler is registered at the bottom of `server.ts`.
+
+## Changelog
+
+See [CHANGELOG.md](./CHANGELOG.md) for the full version history. Recent fixes in **v1.3.2**:
+
+- Fixed `onKeyDown` type mismatch in `ChatInterface.tsx` by extracting a `submitMessage()` function called by both the keyboard handler and the form submit handler.
+- Added missing `responseSchema` to the RAG fallback LLM path in `src/services/ragRecommender.ts`, preventing unparseable responses when the Vector DB is unavailable.
+- Corrected broken import path in `src/reset-db.ts` (`"../src/lib/logger.js"` → `"./lib/logger.js"`).
+- Fixed page `<title>` in `index.html` from the AI Studio scaffold default to `"DineAI"`.
