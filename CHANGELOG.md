@@ -5,6 +5,17 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.3.2] - 2026-03-05
+
+### Fixed
+
+- **`onKeyDown` Type Mismatch** (`src/components/ChatInterface.tsx`) — The `onKeyDown` handler was invoking `handleSubmit(e)` with a `KeyboardEvent`, but `handleSubmit` is typed to accept a `React.FormEvent`. Fixed by extracting core submission logic into a standalone `submitMessage()` async function. Both `onKeyDown` and `handleSubmit` now call `submitMessage()` directly, eliminating the type error and aligning with the pattern already present in the root-level `ChatInterface.tsx`.
+- **Missing `responseSchema` in RAG fallback** (`src/services/ragRecommender.ts`) — The LLM fallback path (used when the Vector DB is unavailable) was calling `generateContent` without a `responseSchema`. Without it, the model can return a wrapped object or prose string instead of a plain array, causing downstream JSON parse failures. Added `RestaurantArraySchema` to the fallback call, matching the schema already defined in the root-level `ragRecommender.ts`.
+- **Broken import path** (`src/reset-db.ts`) — The logger was imported from `"../src/lib/logger.js"`, which resolves to `src/src/lib/logger.js` — a path that does not exist. Corrected to `"./lib/logger.js"`.
+- **Wrong page title** (`index.html`) — The `<title>` tag still contained the AI Studio scaffold default `"My Google AI Studio App"`. Updated to `"DineAI"`.
+
+---
+
 ## [1.3.1] - 2026-03-05
 
 ### Added
