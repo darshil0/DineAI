@@ -30,6 +30,7 @@ export default function ChatInterface() {
   const [imagePreview, setImagePreview] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(false);
   const [loadingStep, setLoadingStep] = useState<string>("");
+  const loadingTimeoutsRef = useRef<NodeJS.Timeout[]>([]);
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
 
@@ -40,6 +41,14 @@ export default function ChatInterface() {
   useEffect(() => {
     scrollToBottom();
   }, [messages, isLoading, loadingStep]);
+
+  useEffect(() => {
+    return () => {
+      // Clear any pending timeouts on unmount
+      loadingTimeoutsRef.current.forEach(clearTimeout);
+      loadingTimeoutsRef.current = [];
+    };
+  }, []);
 
   const handleImageSelect = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
@@ -102,15 +111,17 @@ export default function ChatInterface() {
       }
 
       // Simulate step updates for better UX
-      setTimeout(
+      const t1 = setTimeout(
         () => setLoadingStep("Retrieving candidate restaurants..."),
         2000,
       );
-      setTimeout(
+      const t2 = setTimeout(
         () => setLoadingStep("Analyzing current food trends..."),
         4000,
       );
-      setTimeout(() => setLoadingStep("Finalizing recommendations..."), 6000);
+      const t3 = setTimeout(() => setLoadingStep("Finalizing recommendations..."), 6000);
+
+      loadingTimeoutsRef.current = [t1, t2, t3];
 
       const response = await fetch("/api/chat", {
         method: "POST",
@@ -122,16 +133,27 @@ export default function ChatInterface() {
         throw new Error(errorData.error || "Failed to get recommendations");
       }
 
-      const data = await response.json();
+      let data;
+      try {
+        data = await response.json();
+      } catch (e) {
+        throw new Error("Invalid response from server. Please try again.");
+      }
+
+      if (!data || typeof data !== "object") {
+        throw new Error("Received an unexpected response format from the assistant.");
+      }
 
       const assistantMessage: Message = {
         id: (Date.now() + 1).toString(),
         role: "assistant",
         content:
-          "Here are my top recommendations based on your taste profile and current trends:",
-        recommendations: data.recommendations,
-        profile: data.profile,
-        trends: data.trends,
+          data.recommendations && data.recommendations.length > 0
+            ? "Here are my top recommendations based on your taste profile and current trends:"
+            : "I've updated your taste profile, but I couldn't find any matching restaurants in NYC right now. Could you provide more details?",
+        recommendations: Array.isArray(data.recommendations) ? data.recommendations : [],
+        profile: data.profile || undefined,
+        trends: typeof data.trends === "string" ? data.trends : undefined,
       };
 
       setMessages((prev) => [...prev, assistantMessage]);
@@ -148,6 +170,8 @@ export default function ChatInterface() {
     } finally {
       setIsLoading(false);
       setLoadingStep("");
+      loadingTimeoutsRef.current.forEach(clearTimeout);
+      loadingTimeoutsRef.current = [];
     }
   };
 

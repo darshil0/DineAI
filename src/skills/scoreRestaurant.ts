@@ -29,14 +29,14 @@ export const scoreRestaurantSkill: AgentSkill<ScoreInput, ScoreOutput> = {
     if (profile.cuisines?.length) {
       const lowerCuisines = profile.cuisines.map((c) => c.toLowerCase());
       if (lowerCuisines.includes(restaurant.cuisine.toLowerCase())) {
-        score += 0.2;
+        score += 0.4;
       }
     }
 
     // 3. Price match
     if (profile.price_range && restaurant.price_tier) {
       if (profile.price_range === restaurant.price_tier) {
-        score += 0.15;
+        score += 0.3;
       }
     }
 
@@ -47,7 +47,7 @@ export const scoreRestaurantSkill: AgentSkill<ScoreInput, ScoreOutput> = {
         lowerTags.includes(a.toLowerCase()),
       );
       if (hasAmbianceMatch) {
-        score += 0.1;
+        score += 0.2;
       }
     }
 
@@ -65,7 +65,7 @@ export const scoreRestaurantSkill: AgentSkill<ScoreInput, ScoreOutput> = {
           (tag) => tag.includes(dietaryNote) || dietaryNote.includes(tag),
         )
       ) {
-        score += 0.05;
+        score += 0.1;
       }
     }
 

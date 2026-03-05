@@ -1,5 +1,5 @@
 import { getGeminiClient, GEMINI_MODEL } from "../lib/geminiClient.js";
-import { cleanJson } from "../lib/utils.js";
+import { cleanJson, withRetry } from "../lib/utils.js";
 import { logger } from "../lib/logger.js";
 import { UserTasteProfileSchema, UserTasteProfile } from "../schemas/index.js";
 import {
@@ -71,7 +71,7 @@ export async function buildProfile(
   ];
 
   try {
-    const profileResponse = await ai.models.generateContent({
+    const profileResponse = await withRetry(() => ai.models.generateContent({
       model: GEMINI_MODEL,
       contents: [{ parts: profileParts }],
       config: {
@@ -81,7 +81,7 @@ export async function buildProfile(
           parts: [{ text: PROFILE_BUILDER_SYSTEM }],
         },
       },
-    });
+    }));
 
     const userTasteProfile = JSON.parse(
       cleanJson(

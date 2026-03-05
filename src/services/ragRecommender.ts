@@ -1,5 +1,5 @@
 import { getGeminiClient, GEMINI_MODEL } from "../lib/geminiClient.js";
-import { cleanJson } from "../lib/utils.js";
+import { cleanJson, withRetry } from "../lib/utils.js";
 import { logger } from "../lib/logger.js";
 import { UserTasteProfile } from "../schemas/index.js";
 import { restaurants, Restaurant } from "../data/restaurants.js";
@@ -46,8 +46,10 @@ export async function recommendCandidates(
       const { embedding } = await generateEmbedding.run({ text: queryText });
       const results = await vectorDb.query(embedding, 20); // Get top 20 to re-rank
 
+      const filteredResults = results.filter((r) => r.score >= 0.1);
+
       const scored = await Promise.all(
-        results.map(async (r) => {
+        filteredResults.map(async (r) => {
           const restaurant = r.metadata as Restaurant;
           const { matchScore } = await scoreRestaurant.run({
             profile,
@@ -77,7 +79,7 @@ export async function recommendCandidates(
   logger.info("RagRecommender", "Using fallback LLM filtering...");
   const ai = getGeminiClient();
   try {
-    const ragResponse = await ai.models.generateContent({
+    const ragResponse = await withRetry(() => ai.models.generateContent({
       model: GEMINI_MODEL,
       contents: [
         {
@@ -97,7 +99,7 @@ export async function recommendCandidates(
           parts: [{ text: RAG_RECOMMENDER_SYSTEM }],
         },
       },
-    });
+    }));
 
     const candidateList = JSON.parse(
       cleanJson(ragResponse.candidates?.[0]?.content?.parts?.[0]?.text || "[]"),
