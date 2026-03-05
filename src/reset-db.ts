@@ -1,4 +1,4 @@
-import { logger } from "../src/lib/logger.js";
+import { logger } from "./lib/logger.js";
 
 /**
  * Note: The Vector DB used in DineAI is in-memory.
