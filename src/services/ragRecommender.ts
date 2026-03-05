@@ -10,6 +10,26 @@ import {
   GenerateEmbeddingOutput,
 } from "../skills/generateEmbedding.js";
 import { vectorDb } from "../lib/vectorDb.js";
+import { Type } from "@google/genai";
+
+// Schema used by the fallback LLM path to guarantee parseable output.
+const RestaurantArraySchema = {
+  type: Type.ARRAY,
+  items: {
+    type: Type.OBJECT,
+    properties: {
+      id: { type: Type.STRING },
+      name: { type: Type.STRING },
+      cuisine: { type: Type.STRING },
+      price_tier: { type: Type.STRING },
+      neighborhood: { type: Type.STRING },
+      rating: { type: Type.NUMBER },
+      description: { type: Type.STRING },
+      tags: { type: Type.ARRAY, items: { type: Type.STRING } },
+    },
+    required: ["id", "name", "cuisine", "price_tier", "neighborhood", "rating", "description", "tags"],
+  },
+};
 
 export async function recommendCandidates(
   profile: UserTasteProfile,
@@ -95,6 +115,7 @@ export async function recommendCandidates(
       ],
       config: {
         responseMimeType: "application/json",
+        responseSchema: RestaurantArraySchema,
         systemInstruction: {
           parts: [{ text: RAG_RECOMMENDER_SYSTEM }],
         },
@@ -108,6 +129,6 @@ export async function recommendCandidates(
     return candidateList;
   } catch (error: any) {
     logger.error("RagRecommender", "Error in Coarse RAG Recommender Agent:", error);
-    throw new Error(`RAG Recommender failed: ${error.message}`);
+    throw new Error(`RAG Recommender failed: ${error.message}`, { cause: error });
   }
 }
