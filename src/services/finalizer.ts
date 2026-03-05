@@ -1,5 +1,5 @@
 import { getGeminiClient, GEMINI_MODEL } from "../lib/geminiClient.js";
-import { cleanJson } from "../lib/utils.js";
+import { cleanJson, withRetry } from "../lib/utils.js";
 import { logger } from "../lib/logger.js";
 import {
   UserTasteProfile,
@@ -19,7 +19,7 @@ export async function finalizeRecommendations(
   logger.info("Finalizer", "Running Recommendation Finalizer Agent...");
 
   try {
-    const finalizerResponse = await ai.models.generateContent({
+    const finalizerResponse = await withRetry(() => ai.models.generateContent({
       model: GEMINI_MODEL,
       contents: [
         {
@@ -42,7 +42,7 @@ export async function finalizeRecommendations(
           parts: [{ text: FINALIZER_SYSTEM }],
         },
       },
-    });
+    }));
 
     const finalData = JSON.parse(
       cleanJson(

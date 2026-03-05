@@ -1,4 +1,5 @@
 import { getGeminiClient, GEMINI_MODEL } from "../lib/geminiClient.js";
+import { withRetry } from "../lib/utils.js";
 import { logger } from "../lib/logger.js";
 import { UserTasteProfile } from "../schemas/index.js";
 import { TREND_ANALYST_SYSTEM, buildTrendPrompt } from "../prompts/index.js";
@@ -13,7 +14,8 @@ export async function analyzeTrends(
     const cuisinesStr = Array.isArray(profile.cuisines)
       ? profile.cuisines.join(", ")
       : "various cuisines";
-    const trendResponse = await ai.models.generateContent({
+
+    const trendResponse = await withRetry(() => ai.models.generateContent({
       model: GEMINI_MODEL,
       contents: [{ parts: [{ text: buildTrendPrompt(cuisinesStr) }] }],
       config: {
@@ -22,7 +24,7 @@ export async function analyzeTrends(
           parts: [{ text: TREND_ANALYST_SYSTEM }],
         },
       },
-    });
+    }));
 
     // Explicitly guard against non-text parts (like executableCode)
     const trendReportText =
