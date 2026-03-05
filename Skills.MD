@@ -58,7 +58,7 @@ import { registerSkill } from "./registry.js";
 registerSkill({
   name: "newCapability",
   description: "Does something amazing",
-  run: async (input) => {
+  run: async (input) => { 
     // Implementation logic here
   }
 });

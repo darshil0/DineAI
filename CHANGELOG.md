@@ -5,6 +5,22 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.3.1] - 2026-03-05
+
+### Added
+
+- **`src/lib/utils.ts`** — Added `withRetry` utility for exponential backoff on Gemini API calls, improving resilience against 429 Rate Limit errors.
+- **`src/scripts/reset-db.ts`** — New documentation script explaining the in-memory nature of the Vector DB.
+
+### Fixed
+
+- **Vector DB Pre-normalization** — Implemented pre-normalization of restaurant embeddings during ingestion and user query embeddings during search, optimizing similarity calculations to dot products.
+- **Scoring Weight Normalization** — Adjusted heuristic weights in `scoreRestaurant.ts` (Cuisine: 0.4, Price: 0.3, Ambiance: 0.2, Dietary: 0.1) so they reach a 1.0 match score even without vector similarity.
+- **UI Error Handling & Robustness** — Added defensive JSON parsing and explicit type checks in `ChatInterface.tsx` to prevent crashes from malformed API responses.
+- **Frontend Timer Leaks** — Implemented robust cleanup for `setTimeout` calls in the chat interface to prevent memory leaks on component unmount.
+- **Enhanced `cleanJson`** — Refined the JSON extraction regex to more reliably handle varied LLM markdown outputs.
+- **Explicit Schema Exports** — Fixed type export issues in `src/schemas/index.ts` to support `isolatedModules` and improve overall type safety.
+
 ## [1.3.0] - 2026-02-28
 
 ### Added
