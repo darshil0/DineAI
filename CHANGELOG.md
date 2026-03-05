@@ -10,7 +10,6 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Added
 
 - **`src/lib/utils.ts`** — Added `withRetry` utility for exponential backoff on Gemini API calls, improving resilience against 429 Rate Limit errors.
-- **`src/scripts/reset-db.ts`** — New documentation script explaining the in-memory nature of the Vector DB.
 
 ### Fixed
 
@@ -27,7 +26,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - **`src/lib/logger.ts`** — New structured logging utility. All log output now follows the format `[TIMESTAMP] [LEVEL] [MODULE] message`. Replaced all bare `console.log` / `console.error` calls across agents, services, and scripts.
 - **`src/lib/utils.test.ts`** — Unit tests for the `cleanJson` helper covering standard backtick fences, `\`\`\`json` fences, trailing-newline edge cases, and plain JSON strings.
-- **`scripts/reset-db.ts`** — Documentation script explaining that the Vector DB is in-memory and restarting the server is the only way to clear its state.
+- **`src/scripts/reset-db.ts`** — Documentation script explaining that the Vector DB is in-memory and restarting the server is the only way to clear its state.
 
 ### Fixed
 
@@ -50,8 +49,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - **Model name constant** (`src/lib/geminiClient.ts`) — `"gemini-2.0-flash"` is now exported as `GEMINI_MODEL` and referenced from all six agent and skill files. Previously hard-coded in each file independently.
 - **Express 5 async error handling** (`src/api/chat.ts`, `server.ts`) — Removed the per-route `try/catch` block in the chat route in favor of Express 5's automatic async error forwarding. A global error handler is now registered in `server.ts`.
 - **Named re-exports** (`src/schemas/index.ts`) — Switched from `export *` to explicit named re-exports for `UserTasteProfile`, `UserTasteProfileSchema`, `Recommendation`, and `FinalRecommendationsSchema`.
-- **Package scripts** (`package.json`) — `lint` now runs `eslint src/`; TypeScript type-checking is exposed separately as `typecheck` (`tsc --noEmit`).
-- **Environment file naming** — `.env.example` renamed to `.env.local.example` to match the `cp` command documented in the README.
+- **Package scripts** (`package.json`) — TypeScript type-checking is now exposed as a dedicated `typecheck` script (`tsc --noEmit`). The `lint` script is a placeholder pending ESLint configuration.
 - **Dependencies updated to latest stable:**
 
   | Package | From | To | Notes |
