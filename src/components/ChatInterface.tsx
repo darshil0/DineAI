@@ -70,8 +70,8 @@ export default function ChatInterface() {
     }
   };
 
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
+  // Core submission logic, decoupled from any specific event type.
+  const submitMessage = async () => {
     if (!input.trim() && !selectedImage) return;
 
     const userMessage: Message = {
@@ -173,6 +173,11 @@ export default function ChatInterface() {
       loadingTimeoutsRef.current.forEach(clearTimeout);
       loadingTimeoutsRef.current = [];
     }
+  };
+
+  const handleSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    submitMessage();
   };
 
   return (
@@ -301,7 +306,7 @@ export default function ChatInterface() {
               onKeyDown={(e) => {
                 if (e.key === "Enter" && !e.shiftKey) {
                   e.preventDefault();
-                  handleSubmit(e);
+                  submitMessage();
                 }
               }}
               placeholder="I'm looking for a cozy Italian spot for a date night..."
