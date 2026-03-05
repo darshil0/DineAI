@@ -93,7 +93,7 @@ npm install
 **2. Configure your API key**
 
 ```bash
-cp .env.local.example .env.local
+cp .env.example .env.local
 ```
 
 Open `.env.local` and set your key:
@@ -110,7 +110,7 @@ Get a free API key from [Google AI Studio](https://aistudio.google.com/app/apike
 npm run dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000). The server will embed all 120 restaurant records into the vector database on first startup (takes ~30 seconds). Subsequent starts are instant because ingestion is skipped when records already exist.
+Open [http://localhost:3000](http://localhost:3000). The server will embed all 120 restaurant records into the vector database on startup (takes ~30 seconds each time, since the database is in-memory and does not persist between restarts).
 
 ## Available Scripts
 
@@ -120,7 +120,7 @@ Open [http://localhost:3000](http://localhost:3000). The server will embed all 1
 | `npm run build` | Build the React frontend for production |
 | `npm run preview` | Preview the production build |
 | `npm run typecheck` | Run TypeScript type-checking with no emit |
-| `npm run lint` | Run ESLint across `src/` |
+| `npm run lint` | Placeholder — no ESLint config present; use `npm run typecheck` instead |
 | `npm run clean` | Remove the `dist/` directory |
 
 ## Project Structure
@@ -141,15 +141,19 @@ DineAI/
 │   ├── lib/
 │   │   ├── geminiClient.ts    # Shared Gemini client + model constant
 │   │   ├── logger.ts          # Structured logger ([TIMESTAMP][LEVEL][MODULE])
-│   │   ├── utils.ts           # cleanJson helper
+│   │   ├── utils.ts           # cleanJson helper + withRetry utility
+│   │   ├── utils.test.ts      # Unit tests for cleanJson
 │   │   └── vectorDb.ts        # In-memory vector DB (pre-normalized)
 │   ├── prompts/
 │   │   └── index.ts           # All agent system prompts and prompt builders
 │   ├── schemas/
+│   │   ├── index.ts           # Named re-exports for all schema types
 │   │   ├── userTasteProfile.ts
 │   │   └── recommendation.ts
 │   ├── scripts/
-│   │   └── ingestRestaurants.ts  # Startup embedding + ingestion
+│   │   ├── ingestRestaurants.ts  # Startup embedding + ingestion
+│   │   ├── reset-db.ts           # Documents in-memory DB reset process
+│   │   └── verifySystem.ts       # E2E system verification script
 │   ├── services/
 │   │   ├── profileBuilder.ts  # Agent 1
 │   │   ├── ragRecommender.ts  # Agent 2
@@ -163,7 +167,7 @@ DineAI/
 │       ├── registry.ts
 │       ├── scoreRestaurant.ts
 │       └── types.ts
-└── .env.local.example
+└── .env.example
 ```
 
 ## Environment Variables
@@ -178,7 +182,7 @@ The server loads `.env.local` first and falls back to `.env`, so local developme
 
 ## Important Notes
 
-**Vector DB lifecycle** — the vector database is in-memory. Restarting the server clears all embedded records. Ingestion runs automatically on startup and is skipped if records already exist, so a clean restart takes ~30 seconds the first time and is instant thereafter. There is no persistent storage between sessions.
+**Vector DB lifecycle** — the vector database is in-memory. Restarting the server clears all embedded records, and ingestion runs automatically on every startup (~30 seconds). There is no persistent storage between sessions.
 
 **Rate limiting during ingestion** — restaurant embeddings are generated in concurrent batches of 5 with a 200ms delay between batches. If you hit API quota errors during startup, increase the delay in `src/scripts/ingestRestaurants.ts`.
 
