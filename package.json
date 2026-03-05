@@ -10,7 +10,8 @@
     "preview": "vite preview",
     "clean": "rm -rf dist",
     "typecheck": "tsc --noEmit",
-    "lint": "echo \"Error: no ESLint configuration found. Run 'npm run typecheck' instead.\" && exit 0"
+    "lint": "echo \"Error: no ESLint configuration found. Run 'npm run typecheck' instead.\" && exit 0",
+    "test": "tsx src/lib/utils.test.ts"
   },
   "dependencies": {
     "@google/genai": "^1.43.0",
