@@ -13,6 +13,22 @@ const ExploreScreen: React.FC = () => {
     "Late Night",
   ];
 
+  // Safe references to featured restaurants by name, not brittle indices
+  const FEATURED_RESTAURANTS = {
+    sushi: "Sushi Nakazawa",
+    seafood: "Cervo's",
+    pizza: "Lucali",
+    finedining: "Le Bernardin",
+    vegan: "Superiority Burger",
+  };
+
+  // Get featured restaurants safely
+  const sushiRest = restaurants.find(r => r.name === FEATURED_RESTAURANTS.sushi);
+  const seafoodRest = restaurants.find(r => r.name === FEATURED_RESTAURANTS.seafood);
+  const pizzaRest = restaurants.find(r => r.name === FEATURED_RESTAURANTS.pizza);
+  const fineRest = restaurants.find(r => r.name === FEATURED_RESTAURANTS.finedining);
+  const veganRest = restaurants.find(r => r.name === FEATURED_RESTAURANTS.vegan);
+
   const featuredImages = [
     "https://lh3.googleusercontent.com/aida-public/AB6AXuDHdhb8uzKlZ_unr84YcyomCzM0e5hgEX2JuKpo5vrgq5In_y0JiC52sR2Z1n8P4iuB2IkWXwP1tP14NlLCUfaG8204oqXoBdzHyJlF6zVsXPCzFDiLBYQTXHYCYCSymKN37AMcR6MQ_97eEZs3Jk-XMOHnu74mQw-4K0fG-8PmEMtCRzmUpLpEp7W-ltVrAVuQ90PK58RnfP3-6mh2Lzy-RQaPpuZEOySoTlregehUT0elKRGJ5m3hAAnLwZZ8EmlRU1v5uCnmeAbe",
     "https://lh3.googleusercontent.com/aida-public/AB6AXuDfYIIoC7rdF35bXQNET3V7jbynX2ha4nFVV2sARo1HtPV0L9Fwc-8bAx9q4G7dZrgI_1awaqv_2B2nhzagn3YsEPfU9sP0NeEX_QuzF1lacrMN98EUlNBxYdfR5tWIJbQea8fEEORFsnjKS1ssTS_Mo_2TrSIr79C3kR4vdPKo1Fs1GxFqBqNaZAoUAYYGtqti9InknTpX7SUSKqCn6yz-oRM5-cy4FR8ufWHq66fmryyAurrYs6nCZqsdE3Ua_zhi5nbAcTFi2OAN",
@@ -98,33 +114,43 @@ const ExploreScreen: React.FC = () => {
 
       {/* Results Grid */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-        <ExploreRestaurantCard
-          restaurant={restaurants[17]} // Sushi
-          imageUrl={featuredImages[0]}
-          aiInsight={mockInsights[0]}
-          isAiRecommended
-        />
-        <ExploreRestaurantCard
-          restaurant={restaurants[63]} // Cocktail/Spanish (Cervo's) - actually Aquavit, but let's just pick one
-          imageUrl={featuredImages[1]}
-          aiInsight={mockInsights[1]}
-        />
-        <ExploreRestaurantCard
-          restaurant={restaurants[11]} // Pizza
-          imageUrl={featuredImages[2]}
-          aiInsight={mockInsights[2]}
-        />
-        <ExploreRestaurantCard
-          restaurant={restaurants[2]} // Le Moderne (mocked as Le Bernardin)
-          imageUrl={featuredImages[3]}
-          aiInsight={mockInsights[3]}
-          isBento
-        />
-        <ExploreRestaurantCard
-          restaurant={restaurants[44]} // Vegan (Superiority Burger)
-          imageUrl={featuredImages[4]}
-          aiInsight={mockInsights[4]}
-        />
+        {sushiRest && (
+          <ExploreRestaurantCard
+            restaurant={sushiRest}
+            imageUrl={featuredImages[0]}
+            aiInsight={mockInsights[0]}
+            isAiRecommended
+          />
+        )}
+        {seafoodRest && (
+          <ExploreRestaurantCard
+            restaurant={seafoodRest}
+            imageUrl={featuredImages[1]}
+            aiInsight={mockInsights[1]}
+          />
+        )}
+        {pizzaRest && (
+          <ExploreRestaurantCard
+            restaurant={pizzaRest}
+            imageUrl={featuredImages[2]}
+            aiInsight={mockInsights[2]}
+          />
+        )}
+        {fineRest && (
+          <ExploreRestaurantCard
+            restaurant={fineRest}
+            imageUrl={featuredImages[3]}
+            aiInsight={mockInsights[3]}
+            isBento
+          />
+        )}
+        {veganRest && (
+          <ExploreRestaurantCard
+            restaurant={veganRest}
+            imageUrl={featuredImages[4]}
+            aiInsight={mockInsights[4]}
+          />
+        )}
       </div>
     </main>
   );
