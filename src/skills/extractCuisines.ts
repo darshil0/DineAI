@@ -1,5 +1,5 @@
 import { AgentSkill } from "./types.js";
-import { getGeminiClient, GEMINI_MODEL } from "../lib/geminiClient.js";
+import { getGeminiClient } from "../lib/geminiClient.js";
 import { cleanJson } from "../lib/utils.js";
 import { Type } from "@google/genai";
 
@@ -11,10 +11,7 @@ export interface ExtractCuisinesOutput {
   cuisines: string[];
 }
 
-export const extractCuisinesSkill: AgentSkill<
-  ExtractCuisinesInput,
-  ExtractCuisinesOutput
-> = {
+export const extractCuisinesSkill: AgentSkill<ExtractCuisinesInput, ExtractCuisinesOutput> = {
   name: "extractCuisines",
   description: "Extracts cuisine preferences from user text.",
   async run({ text }) {
@@ -26,22 +23,19 @@ User text:
 ${text}`;
 
     const result = await ai.models.generateContent({
-      model: GEMINI_MODEL,
-      contents: [{ parts: [{ text: prompt }] }],
+      model: "gemini-2.5-flash",
+      contents: prompt,
       config: {
         responseMimeType: "application/json",
         responseSchema: {
           type: Type.ARRAY,
           items: { type: Type.STRING },
-          description:
-            "List of cuisines explicitly mentioned or strongly implied.",
-        },
-      },
+          description: "List of cuisines explicitly mentioned or strongly implied."
+        }
+      }
     });
 
-    const cuisines = JSON.parse(
-      cleanJson(result.candidates?.[0]?.content?.parts?.[0]?.text || "[]"),
-    );
+    const cuisines = JSON.parse(cleanJson(result.text || "[]"));
     return { cuisines };
   },
 };

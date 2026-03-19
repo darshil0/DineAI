@@ -4,23 +4,10 @@ import dotenv from "dotenv";
 import chatRouter from "./src/api/chat.js";
 import { bootstrapSkills } from "./src/skills/bootstrap.js";
 import { ingestRestaurants } from "./src/scripts/ingestRestaurants.js";
-import { getGeminiClient } from "./src/lib/geminiClient.js";
 
-// Fix: README instructs users to create .env.local, but dotenv.config() only
-// loads .env by default. Load .env.local first, then fall back to .env so the
-// GEMINI_API_KEY is actually found in both development and production setups.
-dotenv.config({ path: ".env.local" });
-dotenv.config(); // fallback to .env if a key wasn't already set
+dotenv.config();
 
 async function startServer() {
-  // Explicitly check for GEMINI_API_KEY at startup
-  try {
-    getGeminiClient();
-  } catch (error: any) {
-    console.error("Startup Error:", error.message);
-    process.exit(1);
-  }
-
   const app = express();
   const PORT = 3000;
 
@@ -38,12 +25,6 @@ async function startServer() {
   });
 
   app.use("/api/chat", chatRouter);
-
-  // Global Error Handler for Express 5
-  app.use((err: any, req: express.Request, res: express.Response, next: express.NextFunction) => {
-    console.error("Express Error:", err);
-    res.status(500).json({ error: err.message || "Internal Server Error" });
-  });
 
   // Vite middleware for development
   if (process.env.NODE_ENV !== "production") {

@@ -1,99 +1,66 @@
 import React from "react";
 import { UserTasteProfile } from "../schemas/index.js";
+import { Utensils, DollarSign, Sparkles, AlertCircle, CalendarHeart, MapPin } from "lucide-react";
 
 interface TasteProfileBadgeProps {
-  profile: UserTasteProfile;
+  profile: UserTasteProfile | null;
 }
 
-export const TasteProfileBadge: React.FC<TasteProfileBadgeProps> = ({
-  profile,
-}) => {
+export const TasteProfileBadge: React.FC<TasteProfileBadgeProps> = ({ profile }) => {
+  if (!profile) return null;
+
+  const hasCuisines = profile.cuisines && profile.cuisines.length > 0;
+  const hasAmbiance = profile.ambiance && profile.ambiance.length > 0;
+  const hasOccasions = profile.special_occasions && profile.special_occasions.length > 0;
+  const hasNeighborhoods = profile.neighborhoods && profile.neighborhoods.length > 0;
+
   return (
-    <div className="bg-surface-container-high border border-surface-variant/30 rounded-[32px] p-6 mb-6 shadow-sm">
-      <div className="flex items-center gap-3 mb-4">
-        <div className="bg-primary-container/20 p-2 rounded-xl">
-          <span className="material-symbols-outlined text-primary text-xl">
-            analytics
-          </span>
-        </div>
-        <h4 className="text-sm font-bold uppercase tracking-widest text-primary font-label">
-          Updated Taste Profile
-        </h4>
+    <div className="bg-stone-50 border border-stone-200 rounded-xl p-4 shadow-sm mb-6 max-w-2xl mx-auto">
+      <div className="flex items-center gap-2 mb-3">
+        <Sparkles className="w-4 h-4 text-indigo-600" />
+        <h4 className="text-sm font-semibold text-stone-800 uppercase tracking-wider">Your Taste Profile</h4>
       </div>
-
-      <div className="space-y-4">
-        {profile.cuisines && profile.cuisines.length > 0 && (
-          <div>
-            <span className="text-[10px] font-bold uppercase tracking-widest text-outline block mb-2 font-label">
-              Preferred Cuisines
-            </span>
-            <div className="flex flex-wrap gap-2">
-              {profile.cuisines.map((cuisine) => (
-                <span
-                  key={cuisine}
-                  className="px-3 py-1.5 rounded-full bg-surface-bright border border-outline-variant/30 text-on-surface text-xs font-label"
-                >
-                  {cuisine}
-                </span>
-              ))}
-            </div>
-          </div>
+      
+      <div className="flex flex-wrap gap-2">
+        {hasCuisines && profile.cuisines!.map((cuisine, idx) => (
+          <span key={idx} className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full bg-indigo-100 text-indigo-800 text-xs font-medium">
+            <Utensils className="w-3 h-3" />
+            {cuisine}
+          </span>
+        ))}
+        
+        {profile.price_range && (
+          <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full bg-emerald-100 text-emerald-800 text-xs font-medium">
+            <DollarSign className="w-3 h-3" />
+            {profile.price_range}
+          </span>
         )}
 
-        <div className="grid grid-cols-2 gap-4">
-          {profile.price_range && (
-            <div>
-              <span className="text-[10px] font-bold uppercase tracking-widest text-outline block mb-1 font-label">
-                Price Range
-              </span>
-              <p className="text-sm font-bold text-on-surface font-headline">
-                {profile.price_range}
-              </p>
-            </div>
-          )}
-          {profile.special_occasions && profile.special_occasions.length > 0 && (
-            <div>
-              <span className="text-[10px] font-bold uppercase tracking-widest text-outline block mb-1 font-label">
-                Occasion
-              </span>
-              <div className="flex flex-wrap gap-1">
-                {profile.special_occasions.map((occasion) => (
-                  <span key={occasion} className="text-sm font-bold text-on-surface font-headline">
-                    {occasion}
-                  </span>
-                ))}
-              </div>
-            </div>
-          )}
-        </div>
+        {hasAmbiance && profile.ambiance!.map((amb, idx) => (
+          <span key={idx} className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full bg-stone-200 text-stone-800 text-xs font-medium">
+            {amb}
+          </span>
+        ))}
 
-        {profile.ambiance && profile.ambiance.length > 0 && (
-          <div>
-            <span className="text-[10px] font-bold uppercase tracking-widest text-outline block mb-2 font-label">
-              Vibe
-            </span>
-            <div className="flex flex-wrap gap-2">
-              {profile.ambiance.map((vibe) => (
-                <span
-                  key={vibe}
-                  className="px-3 py-1.5 rounded-full bg-primary/10 border border-primary/20 text-primary text-xs font-label font-bold"
-                >
-                  {vibe}
-                </span>
-              ))}
-            </div>
-          </div>
-        )}
+        {hasOccasions && profile.special_occasions!.map((occ, idx) => (
+          <span key={idx} className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full bg-pink-100 text-pink-800 text-xs font-medium">
+            <CalendarHeart className="w-3 h-3" />
+            {occ}
+          </span>
+        ))}
 
-        {profile.dietary_notes && (
-          <div>
-            <span className="text-[10px] font-bold uppercase tracking-widest text-outline block mb-1 font-label">
-              Dietary Preferences
-            </span>
-            <p className="text-xs text-on-surface-variant italic">
-              {profile.dietary_notes}
-            </p>
-          </div>
+        {hasNeighborhoods && profile.neighborhoods!.map((nb, idx) => (
+          <span key={idx} className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full bg-blue-100 text-blue-800 text-xs font-medium">
+            <MapPin className="w-3 h-3" />
+            {nb}
+          </span>
+        ))}
+
+        {profile.dietary_notes && profile.dietary_notes.toLowerCase() !== "none" && (
+          <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full bg-rose-100 text-rose-800 text-xs font-medium">
+            <AlertCircle className="w-3 h-3" />
+            {profile.dietary_notes}
+          </span>
         )}
       </div>
     </div>

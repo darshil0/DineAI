@@ -1,43 +1,60 @@
-import { getGeminiClient, GEMINI_MODEL } from "../lib/geminiClient.js";
-import { withRetry } from "../lib/utils.js";
-import { logger } from "../lib/logger.js";
+import { getGeminiClient } from "../lib/geminiClient.js";
 import { UserTasteProfile } from "../schemas/index.js";
 import { TREND_ANALYST_SYSTEM, buildTrendPrompt } from "../prompts/index.js";
+import { getSkill } from "../skills/registry.js";
 
-export async function analyzeTrends(
-  profile: UserTasteProfile,
-): Promise<string> {
+export async function analyzeTrends(profile: UserTasteProfile): Promise<string> {
   const ai = getGeminiClient();
-  logger.info("TrendAnalyst", "Running Food Trend Analyst Agent...");
-
+  console.log("Running Food Trend Analyst Agent with Skills...");
+  
   try {
-    const cuisinesStr = Array.isArray(profile.cuisines)
-      ? profile.cuisines.join(", ")
-      : "various cuisines";
-
-    const trendResponse = await withRetry(() => ai.models.generateContent({
-      model: GEMINI_MODEL,
-      contents: [{ parts: [{ text: buildTrendPrompt(cuisinesStr) }] }],
+    const cuisinesStr = Array.isArray(profile.cuisines) ? profile.cuisines.join(", ") : "various cuisines";
+    
+    // 1. Get raw search results using Google Search
+    const trendResponse = await ai.models.generateContent({
+      model: "gemini-3.1-pro-preview",
+      contents: buildTrendPrompt(cuisinesStr),
       config: {
         tools: [{ googleSearch: {} }],
-        systemInstruction: {
-          parts: [{ text: TREND_ANALYST_SYSTEM }],
-        },
+        systemInstruction: TREND_ANALYST_SYSTEM,
       },
-    }));
+    });
 
-    // Explicitly guard against non-text parts (like executableCode)
-    const trendReportText =
-      trendResponse.candidates?.[0]?.content?.parts
-        ?.filter((p) => p.text)
-        .map((p) => p.text)
-        .join("") || "No trends found.";
-    logger.info("TrendAnalyst", "Trend Report generated successfully.");
-    return trendReportText;
+    const rawSearchResults = trendResponse.text || "No trends found.";
+    
+    // 2. Extract structured trends using skill
+    const extractSkill = getSkill<any, any>("extractTrendsFromSearchResults");
+    const structuredTrends = await extractSkill.run({
+      searchResults: rawSearchResults,
+      city: "New York City" // Defaulting to NYC as per PRD context
+    });
+
+    // 3. Classify relevance to user profile using skill
+    const classifySkill = getSkill<any, any>("classifyTrendRelevanceToProfile");
+    const relevanceReport = await classifySkill.run({
+      profile,
+      trends: structuredTrends
+    });
+
+    // 4. Construct final report
+    const finalReport = `
+### Food Trends in NYC
+${structuredTrends.summary}
+
+#### Relevant to Your Profile
+${relevanceReport.rationale}
+
+**Trending Cuisines:** ${relevanceReport.relevantCuisines.join(", ") || "None matching your profile"}
+**New Openings:** ${relevanceReport.relevantOpenings.join(", ") || "None matching your profile"}
+**Viral Dishes:** ${relevanceReport.relevantDishes.join(", ") || "None matching your profile"}
+
+*Overall Relevance Score: ${Math.round(relevanceReport.overallRelevanceScore * 100)}%*
+    `.trim();
+
+    console.log("Personalized Trend Report Generated.");
+    return finalReport;
   } catch (error: any) {
-    logger.error("TrendAnalyst", "Error in Food Trend Analyst Agent:", error);
-    logger.info("TrendAnalyst", "Continuing without trend report due to error.");
-    // Return the error message but don't re-throw as the pipeline can continue without trends
+    console.error("Error in Food Trend Analyst Agent:", error);
     return `Trend analysis failed: ${error.message}`;
   }
 }
