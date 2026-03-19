@@ -2,6 +2,7 @@ import { getGeminiClient } from "../lib/geminiClient.js";
 import { AgentSkill } from "./types.js";
 import { Type } from "@google/genai";
 import { UserTasteProfile } from "../schemas/userTasteProfile.js";
+import { cleanJson } from "../lib/utils.js";
 
 interface ClassifyTrendInput {
   profile: UserTasteProfile;
@@ -53,6 +54,13 @@ export const classifyTrendRelevanceToProfileSkill: AgentSkill<ClassifyTrendInput
       }
     });
 
-    return JSON.parse(response.text);
+    const data = JSON.parse(cleanJson(response.text || "{}"));
+    return {
+      relevantCuisines: data.relevantCuisines || [],
+      relevantOpenings: data.relevantOpenings || [],
+      relevantDishes: data.relevantDishes || [],
+      overallRelevanceScore: data.overallRelevanceScore || 0,
+      rationale: data.rationale || "No specific relevance found."
+    };
   }
 };

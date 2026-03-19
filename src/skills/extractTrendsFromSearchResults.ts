@@ -1,6 +1,7 @@
 import { getGeminiClient } from "../lib/geminiClient.js";
 import { AgentSkill } from "./types.js";
 import { Type } from "@google/genai";
+import { cleanJson } from "../lib/utils.js";
 
 interface ExtractTrendsInput {
   searchResults: string;
@@ -47,6 +48,12 @@ export const extractTrendsFromSearchResultsSkill: AgentSkill<ExtractTrendsInput,
       }
     });
 
-    return JSON.parse(response.text);
+    const data = JSON.parse(cleanJson(response.text || "{}"));
+    return {
+      trendingCuisines: data.trendingCuisines || [],
+      newOpenings: data.newOpenings || [],
+      viralDishes: data.viralDishes || [],
+      summary: data.summary || "No trends summary available."
+    };
   }
 };

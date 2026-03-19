@@ -28,14 +28,20 @@ ${text}`;
       config: {
         responseMimeType: "application/json",
         responseSchema: {
-          type: Type.ARRAY,
-          items: { type: Type.STRING },
-          description: "List of cuisines explicitly mentioned or strongly implied."
+          type: Type.OBJECT,
+          properties: {
+            cuisines: {
+              type: Type.ARRAY,
+              items: { type: Type.STRING },
+              description: "List of cuisines explicitly mentioned or strongly implied."
+            }
+          },
+          required: ["cuisines"]
         }
       }
     });
 
-    const cuisines = JSON.parse(cleanJson(result.text || "[]"));
-    return { cuisines };
+    const data = JSON.parse(cleanJson(result.text || '{"cuisines":[]}'));
+    return { cuisines: data.cuisines || [] };
   },
 };
