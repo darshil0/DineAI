@@ -7,6 +7,9 @@ export interface Restaurant {
   rating: number;
   description: string;
   tags: string[];
+  address?: string;
+  phone?: string;
+  hours?: string;
 }
 
 export const restaurants: Restaurant[] = [
@@ -18,7 +21,10 @@ export const restaurants: Restaurant[] = [
     neighborhood: "West Village",
     rating: 4.8,
     description: "Bustling, bi-level space for elevated Italian comfort food & a long wine list.",
-    tags: ["date night", "pasta", "wine", "lively ambiance"]
+    tags: ["date night", "pasta", "wine", "lively ambiance"],
+    address: "228 W 10th St, New York, NY 10014",
+    phone: "(212) 255-5757",
+    hours: "5:00 PM - 11:00 PM"
   },
   {
     id: "2",
@@ -28,7 +34,10 @@ export const restaurants: Restaurant[] = [
     neighborhood: "Lower East Side",
     rating: 4.7,
     description: "No-frills deli with theatrically cranky service serving mile-high sandwiches since 1888.",
-    tags: ["casual", "historic", "pastrami", "touristy"]
+    tags: ["casual", "historic", "pastrami", "touristy"],
+    address: "205 E Houston St, New York, NY 10002",
+    phone: "(212) 254-2246",
+    hours: "8:00 AM - 11:00 PM"
   },
   {
     id: "3",
@@ -38,7 +47,10 @@ export const restaurants: Restaurant[] = [
     neighborhood: "Midtown",
     rating: 4.9,
     description: "Elite French restaurant offering exquisitely prepared seafood in an elegant, formal setting.",
-    tags: ["fine dining", "special occasion", "seafood", "formal"]
+    tags: ["fine dining", "special occasion", "seafood", "formal"],
+    address: "155 W 51st St, New York, NY 10019",
+    phone: "(212) 554-1515",
+    hours: "12:00 PM - 2:30 PM, 5:15 PM - 10:30 PM"
   },
   {
     id: "4",
@@ -48,7 +60,10 @@ export const restaurants: Restaurant[] = [
     neighborhood: "Chelsea",
     rating: 4.8,
     description: "Bustling taqueria serving authentic tacos, quesadillas & aguas frescas.",
-    tags: ["quick bite", "casual", "tacos", "cheap eats"]
+    tags: ["quick bite", "casual", "tacos", "cheap eats"],
+    address: "75 9th Ave, New York, NY 10011",
+    phone: "(212) 256-0343",
+    hours: "11:00 AM - 10:00 PM"
   },
   {
     id: "5",

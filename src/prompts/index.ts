@@ -86,6 +86,7 @@ For each:
 - Use match_score and trend signals to compute a combined sense of relevance.
 - Provide a short natural-language rationale (1-3 sentences) mentioning how it fits the user's tastes (including neighborhood if specified) and any trend angle.
 - Set trend_relevance (e.g., "Viral dish: Spicy Vodka Rigatoni" or "None" if not trending).
+- Include the restaurant's address, phone, and hours if they are available in the CandidateList.
 
 Refined User Taste Profile: ${profile}
 Latest User Request: "${message}"

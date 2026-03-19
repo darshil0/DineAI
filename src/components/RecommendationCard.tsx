@@ -1,5 +1,5 @@
 import React from "react";
-import { Star, TrendingUp, MapPin } from "lucide-react";
+import { Star, TrendingUp, MapPin, Phone, Clock } from "lucide-react";
 import { Recommendation } from "../schemas/index.js";
 
 interface RecommendationCardProps {
@@ -7,7 +7,7 @@ interface RecommendationCardProps {
 }
 
 export const RecommendationCard: React.FC<RecommendationCardProps> = ({ recommendation }) => {
-  const { rank, name, rationale, match_score, trend_relevance } = recommendation;
+  const { rank, name, rationale, match_score, trend_relevance, address, phone, hours } = recommendation;
   const matchPercentage = Math.round(match_score * 100);
 
   return (
@@ -30,6 +30,27 @@ export const RecommendationCard: React.FC<RecommendationCardProps> = ({ recommen
       <p className="text-stone-600 text-sm leading-relaxed mb-4">
         {rationale}
       </p>
+
+      <div className="space-y-2 mb-4">
+        {address && (
+          <div className="flex items-center gap-2 text-xs text-stone-500">
+            <MapPin className="w-3.5 h-3.5 text-stone-400" />
+            <span>{address}</span>
+          </div>
+        )}
+        {phone && (
+          <div className="flex items-center gap-2 text-xs text-stone-500">
+            <Phone className="w-3.5 h-3.5 text-stone-400" />
+            <span>{phone}</span>
+          </div>
+        )}
+        {hours && (
+          <div className="flex items-center gap-2 text-xs text-stone-500">
+            <Clock className="w-3.5 h-3.5 text-stone-400" />
+            <span>{hours}</span>
+          </div>
+        )}
+      </div>
 
       {trend_relevance && trend_relevance.trim() !== "" && trend_relevance.toLowerCase() !== "none" && (
         <div className="bg-amber-50 border border-amber-100 rounded-lg p-3 flex items-start gap-2">

@@ -6,6 +6,9 @@ export interface Recommendation {
   rationale: string;
   match_score: number;
   trend_relevance: string;
+  address?: string;
+  phone?: string;
+  hours?: string;
 }
 
 export const FinalRecommendationsSchema = {
@@ -20,7 +23,10 @@ export const FinalRecommendationsSchema = {
           name: { type: Type.STRING, description: "Name of the restaurant" },
           rationale: { type: Type.STRING, description: "Detailed explanation of why this restaurant is recommended based on taste profile and trends" },
           match_score: { type: Type.NUMBER, description: "A score from 0.0 to 1.0 indicating how well it matches the user's profile" },
-          trend_relevance: { type: Type.STRING, description: "How this restaurant relates to current food trends" }
+          trend_relevance: { type: Type.STRING, description: "How this restaurant relates to current food trends" },
+          address: { type: Type.STRING, description: "Physical address of the restaurant" },
+          phone: { type: Type.STRING, description: "Contact phone number" },
+          hours: { type: Type.STRING, description: "Operating hours" }
         },
         required: ["rank", "name", "rationale", "match_score", "trend_relevance"]
       }

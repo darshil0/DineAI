@@ -1,6 +1,8 @@
 # DineAI 🍽️
 
-**DineAI** is an AI-powered restaurant recommendation chatbot that orchestrates multiple specialized agents to deliver personalized, real-time dining suggestions. By combining Retrieval-Augmented Generation (RAG) with Google Gemini embeddings, multimodal vision analysis, and live web search, DineAI builds dynamic user taste profiles that account for personal preferences, budgets, and dining styles.
+**DineAI** is an AI-powered restaurant recommendation chatbot that orchestrates multiple specialized agents to deliver personalized, real-time dining suggestions. By combining Retrieval-Augmented Generation (RAG) with Google Gemini embeddings, multimodal vision analysis, and live web search, DineAI builds dynamic user taste profiles that account for personal preferences, budgets, and dining styles—going beyond static filters or one-size-fits-all recommendations.
+
+The system leverages a custom **Express/Node.js** agent orchestrator with a modular **Agent Skills** architecture, an in-memory vector database for semantic retrieval, **Gemini Structured Outputs** for validation, and a **React/Tailwind** web interface for user interaction—resulting in a production-grade AI pipeline that is both extensible and explainable.
 
 ## 🚀 Key Features
 
@@ -13,20 +15,38 @@
 
 ## 🛠️ Technology Stack
 
-- **Frontend**: React, Tailwind CSS, Lucide Icons
-- **Backend**: Node.js, Express
-- **AI/LLM**: Google Gemini API (`@google/genai`)
-- **Embeddings**: Gemini `text-embedding-004`
-- **Vector Database**: Custom in-memory vector store
-- **Search**: Gemini Google Search Tool
+| Category | Technology | Version / Notes |
+|-----------|-------------|----------------|
+| Frontend | React + Tailwind CSS | Vite build system, Lucide Icons |
+| Backend | Node.js + Express | Custom Agent Orchestrator |
+| AI/LLM | Google Gemini API | `@google/genai` SDK |
+| Models | `gemini-3-flash-preview` | Text & Vision analysis |
+| Reasoning | `gemini-3.1-pro-preview` | Complex agent reasoning |
+| Embeddings | `gemini-embedding-2-preview` | Used for semantic search |
+| Vector DB | Custom In-Memory DB | Local semantic storage |
+| Web Search | Gemini Google Search Tool | Real-time trend retrieval |
 
-## 🏗️ Architecture
+## 🏗️ System Architecture
 
-DineAI uses a modular **Agent Skills** architecture:
-1. **Profile Builder**: Analyzes messages and photos to create a `UserTasteProfile`.
-2. **RAG Recommender**: Performs semantic search and rule-based re-ranking to find candidate restaurants.
-3. **Trend Analyst**: Searches the web for local food trends and classifies their relevance to your profile.
-4. **Finalizer**: Synthesizes all data into a friendly, ranked list of recommendations.
+DineAI comprises four coordinated layers that can operate sequentially or in parallel:
+
+| Layer | Component | Technology |
+|--------|------------|------------|
+| Data Ingestion | Restaurant knowledge base | Local in-memory Vector DB (`vectorDb.ts`) |
+| Agent Orchestration | Multi-agent coordination | Express.js custom orchestrator |
+| Agent Capabilities | Modular Agent Skills | Composable TypeScript functions (`/src/skills`) |
+| Retrieval | Semantic similarity search | Gemini Embeddings + Cosine Similarity |
+| Trend Analysis | Real-time web search | Gemini Google Search Tool |
+| Vision Analysis | Dining photo interpretation | Gemini Multimodal (`analyzeFoodPhoto` skill) |
+| Output Validation | Structured agent responses | Gemini `responseSchema` |
+| User Interface | Conversational chatbot | React + Tailwind CSS |
+
+### Agent Design
+
+1. **Profile Builder Agent**: Analyzes messages and photos to create a `UserTasteProfile`.
+2. **RAG Recommender Agent**: Performs semantic search and rule-based re-ranking to find candidate restaurants.
+3. **Food Trend Analyst Agent**: Searches the web for local food trends and classifies their relevance to your profile.
+4. **Recommendation Finalizer Agent**: Synthesizes all data into a friendly, ranked list of recommendations.
 
 ## 🚦 Getting Started
 
@@ -48,6 +68,14 @@ DineAI uses a modular **Agent Skills** architecture:
    ```bash
    npm run dev
    ```
+
+## 📊 Success Metrics
+| Metric | Target |
+|--------|---------|
+| Retrieval Precision@5 | ≥ 70% |
+| Recommendation Relevance | ≥ 4.0 / 5.0 |
+| End-to-end Latency | < 15 seconds (P95) |
+| Agent Output Validity | 100% |
 
 ## 📄 License
 MIT

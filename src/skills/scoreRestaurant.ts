@@ -34,8 +34,19 @@ export const scoreRestaurantSkill: AgentSkill<ScoreInput, ScoreOutput> = {
 
     // 3. Price match
     if (profile.price_range && restaurant.price_tier) {
-      if (profile.price_range === restaurant.price_tier) {
-        score += 0.15;
+      const priceMap: Record<string, number> = { "$": 1, "$$": 2, "$$$": 3, "$$$$": 4 };
+      const userPrice = priceMap[profile.price_range] || 0;
+      const restaurantPrice = priceMap[restaurant.price_tier] || 0;
+
+      if (userPrice > 0 && restaurantPrice > 0) {
+        const diff = Math.abs(userPrice - restaurantPrice);
+        if (diff === 0) {
+          score += 0.15; // Exact match
+        } else if (diff === 1) {
+          score += 0.05; // Close match (one tier away)
+        } else if (diff >= 3) {
+          score -= 0.1; // Significant mismatch (e.g., $ vs $$$$)
+        }
       }
     }
 
