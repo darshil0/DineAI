@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import TopAppBar from "./components/TopAppBar";
-import BottomNavBar, { Screen } from "./components/BottomNavBar";
+import BottomNavBar, { type Screen } from "./components/BottomNavBar";
 import ChatInterface from "./components/ChatInterface";
 import ExploreScreen from "./components/ExploreScreen";
 
