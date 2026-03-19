@@ -13,10 +13,10 @@ export async function analyzeTrends(profile: UserTasteProfile): Promise<string> 
     // 1. Get raw search results using Google Search
     const trendResponse = await ai.models.generateContent({
       model: "gemini-3.1-pro-preview",
-      contents: buildTrendPrompt(cuisinesStr),
+      contents: [{ parts: [{ text: buildTrendPrompt(cuisinesStr) }] }],
       config: {
         tools: [{ googleSearch: {} }],
-        systemInstruction: TREND_ANALYST_SYSTEM,
+        systemInstruction: { parts: [{ text: TREND_ANALYST_SYSTEM }] },
       },
     });
 
@@ -24,6 +24,9 @@ export async function analyzeTrends(profile: UserTasteProfile): Promise<string> 
     
     // 2. Extract structured trends using skill
     const extractSkill = getSkill<any, any>("extractTrendsFromSearchResults");
+    if (!extractSkill) {
+      throw new Error("Skill 'extractTrendsFromSearchResults' is not registered.");
+    }
     const structuredTrends = await extractSkill.run({
       searchResults: rawSearchResults,
       city: "New York City" // Defaulting to NYC as per PRD context
@@ -31,6 +34,9 @@ export async function analyzeTrends(profile: UserTasteProfile): Promise<string> 
 
     // 3. Classify relevance to user profile using skill
     const classifySkill = getSkill<any, any>("classifyTrendRelevanceToProfile");
+    if (!classifySkill) {
+      throw new Error("Skill 'classifyTrendRelevanceToProfile' is not registered.");
+    }
     const relevanceReport = await classifySkill.run({
       profile,
       trends: structuredTrends

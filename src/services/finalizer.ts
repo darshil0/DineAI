@@ -16,11 +16,11 @@ export async function finalizeRecommendations(
   try {
     const finalizerResponse = await ai.models.generateContent({
       model: "gemini-3.1-pro-preview",
-      contents: buildFinalizerPrompt(JSON.stringify(profile), message, JSON.stringify(candidates), trendReport),
+      contents: [{ parts: [{ text: buildFinalizerPrompt(JSON.stringify(profile), message, JSON.stringify(candidates), trendReport) }] }],
       config: {
         responseMimeType: "application/json",
         responseSchema: FinalRecommendationsSchema,
-        systemInstruction: FINALIZER_SYSTEM,
+        systemInstruction: { parts: [{ text: FINALIZER_SYSTEM }] },
       },
     });
 
