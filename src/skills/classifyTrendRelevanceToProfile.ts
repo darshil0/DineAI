@@ -54,13 +54,17 @@ export const classifyTrendRelevanceToProfileSkill: AgentSkill<ClassifyTrendInput
       }
     });
 
-    const data = JSON.parse(cleanJson(response.text || "{}"));
-    return {
-      relevantCuisines: data.relevantCuisines || [],
-      relevantOpenings: data.relevantOpenings || [],
-      relevantDishes: data.relevantDishes || [],
-      overallRelevanceScore: data.overallRelevanceScore || 0,
-      rationale: data.rationale || "No specific relevance found."
-    };
+    try {
+      return JSON.parse(cleanJson(response.text || "{}"));
+    } catch (e) {
+      console.error("Failed to parse trend relevance response:", e);
+      return {
+        relevantCuisines: [],
+        relevantOpenings: [],
+        relevantDishes: [],
+        overallRelevanceScore: 0,
+        rationale: "Could not analyze trend relevance at this time."
+      };
+    }
   }
 };

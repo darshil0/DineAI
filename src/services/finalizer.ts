@@ -3,12 +3,14 @@ import { cleanJson } from "../lib/utils.js";
 import { UserTasteProfile, Recommendation, FinalRecommendationsSchema } from "../schemas/index.js";
 import { Restaurant } from "../data/restaurants.js";
 import { FINALIZER_SYSTEM, buildFinalizerPrompt } from "../prompts/index.js";
+import { AgentServiceError } from "../lib/errors.js";
 
 export async function finalizeRecommendations(
   profile: UserTasteProfile,
   message: string,
   candidates: Restaurant[],
-  trendReport: string
+  trendReport: string,
+  history: string
 ): Promise<Recommendation[]> {
   const ai = getGeminiClient();
   console.log("Running Recommendation Finalizer Agent...");
@@ -16,11 +18,11 @@ export async function finalizeRecommendations(
   try {
     const finalizerResponse = await ai.models.generateContent({
       model: "gemini-3.1-pro-preview",
-      contents: [{ parts: [{ text: buildFinalizerPrompt(JSON.stringify(profile), message, JSON.stringify(candidates), trendReport) }] }],
+      contents: buildFinalizerPrompt(JSON.stringify(profile), message, JSON.stringify(candidates), trendReport, history),
       config: {
         responseMimeType: "application/json",
         responseSchema: FinalRecommendationsSchema,
-        systemInstruction: { parts: [{ text: FINALIZER_SYSTEM }] },
+        systemInstruction: FINALIZER_SYSTEM,
       },
     });
 
@@ -29,7 +31,6 @@ export async function finalizeRecommendations(
     console.log(`Generated ${finalRecommendations.length} final recommendations.`);
     return finalRecommendations;
   } catch (error: any) {
-    console.error("Error in Recommendation Finalizer Agent:", error);
-    throw new Error(`Recommendation Finalizer failed: ${error.message}`);
+    throw new AgentServiceError("Recommendation Finalizer", error);
   }
 }

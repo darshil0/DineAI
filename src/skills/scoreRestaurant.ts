@@ -24,19 +24,15 @@ export const scoreRestaurantSkill: AgentSkill<ScoreInput, ScoreOutput> = {
       score += similarity * 0.5;
     }
 
-    // Normalized Weights (sum = 1.0): Cuisine: 0.4, Price: 0.3, Ambiance: 0.2, Dietary: 0.1
-    // Neighborhood and Vector Similarity are additional multipliers or adjustments if used differently,
-    // but here we keep a simple additive scoring system.
-
-    // 2. Cuisine match (Weight: 0.4)
+    // 2. Cuisine match
     if (profile.cuisines?.length) {
       const lowerCuisines = profile.cuisines.map(c => c.toLowerCase());
       if (lowerCuisines.includes(restaurant.cuisine.toLowerCase())) {
-        score += 0.4;
+        score += 0.3;
       }
     }
 
-    // 3. Price match (Weight: 0.3)
+    // 3. Price match
     if (profile.price_range && restaurant.price_tier) {
       const priceMap: Record<string, number> = { "$": 1, "$$": 2, "$$$": 3, "$$$$": 4 };
       const userPrice = priceMap[profile.price_range] || 0;
@@ -45,16 +41,16 @@ export const scoreRestaurantSkill: AgentSkill<ScoreInput, ScoreOutput> = {
       if (userPrice > 0 && restaurantPrice > 0) {
         const diff = Math.abs(userPrice - restaurantPrice);
         if (diff === 0) {
-          score += 0.3; // Exact match
+          score += 0.2; // Exact match
         } else if (diff === 1) {
-          score += 0.15; // Close match
+          score += 0.1; // Close match (one tier away)
         } else if (diff >= 3) {
           score -= 0.2; // Significant mismatch
         }
       }
     }
 
-    // 4. Ambiance overlap (Weight: 0.2)
+    // 4. Ambiance overlap
     if (profile.ambiance?.length && restaurant.tags?.length) {
       const lowerTags = restaurant.tags.map(t => t.toLowerCase());
       const hasAmbianceMatch = profile.ambiance.some((a) => lowerTags.includes(a.toLowerCase()));
@@ -63,20 +59,20 @@ export const scoreRestaurantSkill: AgentSkill<ScoreInput, ScoreOutput> = {
       }
     }
 
-    // 5. Dietary compatibility (Weight: 0.1)
+    // 5. Neighborhood match
+    if (profile.neighborhoods?.length && restaurant.neighborhood) {
+      const lowerNeighborhoods = profile.neighborhoods.map(n => n.toLowerCase());
+      if (lowerNeighborhoods.includes(restaurant.neighborhood.toLowerCase())) {
+        score += 0.2;
+      }
+    }
+
+    // 6. Dietary compatibility
     if (profile.dietary_notes && profile.dietary_notes.toLowerCase() !== "none" && restaurant.tags?.length) {
       const lowerTags = restaurant.tags.map(t => t.toLowerCase());
       const dietaryNote = profile.dietary_notes.toLowerCase();
       if (lowerTags.some(tag => tag.includes(dietaryNote) || dietaryNote.includes(tag))) {
         score += 0.1;
-      }
-    }
-
-    // Extra Boost: Neighborhood match (Significant but outside the base 1.0)
-    if (profile.neighborhoods?.length && restaurant.neighborhood) {
-      const lowerNeighborhoods = profile.neighborhoods.map(n => n.toLowerCase());
-      if (lowerNeighborhoods.includes(restaurant.neighborhood.toLowerCase())) {
-        score += 0.2;
       }
     }
 

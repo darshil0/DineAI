@@ -17,17 +17,31 @@ Output: {
   "neighborhoods": ["West Village"]
 }`;
 
-export const buildProfilePrompt = (currentProfile: string, history: string, message: string) => `
+export const buildProfilePrompt = (currentProfile: string, history: string, message: string) => {
+  let formattedHistory = "None";
+  if (history && history !== "None") {
+    try {
+      const historyArr = JSON.parse(history);
+      formattedHistory = historyArr.map((m: any) => `${m.role.toUpperCase()}: ${m.content}`).join("\n");
+    } catch (e) {
+      formattedHistory = history;
+    }
+  }
+
+  return `
 Analyze the user's recent messages and the inferred signals from any dining photos.
 Produce a UserTasteProfile object.
 
 Current Taste Profile: ${currentProfile || 'None'}
-Conversation History: ${history || 'None'}
+Conversation History:
+${formattedHistory}
+
 Latest User Message: "${message}"
 
-Task: Update and refine the user's taste profile based on their latest message.
+Task: Update and refine the user's taste profile based on their latest message and the conversation context.
 If they are asking for something completely new (e.g., "Actually, let's do sushi instead"), update the profile to reflect this new immediate desire while keeping relevant past preferences (like dietary restrictions).
 `;
+};
 
 export const RAG_RECOMMENDER_SYSTEM = `You are the RAG Recommender Agent. Your role is to select the best candidate restaurants based on the user's taste profile.
 
@@ -80,7 +94,18 @@ CRITICAL RULES:
 EXAMPLE RATIONALE:
 "L'Artusi is a perfect match for your date night in the West Village. It hits your budget ($$$) and offers the lively, romantic ambiance you're looking for, plus their house-made pasta is legendary."`;
 
-export const buildFinalizerPrompt = (profile: string, message: string, candidates: string, trends: string) => `
+export const buildFinalizerPrompt = (profile: string, message: string, candidates: string, trends: string, history: string) => {
+  let formattedHistory = "None";
+  if (history && history !== "None") {
+    try {
+      const historyArr = JSON.parse(history);
+      formattedHistory = historyArr.map((m: any) => `${m.role.toUpperCase()}: ${m.content}`).join("\n");
+    } catch (e) {
+      formattedHistory = history;
+    }
+  }
+
+  return `
 Select the top 3-5 restaurants from the CandidateList.
 For each:
 - Use match_score and trend signals to compute a combined sense of relevance.
@@ -90,6 +115,10 @@ For each:
 
 Refined User Taste Profile: ${profile}
 Latest User Request: "${message}"
+Conversation History:
+${formattedHistory}
+
 Candidate Restaurants: ${candidates}
 Trend Report: ${trends}
 `;
+};

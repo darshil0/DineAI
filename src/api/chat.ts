@@ -4,6 +4,7 @@ import { buildProfile } from "../services/profileBuilder.js";
 import { recommendCandidates } from "../services/ragRecommender.js";
 import { analyzeTrends } from "../services/trendAnalyst.js";
 import { finalizeRecommendations } from "../services/finalizer.js";
+import { handleApiError, ValidationError } from "../lib/errors.js";
 
 const router = Router();
 const upload = multer({ storage: multer.memoryStorage() });
@@ -12,6 +13,10 @@ router.post("/", upload.single("image"), async (req, res) => {
   try {
     const { message, history, currentProfile } = req.body;
     const imageFile = req.file;
+
+    if (!message) {
+      throw new ValidationError("Message is required.");
+    }
 
     // 1. Profile Builder Agent
     const userTasteProfile = await buildProfile(message, history, currentProfile, imageFile);
@@ -27,7 +32,8 @@ router.post("/", upload.single("image"), async (req, res) => {
       userTasteProfile,
       message,
       candidateList,
-      trendReportText
+      trendReportText,
+      history
     );
 
     res.json({
@@ -37,8 +43,7 @@ router.post("/", upload.single("image"), async (req, res) => {
     });
 
   } catch (error: any) {
-    console.error("Error in chat endpoint:", error);
-    res.status(500).json({ error: error.message || "An error occurred" });
+    handleApiError(res, error);
   }
 });
 

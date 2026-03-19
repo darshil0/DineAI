@@ -23,7 +23,7 @@ export const extractTrendsFromSearchResultsSkill: AgentSkill<ExtractTrendsInput,
     
     const response = await ai.models.generateContent({
       model: "gemini-3-flash-preview",
-      contents: [{ parts: [{ text: `Analyze these search results for food trends in ${input.city}.
+      contents: `Analyze these search results for food trends in ${input.city}.
       
       Search Results:
       ${input.searchResults}
@@ -32,7 +32,7 @@ export const extractTrendsFromSearchResultsSkill: AgentSkill<ExtractTrendsInput,
       1. Trending Cuisines: Specific cuisines gaining popularity.
       2. New Openings: Notable restaurants that recently opened.
       3. Viral Dishes: Specific dishes people are talking about.
-      4. A brief summary of the overall food scene.` }] }],
+      4. A brief summary of the overall food scene.`,
       config: {
         responseMimeType: "application/json",
         responseSchema: {
@@ -48,12 +48,16 @@ export const extractTrendsFromSearchResultsSkill: AgentSkill<ExtractTrendsInput,
       }
     });
 
-    const data = JSON.parse(cleanJson(response.text || "{}"));
-    return {
-      trendingCuisines: data.trendingCuisines || [],
-      newOpenings: data.newOpenings || [],
-      viralDishes: data.viralDishes || [],
-      summary: data.summary || "No trends summary available."
-    };
+    try {
+      return JSON.parse(cleanJson(response.text || "{}"));
+    } catch (e) {
+      console.error("Failed to parse trends from search results:", e);
+      return {
+        trendingCuisines: [],
+        newOpenings: [],
+        viralDishes: [],
+        summary: "Could not extract trends from search results."
+      };
+    }
   }
 };

@@ -2,6 +2,7 @@ import { getGeminiClient } from "../lib/geminiClient.js";
 import { UserTasteProfile } from "../schemas/index.js";
 import { TREND_ANALYST_SYSTEM, buildTrendPrompt } from "../prompts/index.js";
 import { getSkill } from "../skills/registry.js";
+import { AgentServiceError, SkillError } from "../lib/errors.js";
 
 export async function analyzeTrends(profile: UserTasteProfile): Promise<string> {
   const ai = getGeminiClient();
@@ -13,10 +14,10 @@ export async function analyzeTrends(profile: UserTasteProfile): Promise<string> 
     // 1. Get raw search results using Google Search
     const trendResponse = await ai.models.generateContent({
       model: "gemini-3.1-pro-preview",
-      contents: [{ parts: [{ text: buildTrendPrompt(cuisinesStr) }] }],
+      contents: buildTrendPrompt(cuisinesStr),
       config: {
         tools: [{ googleSearch: {} }],
-        systemInstruction: { parts: [{ text: TREND_ANALYST_SYSTEM }] },
+        systemInstruction: TREND_ANALYST_SYSTEM,
       },
     });
 
@@ -25,33 +26,22 @@ export async function analyzeTrends(profile: UserTasteProfile): Promise<string> 
     // 2. Extract structured trends using skill
     const extractSkill = getSkill<any, any>("extractTrendsFromSearchResults");
     if (!extractSkill) {
-      console.warn("Skill 'extractTrendsFromSearchResults' not found. Using raw results.");
-      return rawSearchResults;
+      throw new Error("Required skill 'extractTrendsFromSearchResults' not found.");
     }
-
     const structuredTrends = await extractSkill.run({
       searchResults: rawSearchResults,
-      city: "New York City"
-    });
+      city: "New York City" // Defaulting to NYC as per PRD context
+    }).catch(e => { throw new SkillError("extractTrendsFromSearchResults", e); });
 
     // 3. Classify relevance to user profile using skill
     const classifySkill = getSkill<any, any>("classifyTrendRelevanceToProfile");
     if (!classifySkill) {
-      console.warn("Skill 'classifyTrendRelevanceToProfile' not found. Returning structured trends without personalization.");
-      return `
-### Food Trends in NYC
-${structuredTrends.summary}
-
-**Trending Cuisines:** ${structuredTrends.trendingCuisines.join(", ")}
-**New Openings:** ${structuredTrends.newOpenings.join(", ")}
-**Viral Dishes:** ${structuredTrends.viralDishes.join(", ")}
-      `.trim();
+      throw new Error("Required skill 'classifyTrendRelevanceToProfile' not found.");
     }
-
     const relevanceReport = await classifySkill.run({
       profile,
       trends: structuredTrends
-    });
+    }).catch(e => { throw new SkillError("classifyTrendRelevanceToProfile", e); });
 
     // 4. Construct final report
     const finalReport = `
@@ -71,7 +61,7 @@ ${relevanceReport.rationale}
     console.log("Personalized Trend Report Generated.");
     return finalReport;
   } catch (error: any) {
-    console.error("Error in Food Trend Analyst Agent:", error);
-    return `Trend analysis failed: ${error.message}`;
+    if (error instanceof SkillError) throw error;
+    throw new AgentServiceError("Trend Analyst", error);
   }
 }

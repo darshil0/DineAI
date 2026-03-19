@@ -6,6 +6,7 @@ import { RAG_RECOMMENDER_SYSTEM, buildRagPrompt } from "../prompts/index.js";
 import { getSkill } from "../skills/registry.js";
 import { GenerateEmbeddingInput, GenerateEmbeddingOutput } from "../skills/generateEmbedding.js";
 import { vectorDb } from "../lib/vectorDb.js";
+import { AgentServiceError, SkillError } from "../lib/errors.js";
 
 export async function recommendCandidates(profile: UserTasteProfile): Promise<Restaurant[]> {
   console.log("Running RAG Recommender Agent...");
@@ -28,13 +29,11 @@ export async function recommendCandidates(profile: UserTasteProfile): Promise<Re
         Neighborhoods: ${profile.neighborhoods?.join(", ") || "Any"}
       `.trim();
       
-      const { embedding } = await generateEmbedding.run({ text: queryText });
+      const { embedding } = await generateEmbedding.run({ text: queryText }).catch(e => { throw new SkillError("generateEmbedding", e); });
       const results = await vectorDb.query(embedding, 20); // Get top 20 to re-rank
       
-      // Filter by similarity threshold
       const filteredResults = results.filter(r => r.score >= 0.1);
-      console.log(`Vector DB returned ${results.length} results, ${filteredResults.length} passed threshold (0.1)`);
-
+      
       const scored = await Promise.all(
         filteredResults.map(async (r) => {
           const restaurant = r.metadata as Restaurant;
@@ -42,7 +41,7 @@ export async function recommendCandidates(profile: UserTasteProfile): Promise<Re
             profile,
             restaurant,
             similarity: r.score
-          });
+          }).catch(e => { throw new SkillError("scoreRestaurant", e); });
           return { ...restaurant, match_score: matchScore, embedding_score: r.score };
         })
       );
@@ -55,6 +54,7 @@ export async function recommendCandidates(profile: UserTasteProfile): Promise<Re
       return candidates;
     }
   } catch (error) {
+    if (error instanceof SkillError) throw error;
     console.warn("Vector DB search failed, falling back to static filtering...", error);
   }
 
@@ -75,7 +75,6 @@ export async function recommendCandidates(profile: UserTasteProfile): Promise<Re
     console.log(`Found ${candidateList.length} candidates via fallback.`);
     return candidateList;
   } catch (error: any) {
-    console.error("Error in Coarse RAG Recommender Agent:", error);
-    throw new Error(`RAG Recommender failed: ${error.message}`);
+    throw new AgentServiceError("RAG Recommender", error);
   }
 }

@@ -8,12 +8,18 @@ export interface VectorRecord {
 class LocalVectorDB {
   private records: VectorRecord[] = [];
 
+  private normalize(vec: number[]): number[] {
+    const norm = Math.sqrt(vec.reduce((sum, val) => sum + val * val, 0));
+    if (norm === 0) return vec;
+    return vec.map(val => val / norm);
+  }
+
   async upsert(records: VectorRecord[]) {
     for (const record of records) {
-      // Pre-normalize embeddings for faster dot-product similarity
-      const normalizedEmbedding = this.normalize(record.embedding);
-      const normalizedRecord = { ...record, embedding: normalizedEmbedding };
-
+      const normalizedRecord = {
+        ...record,
+        embedding: this.normalize(record.embedding)
+      };
       const existingIdx = this.records.findIndex(r => r.id === record.id);
       if (existingIdx >= 0) {
         this.records[existingIdx] = normalizedRecord;
@@ -26,7 +32,6 @@ class LocalVectorDB {
   async query(queryEmbedding: number[], topK: number = 10) {
     const normalizedQuery = this.normalize(queryEmbedding);
     const scored = this.records.map(record => {
-      // Use dot product as similarity score (since vectors are normalized)
       const score = this.dotProduct(normalizedQuery, record.embedding);
       return { ...record, score };
     });
@@ -34,12 +39,6 @@ class LocalVectorDB {
     // Sort descending by similarity score
     scored.sort((a, b) => b.score - a.score);
     return scored.slice(0, topK);
-  }
-
-  private normalize(vec: number[]): number[] {
-    const norm = Math.sqrt(vec.reduce((sum, val) => sum + val * val, 0));
-    if (norm === 0) return vec;
-    return vec.map(val => val / norm);
   }
 
   private dotProduct(vecA: number[], vecB: number[]) {

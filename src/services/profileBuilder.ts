@@ -5,6 +5,7 @@ import { PROFILE_BUILDER_SYSTEM, buildProfilePrompt } from "../prompts/index.js"
 import { getSkill } from "../skills/registry.js";
 import { ExtractCuisinesInput, ExtractCuisinesOutput } from "../skills/extractCuisines.js";
 import { AnalyzeFoodPhotoInput, AnalyzeFoodPhotoOutput } from "../skills/analyzeFoodPhoto.js";
+import { AgentServiceError, SkillError } from "../lib/errors.js";
 
 export async function buildProfile(
   message: string,
@@ -24,7 +25,7 @@ export async function buildProfile(
   }
 
   const skillPromises: Promise<any>[] = [
-    extractCuisines.run({ text: message })
+    extractCuisines.run({ text: message }).catch(e => { throw new SkillError("extractCuisines", e); })
   ];
 
   if (imageFile) {
@@ -32,7 +33,7 @@ export async function buildProfile(
       analyzeFoodPhoto.run({
         mimeType: imageFile.mimetype,
         data: imageFile.buffer.toString("base64")
-      })
+      }).catch(e => { throw new SkillError("analyzeFoodPhoto", e); })
     );
   }
 
@@ -56,11 +57,11 @@ export async function buildProfile(
   try {
     const profileResponse = await ai.models.generateContent({
       model: "gemini-3-flash-preview",
-      contents: [{ parts: profileParts }],
+      contents: { parts: profileParts },
       config: {
         responseMimeType: "application/json",
         responseSchema: UserTasteProfileSchema,
-        systemInstruction: { parts: [{ text: PROFILE_BUILDER_SYSTEM }] },
+        systemInstruction: PROFILE_BUILDER_SYSTEM,
       },
     });
 
@@ -68,7 +69,7 @@ export async function buildProfile(
     console.log("Taste Profile:", userTasteProfile);
     return userTasteProfile;
   } catch (error: any) {
-    console.error("Error in Profile Builder Agent:", error);
-    throw new Error(`Profile Builder failed: ${error.message}`);
+    if (error instanceof SkillError) throw error;
+    throw new AgentServiceError("Profile Builder", error);
   }
 }

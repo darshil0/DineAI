@@ -9,7 +9,9 @@
     "build": "vite build",
     "preview": "vite preview",
     "clean": "rm -rf dist",
-    "lint": "tsc --noEmit"
+    "lint": "tsc --noEmit",
+    "test": "tsx src/lib/__tests__/utils.test.ts && tsx src/lib/__tests__/vectorDb.test.ts && tsx src/skills/__tests__/scoreRestaurant.test.ts",
+    "verify": "tsx src/scripts/verifySystem.ts"
   },
   "dependencies": {
     "@google/genai": "^1.29.0",

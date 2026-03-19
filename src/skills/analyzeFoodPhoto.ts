@@ -24,12 +24,10 @@ Extract the most likely cuisines it represents, the ambiance or vibe it suggests
 
     const result = await ai.models.generateContent({
       model: "gemini-3-flash-preview",
-      contents: [{
-        parts: [
-          { inlineData: { mimeType, data } },
-          { text: prompt }
-        ]
-      }],
+      contents: [
+        { inlineData: { mimeType, data } },
+        { text: prompt }
+      ],
       config: {
         responseMimeType: "application/json",
         responseSchema: {

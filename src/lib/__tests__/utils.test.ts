@@ -2,7 +2,7 @@ import { withRetry } from "../utils.js";
 
 async function testWithRetry() {
   console.log("Testing withRetry utility...");
-
+  
   let attempts = 0;
   const failingFn = async () => {
     attempts++;
@@ -18,7 +18,7 @@ async function testWithRetry() {
   if (result !== "success" || attempts !== 3) {
     throw new Error(`withRetry failed: expected success and 3 attempts, got ${result} and ${attempts} attempts`);
   }
-
+  
   console.log("withRetry test passed!");
 }
 

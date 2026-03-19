@@ -22,8 +22,8 @@ export const TasteProfileBadge: React.FC<TasteProfileBadgeProps> = ({ profile })
       </div>
       
       <div className="flex flex-wrap gap-2">
-        {hasCuisines && profile.cuisines!.map((cuisine, idx) => (
-          <span key={idx} className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full bg-indigo-100 text-indigo-800 text-xs font-medium">
+        {hasCuisines && profile.cuisines!.map((cuisine) => (
+          <span key={cuisine} className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full bg-indigo-100 text-indigo-800 text-xs font-medium">
             <Utensils className="w-3 h-3" />
             {cuisine}
           </span>
@@ -36,21 +36,21 @@ export const TasteProfileBadge: React.FC<TasteProfileBadgeProps> = ({ profile })
           </span>
         )}
 
-        {hasAmbiance && profile.ambiance!.map((amb, idx) => (
-          <span key={idx} className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full bg-stone-200 text-stone-800 text-xs font-medium">
+        {hasAmbiance && profile.ambiance!.map((amb) => (
+          <span key={amb} className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full bg-stone-200 text-stone-800 text-xs font-medium">
             {amb}
           </span>
         ))}
 
-        {hasOccasions && profile.special_occasions!.map((occ, idx) => (
-          <span key={idx} className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full bg-pink-100 text-pink-800 text-xs font-medium">
+        {hasOccasions && profile.special_occasions!.map((occ) => (
+          <span key={occ} className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full bg-pink-100 text-pink-800 text-xs font-medium">
             <CalendarHeart className="w-3 h-3" />
             {occ}
           </span>
         ))}
 
-        {hasNeighborhoods && profile.neighborhoods!.map((nb, idx) => (
-          <span key={idx} className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full bg-blue-100 text-blue-800 text-xs font-medium">
+        {hasNeighborhoods && profile.neighborhoods!.map((nb) => (
+          <span key={nb} className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full bg-blue-100 text-blue-800 text-xs font-medium">
             <MapPin className="w-3 h-3" />
             {nb}
           </span>

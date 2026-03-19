@@ -6,6 +6,7 @@ The system leverages a custom **Express/Node.js** agent orchestrator with a modu
 
 ## 🚀 Key Features
 
+- **Chat History Persistence**: Conversations are saved to local storage, allowing you to pick up where you left off.
 - **Multi-Agent Orchestration**: A specialized pipeline of agents (Profile Builder, RAG Recommender, Trend Analyst, and Finalizer) working together.
 - **Dynamic Taste Profiles**: Automatically infers your preferences from chat history and uploaded food photos.
 - **Neighborhood-Aware Recommendations**: Specify your preferred areas (e.g., "West Village", "SoHo") to get hyper-local suggestions.
@@ -25,6 +26,7 @@ The system leverages a custom **Express/Node.js** agent orchestrator with a modu
 | Embeddings | `gemini-embedding-2-preview` | Used for semantic search |
 | Vector DB | Custom In-Memory DB | Local semantic storage |
 | Web Search | Gemini Google Search Tool | Real-time trend retrieval |
+| Error Handling | Custom AppError System | Centralized, user-friendly feedback |
 
 ## 🏗️ System Architecture
 

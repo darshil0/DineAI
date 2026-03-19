@@ -2,34 +2,31 @@
 
 All notable changes to this project will be documented in this file.
 
-## [Unreleased]
+## [1.5.0] - 2026-03-19
 
 ### Added
-- Implemented `withRetry` utility in `src/lib/utils.ts` to handle 429 rate limit errors with exponential backoff.
-- Added unit tests for `withRetry` (`src/lib/__tests__/utils.test.ts`), `VectorDB` (`src/lib/__tests__/vectorDb.test.ts`), and `scoreRestaurant` (`src/skills/__tests__/scoreRestaurant.test.ts`).
-- Created `SKILLS.md` to document the Agent Skills architecture.
-- Created `src/scripts/verifySystem.ts` for comprehensive system-level verification.
+- **Chat History Persistence**: Implemented local storage persistence for conversation history, allowing users to resume chats across sessions.
+- **Clear History Functionality**: Added a "Clear History" button with a confirmation dialog to allow users to reset their conversation.
+- **Accessibility Improvements**: Added ARIA labels to interactive elements and improved keyboard navigation support.
+- **Image Upload Limits**: Implemented a 5MB size limit for image uploads with user-friendly error feedback.
 
-### Fixed
-- Fixed `extractCuisines` skill to correctly wrap the response schema in a root object, resolving an API error.
-- Fixed `isolatedModules` errors in `src/schemas/index.ts` by using explicit `export type` syntax.
-- Hardened trend skills (`classifyTrendRelevanceToProfile`, `extractTrendsFromSearchResults`) with `cleanJson` and null-safe fallbacks.
-- Added null checks for skill registry lookups in `src/services/trendAnalyst.ts`.
+### Improved
+- **Stable List Rendering**: Updated React keys in `ChatInterface.tsx` and `TasteProfileBadge.tsx` to use unique identifiers instead of array indices, preventing rendering issues.
+- **UI/UX Refinement**: Updated the page title in `index.html` to "DineAI - Restaurant Recommender" and polished the chat interface layout.
+- **Backend Context Support**: Updated the frontend to send full conversation history to the backend API for better context-aware responses.
 
-### Changed
-- Optimized `VectorDB` performance in `src/lib/vectorDb.ts` by using pre-normalized embeddings and dot-product similarity.
-- Normalized heuristic match weights in `src/skills/scoreRestaurant.ts` to sum to 1.0 (Cuisine: 0.4, Price: 0.3, Ambiance: 0.2, Dietary: 0.1).
-- Implemented a 0.1 similarity threshold for vector search results in `src/services/ragRecommender.ts`.
+## [1.4.0] - 2026-03-19
 
-## [1.3.1] - 2026-03-19
+### Added
+- **Centralized Error Handling**: Introduced `src/lib/errors.ts` with custom error classes (`AppError`, `AgentServiceError`, `SkillError`, `ValidationError`) for consistent, multi-layered error management.
+- **User-Friendly Feedback**: Implemented a `userFriendlyMessage` property in custom errors to provide helpful, non-technical feedback to users while maintaining detailed logs for debugging.
+- **Standardized API Error Responses**: Added `handleApiError` utility to ensure all API failures return a consistent JSON structure with both technical and user-facing messages.
 
-### Fixed
-- **Invalid Gemini Response Schema** (`src/skills/extractCuisines.ts`): The `responseSchema` was incorrectly defined with `Type.ARRAY` at the root level, which is unsupported by the Gemini API and caused an API error on every call. The schema has been corrected to use a root `Type.OBJECT` wrapping the array under a named `cuisines` property, with parsing updated accordingly.
-- **Unsafe JSON Parsing in Trend Skills** (`src/skills/classifyTrendRelevanceToProfile.ts`, `src/skills/extractTrendsFromSearchResults.ts`): Both skills called `JSON.parse(response.text)` directly, without guarding against an `undefined` response or Gemini's occasional markdown fencing of JSON output. Both now use `cleanJson` with a typed null-safe fallback, eliminating the crash surface.
-- **Missing Null Checks on Skill Registry Lookups** (`src/services/trendAnalyst.ts`): `getSkill()` returns `AgentSkill | undefined`, but `.run()` was called on both `extractTrendsFromSearchResults` and `classifyTrendRelevanceToProfile` without verifying the skills were registered. This guaranteed a `TypeError` at runtime if either skill was absent. Explicit null checks with descriptive error messages have been added.
-- **Type Mismatch in Textarea Submit Handler** (`src/components/ChatInterface.tsx`): The `onKeyDown` handler on the textarea called `handleSubmit(e)`, passing a `React.KeyboardEvent` to a function typed to accept `React.FormEvent`. This also caused `e.preventDefault()` to be invoked on the wrong event type. The core submission logic has been extracted into a dedicated `submitMessage` callback, which both the form's `onSubmit` and the textarea's `onKeyDown` now invoke independently without event-type coercion.
-
----
+### Improved
+- **Recursive withRetry Utility**: Refactored `withRetry` in `src/lib/utils.ts` to use a recursive implementation with exponential backoff, specifically targeting 429 rate limit errors.
+- **Robust Vector DB Testing**: Updated `src/lib/__tests__/vectorDb.test.ts` with a comprehensive test case for cosine similarity, verifying perfect matches, 45-degree angles, and orthogonal vectors.
+- **Agent Service Resilience**: Refactored all core agent services (`profileBuilder`, `ragRecommender`, `trendAnalyst`, and `finalizer`) to use custom error classes, providing better context and observability for failures in the multi-agent pipeline.
+- **Input Validation**: Added explicit validation for required fields (e.g., `message`) in the chat API endpoint using the new `ValidationError` class.
 
 ## [1.3.0] - 2026-03-19
 

@@ -12,7 +12,7 @@ async function testVectorDb() {
   // Query for record 1 (should have similarity 1.0)
   const results1 = await vectorDb.query([1, 0, 0], 3);
   console.log("Results for [1,0,0]:", results1.map(r => ({ id: r.id, score: r.score.toFixed(3) })));
-
+  
   if (Math.abs(results1[0].score - 1.0) > 0.01) {
     throw new Error(`Expected similarity 1.0 for perfect match, got ${results1[0].score}`);
   }

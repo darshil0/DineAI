@@ -1,5 +1,5 @@
-import React, { useState, useRef, useEffect, useCallback } from 'react';
-import { Send, Image as ImageIcon, X, ChefHat } from 'lucide-react';
+import React, { useState, useRef, useEffect } from 'react';
+import { Send, Image as ImageIcon, X, ChefHat, Trash2 } from 'lucide-react';
 import { motion, AnimatePresence } from 'motion/react';
 import { ChatMessage } from './ChatMessage.js';
 import { RecommendationCard } from './RecommendationCard.js';
@@ -16,14 +16,10 @@ interface Message {
   trends?: string;
 }
 
+const STORAGE_KEY = 'dineai_chat_history';
+
 export default function ChatInterface() {
-  const [messages, setMessages] = useState<Message[]>([
-    {
-      id: '1',
-      role: 'assistant',
-      content: "Hi! I'm DineAI, your personal restaurant recommendation agent. Tell me what you're craving, your budget, or upload a photo of a dish you love, and I'll find the perfect spot for you in NYC!"
-    }
-  ]);
+  const [messages, setMessages] = useState<Message[]>([]);
   const [input, setInput] = useState('');
   const [selectedImage, setSelectedImage] = useState<File | null>(null);
   const [imagePreview, setImagePreview] = useState<string | null>(null);
@@ -31,6 +27,45 @@ export default function ChatInterface() {
   const [loadingStep, setLoadingStep] = useState<string>('');
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
+
+  // Load history on mount
+  useEffect(() => {
+    const saved = localStorage.getItem(STORAGE_KEY);
+    if (saved) {
+      try {
+        setMessages(JSON.parse(saved));
+      } catch (e) {
+        console.error('Failed to parse saved history', e);
+        setInitialMessage();
+      }
+    } else {
+      setInitialMessage();
+    }
+  }, []);
+
+  // Save history on change
+  useEffect(() => {
+    if (messages.length > 0) {
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(messages));
+    }
+  }, [messages]);
+
+  const setInitialMessage = () => {
+    setMessages([
+      {
+        id: '1',
+        role: 'assistant',
+        content: "Hi! I'm DineAI, your personal restaurant recommendation agent. Tell me what you're craving, your budget, or upload a photo of a dish you love, and I'll find the perfect spot for you in NYC!"
+      }
+    ]);
+  };
+
+  const clearHistory = () => {
+    if (window.confirm('Are you sure you want to clear your conversation history?')) {
+      localStorage.removeItem(STORAGE_KEY);
+      setInitialMessage();
+    }
+  };
 
   const scrollToBottom = () => {
     messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
@@ -43,6 +78,14 @@ export default function ChatInterface() {
   const handleImageSelect = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (file) {
+      // Limit image size to 5MB
+      if (file.size > 5 * 1024 * 1024) {
+        alert('Image size must be less than 5MB');
+        if (fileInputRef.current) {
+          fileInputRef.current.value = '';
+        }
+        return;
+      }
       setSelectedImage(file);
       const reader = new FileReader();
       reader.onloadend = () => {
@@ -60,40 +103,36 @@ export default function ChatInterface() {
     }
   };
 
-  const submitMessage = useCallback(async (currentInput: string, currentImage: File | null, currentPreview: string | null) => {
-    if (!currentInput.trim() && !currentImage) return;
+  const submitMessage = async () => {
+    if (!input.trim() && !selectedImage) return;
 
     const userMessage: Message = {
       id: Date.now().toString(),
       role: 'user',
-      content: currentInput,
-      image: currentPreview || undefined,
+      content: input,
+      image: imagePreview || undefined,
     };
 
     setMessages(prev => [...prev, userMessage]);
+    const currentInput = input;
+    const currentImage = selectedImage;
+    const currentPreview = imagePreview;
+
     setInput('');
     setSelectedImage(null);
     setImagePreview(null);
-    if (fileInputRef.current) {
-      fileInputRef.current.value = '';
-    }
     setIsLoading(true);
     setLoadingStep('Analyzing taste profile...');
 
     try {
       const formData = new FormData();
       formData.append('message', currentInput);
-
-      setMessages(prev => {
-        const history = prev.map(m => ({ role: m.role, content: m.content }));
-        formData.append('history', JSON.stringify(history));
-
-        const lastProfileMessage = [...prev].reverse().find(m => m.profile);
-        if (lastProfileMessage?.profile) {
-          formData.append('currentProfile', JSON.stringify(lastProfileMessage.profile));
-        }
-        return prev;
-      });
+      formData.append('history', JSON.stringify(messages.map(m => ({ role: m.role, content: m.content }))));
+      
+      const lastProfileMessage = [...messages].reverse().find(m => m.profile);
+      if (lastProfileMessage?.profile) {
+        formData.append('currentProfile', JSON.stringify(lastProfileMessage.profile));
+      }
 
       if (currentImage) {
         formData.append('image', currentImage);
@@ -138,24 +177,34 @@ export default function ChatInterface() {
       setIsLoading(false);
       setLoadingStep('');
     }
-  }, []);
+  };
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    submitMessage(input, selectedImage, imagePreview);
+    submitMessage();
   };
 
   return (
     <div className="flex flex-col h-screen max-w-4xl mx-auto bg-stone-50 shadow-2xl overflow-hidden">
       {/* Header */}
-      <header className="bg-white border-b border-stone-200 px-6 py-4 flex items-center gap-3 z-10">
-        <div className="bg-orange-100 p-2 rounded-xl">
-          <ChefHat className="w-6 h-6 text-orange-600" />
+      <header className="bg-white border-b border-stone-200 px-6 py-4 flex items-center justify-between z-10">
+        <div className="flex items-center gap-3">
+          <div className="bg-orange-100 p-2 rounded-xl">
+            <ChefHat className="w-6 h-6 text-orange-600" />
+          </div>
+          <div>
+            <h1 className="text-xl font-bold text-stone-900">DineAI</h1>
+            <p className="text-sm text-stone-500">Multi-Agent Restaurant Recommender</p>
+          </div>
         </div>
-        <div>
-          <h1 className="text-xl font-bold text-stone-900">DineAI</h1>
-          <p className="text-sm text-stone-500">Multi-Agent Restaurant Recommender</p>
-        </div>
+        <button
+          onClick={clearHistory}
+          className="p-2 text-stone-400 hover:text-red-500 hover:bg-red-50 transition-all rounded-lg"
+          title="Clear History"
+          aria-label="Clear conversation history"
+        >
+          <Trash2 className="w-5 h-5" />
+        </button>
       </header>
 
       {/* Chat Area */}
@@ -189,12 +238,12 @@ export default function ChatInterface() {
 
               {msg.role === 'assistant' && msg.recommendations && (
                 <div className="pl-14 pr-4 space-y-4">
-                  {msg.recommendations.map((rec, idx) => (
+                  {msg.recommendations.map((rec) => (
                     <motion.div
-                      key={idx}
+                      key={`${msg.id}-${rec.name}`}
                       initial={{ opacity: 0, y: 10 }}
                       animate={{ opacity: 1, y: 0 }}
-                      transition={{ delay: 0.3 + (idx * 0.1) }}
+                      transition={{ delay: 0.3 }}
                     >
                       <RecommendationCard recommendation={rec} />
                     </motion.div>
@@ -230,6 +279,7 @@ export default function ChatInterface() {
               <button
                 onClick={removeImage}
                 className="absolute -top-2 -right-2 bg-stone-800 text-white rounded-full p-1 hover:bg-stone-700 transition-colors shadow-sm"
+                aria-label="Remove image"
               >
                 <X className="w-3 h-3" />
               </button>
@@ -251,6 +301,7 @@ export default function ChatInterface() {
               onClick={() => fileInputRef.current?.click()}
               className="p-3 text-stone-400 hover:text-orange-500 transition-colors rounded-xl"
               title="Upload image"
+              aria-label="Upload image"
             >
               <ImageIcon className="w-5 h-5" />
             </button>
@@ -260,7 +311,7 @@ export default function ChatInterface() {
               onKeyDown={(e) => {
                 if (e.key === 'Enter' && !e.shiftKey) {
                   e.preventDefault();
-                  submitMessage(input, selectedImage, imagePreview);
+                  submitMessage();
                 }
               }}
               placeholder="I'm looking for a cozy Italian spot for a date night..."
@@ -272,6 +323,7 @@ export default function ChatInterface() {
             type="submit"
             disabled={(!input.trim() && !selectedImage) || isLoading}
             className="bg-orange-600 text-white p-4 rounded-2xl hover:bg-orange-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors shadow-sm flex-shrink-0"
+            aria-label="Send message"
           >
             <Send className="w-5 h-5" />
           </button>
