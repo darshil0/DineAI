@@ -22,7 +22,7 @@ export const extractTrendsFromSearchResultsSkill: AgentSkill<ExtractTrendsInput,
     
     const response = await ai.models.generateContent({
       model: "gemini-3-flash-preview",
-      contents: `Analyze these search results for food trends in ${input.city}.
+      contents: [{ parts: [{ text: `Analyze these search results for food trends in ${input.city}.
       
       Search Results:
       ${input.searchResults}
@@ -31,7 +31,7 @@ export const extractTrendsFromSearchResultsSkill: AgentSkill<ExtractTrendsInput,
       1. Trending Cuisines: Specific cuisines gaining popularity.
       2. New Openings: Notable restaurants that recently opened.
       3. Viral Dishes: Specific dishes people are talking about.
-      4. A brief summary of the overall food scene.`,
+      4. A brief summary of the overall food scene.` }] }],
       config: {
         responseMimeType: "application/json",
         responseSchema: {

@@ -1,4 +1,4 @@
-import React, { useState, useRef, useEffect } from 'react';
+import React, { useState, useRef, useEffect, useCallback } from 'react';
 import { Send, Image as ImageIcon, X, ChefHat } from 'lucide-react';
 import { motion, AnimatePresence } from 'motion/react';
 import { ChatMessage } from './ChatMessage.js';
@@ -60,36 +60,43 @@ export default function ChatInterface() {
     }
   };
 
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    if (!input.trim() && !selectedImage) return;
+  const submitMessage = useCallback(async (currentInput: string, currentImage: File | null, currentPreview: string | null) => {
+    if (!currentInput.trim() && !currentImage) return;
 
     const userMessage: Message = {
       id: Date.now().toString(),
       role: 'user',
-      content: input,
-      image: imagePreview || undefined,
+      content: currentInput,
+      image: currentPreview || undefined,
     };
 
     setMessages(prev => [...prev, userMessage]);
     setInput('');
     setSelectedImage(null);
     setImagePreview(null);
+    if (fileInputRef.current) {
+      fileInputRef.current.value = '';
+    }
     setIsLoading(true);
     setLoadingStep('Analyzing taste profile...');
 
     try {
       const formData = new FormData();
-      formData.append('message', input);
-      formData.append('history', JSON.stringify(messages.map(m => ({ role: m.role, content: m.content }))));
-      
-      const lastProfileMessage = [...messages].reverse().find(m => m.profile);
-      if (lastProfileMessage?.profile) {
-        formData.append('currentProfile', JSON.stringify(lastProfileMessage.profile));
-      }
+      formData.append('message', currentInput);
 
-      if (selectedImage) {
-        formData.append('image', selectedImage);
+      setMessages(prev => {
+        const history = prev.map(m => ({ role: m.role, content: m.content }));
+        formData.append('history', JSON.stringify(history));
+
+        const lastProfileMessage = [...prev].reverse().find(m => m.profile);
+        if (lastProfileMessage?.profile) {
+          formData.append('currentProfile', JSON.stringify(lastProfileMessage.profile));
+        }
+        return prev;
+      });
+
+      if (currentImage) {
+        formData.append('image', currentImage);
       }
 
       // Simulate step updates for better UX
@@ -131,6 +138,11 @@ export default function ChatInterface() {
       setIsLoading(false);
       setLoadingStep('');
     }
+  }, []);
+
+  const handleSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    submitMessage(input, selectedImage, imagePreview);
   };
 
   return (
@@ -248,7 +260,7 @@ export default function ChatInterface() {
               onKeyDown={(e) => {
                 if (e.key === 'Enter' && !e.shiftKey) {
                   e.preventDefault();
-                  handleSubmit(e);
+                  submitMessage(input, selectedImage, imagePreview);
                 }
               }}
               placeholder="I'm looking for a cozy Italian spot for a date night..."

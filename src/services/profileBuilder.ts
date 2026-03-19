@@ -56,11 +56,11 @@ export async function buildProfile(
   try {
     const profileResponse = await ai.models.generateContent({
       model: "gemini-3-flash-preview",
-      contents: { parts: profileParts },
+      contents: [{ parts: profileParts }],
       config: {
         responseMimeType: "application/json",
         responseSchema: UserTasteProfileSchema,
-        systemInstruction: PROFILE_BUILDER_SYSTEM,
+        systemInstruction: { parts: [{ text: PROFILE_BUILDER_SYSTEM }] },
       },
     });
 
