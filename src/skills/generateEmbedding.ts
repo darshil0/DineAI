@@ -15,7 +15,7 @@ export const generateEmbeddingSkill: AgentSkill<GenerateEmbeddingInput, Generate
   async run({ text }) {
     const ai = getGeminiClient();
     const response = await ai.models.embedContent({
-      model: "text-embedding-004",
+      model: "gemini-embedding-2-preview",
       contents: text,
     });
     

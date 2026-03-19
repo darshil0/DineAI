@@ -1,5 +1,6 @@
-import { GoogleGenAI, Type } from "@google/genai";
+import { getGeminiClient } from "../lib/geminiClient.js";
 import { AgentSkill } from "./types.js";
+import { Type } from "@google/genai";
 import { UserTasteProfile } from "../schemas/userTasteProfile.js";
 
 interface ClassifyTrendInput {
@@ -23,7 +24,7 @@ export const classifyTrendRelevanceToProfileSkill: AgentSkill<ClassifyTrendInput
   name: "classifyTrendRelevanceToProfile",
   description: "Determines which food trends are most relevant to a user's specific taste profile.",
   run: async (input: ClassifyTrendInput) => {
-    const ai = new GoogleGenAI({ apiKey: process.env.GEMINI_API_KEY! });
+    const ai = getGeminiClient();
     
     const response = await ai.models.generateContent({
       model: "gemini-3-flash-preview",

@@ -1,5 +1,6 @@
-import { GoogleGenAI, Type } from "@google/genai";
+import { getGeminiClient } from "../lib/geminiClient.js";
 import { AgentSkill } from "./types.js";
+import { Type } from "@google/genai";
 
 interface ExtractTrendsInput {
   searchResults: string;
@@ -17,7 +18,7 @@ export const extractTrendsFromSearchResultsSkill: AgentSkill<ExtractTrendsInput,
   name: "extractTrendsFromSearchResults",
   description: "Extracts structured food trends, new openings, and viral dishes from raw search results.",
   run: async (input: ExtractTrendsInput) => {
-    const ai = new GoogleGenAI({ apiKey: process.env.GEMINI_API_KEY! });
+    const ai = getGeminiClient();
     
     const response = await ai.models.generateContent({
       model: "gemini-3-flash-preview",

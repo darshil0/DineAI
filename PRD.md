@@ -40,7 +40,7 @@ DineAI comprises four coordinated layers that can operate sequentially or in par
 | Data Ingestion | Restaurant knowledge base | Local in-memory Vector DB (`vectorDb.ts`) |
 | Agent Orchestration | Multi-agent coordination | Express.js custom orchestrator |
 | Agent Capabilities | Modular Agent Skills | Composable TypeScript functions (`/src/skills`) |
-| Retrieval | Semantic similarity search | Gemini Embeddings (`text-embedding-004`) + Cosine Similarity |
+| Retrieval | Semantic similarity search | Gemini Embeddings (`gemini-embedding-2-preview`) + Cosine Similarity |
 | Trend Analysis | Real-time web search | Gemini Google Search Tool |
 | Vision Analysis | Dining photo interpretation | Gemini Multimodal (`analyzeFoodPhoto` skill) |
 | Output Validation | Structured agent responses | Gemini `responseSchema` |
@@ -100,7 +100,7 @@ All agents are defined via centralized system instructions (`/src/prompts/index.
 |-----------|-------------|----------------|
 | Agent Framework | Custom Express Orchestrator | Node.js with Agent Skills Registry |
 | LLM (Text & Vision) | Google Gemini API | `@google/genai` SDK |
-| Embeddings | Gemini `text-embedding-004` | Used for semantic search |
+| Embeddings | Gemini `gemini-embedding-2-preview` | Used for semantic search |
 | Vector DB | Custom In-Memory DB | Mimics Pinecone/Qdrant API |
 | Web Search | Gemini Google Search Tool | Built-in tool |
 | Output Validation | Gemini `responseSchema` | Type.OBJECT, Type.ARRAY |
