@@ -13,6 +13,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - **Multi-Screen Navigation** (`src/App.tsx`, `src/components/BottomNavBar.tsx`) — Implemented a persistent bottom navigation bar with state-based switching between Home (Chat), Explore, Bookings, and Profile screens.
 - **`ExploreRestaurantCard` Component** — Specialized card for the Explore screen featuring AI-driven insights and a bento-style layout for featured recommendations.
 - **Top App Bar** (`src/components/TopAppBar.tsx`) — New branding and status bar component consistent across all screens.
+- **Placeholder Screens** (`BookingsScreen.tsx`, `ProfileScreen.tsx`) — Added placeholder components for upcoming Booking and Profile features to complete the navigation experience.
+
+### Changed
+
+- **Relocated `reset-db.ts`** — Moved `src/reset-db.ts` to `src/scripts/reset-db.ts` to align with project structure and documentation.
+- **Architecture Consolidation** — Removed deprecated root-level files and cleaned up internal scripts to finalize the modular `src/` architecture.
 
 ## [1.3.2] - 2026-03-05
 

@@ -1,8 +1,10 @@
 import React, { useState } from "react";
-import TopAppBar from "./components/TopAppBar";
-import BottomNavBar, { Screen } from "./components/BottomNavBar";
-import ChatInterface from "./components/ChatInterface";
-import ExploreScreen from "./components/ExploreScreen";
+import TopAppBar from "./components/TopAppBar.js";
+import BottomNavBar, { Screen } from "./components/BottomNavBar.js";
+import ChatInterface from "./components/ChatInterface.js";
+import ExploreScreen from "./components/ExploreScreen.js";
+import BookingsScreen from "./components/BookingsScreen.js";
+import ProfileScreen from "./components/ProfileScreen.js";
 
 export default function App() {
   const [activeScreen, setActiveScreen] = useState<Screen>("home");
@@ -14,17 +16,9 @@ export default function App() {
       case "explore":
         return <ExploreScreen />;
       case "bookings":
-        return (
-          <div className="flex items-center justify-center min-h-screen text-on-surface-variant font-headline text-xl">
-            Bookings Screen (Coming Soon)
-          </div>
-        );
+        return <BookingsScreen />;
       case "profile":
-        return (
-          <div className="flex items-center justify-center min-h-screen text-on-surface-variant font-headline text-xl">
-            Profile Screen (Coming Soon)
-          </div>
-        );
+        return <ProfileScreen />;
       default:
         return <ChatInterface />;
     }
