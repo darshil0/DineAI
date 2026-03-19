@@ -1,5 +1,5 @@
 import React from "react";
-import { Star, TrendingUp, MapPin } from "lucide-react";
+import { Star, TrendingUp } from "lucide-react";
 import { Recommendation } from "../schemas/index.js";
 
 interface RecommendationCardProps {
@@ -14,33 +14,39 @@ export const RecommendationCard: React.FC<RecommendationCardProps> = ({
   const matchPercentage = Math.round(match_score * 100);
 
   return (
-    <div className="bg-white border border-stone-200 rounded-xl p-5 shadow-sm hover:shadow-md transition-shadow mb-4">
+    <div className="bg-surface-container-low border border-surface-variant/30 rounded-[32px] p-6 shadow-sm hover:shadow-md transition-all mb-4">
       <div className="flex justify-between items-start mb-3">
         <div className="flex items-center gap-3">
-          <div className="flex items-center justify-center w-8 h-8 rounded-full bg-stone-900 text-white font-bold text-sm">
+          <div className="flex items-center justify-center w-8 h-8 rounded-full bg-primary text-on-primary font-bold text-sm font-headline">
             #{rank}
           </div>
-          <h3 className="text-lg font-semibold text-stone-900">{name}</h3>
+          <h3 className="text-xl font-bold text-on-surface font-headline tracking-tight">{name}</h3>
         </div>
         <div className="flex flex-col items-end gap-2">
-          <div className="px-2.5 py-1 rounded-full bg-emerald-100 text-emerald-800 text-xs font-semibold flex items-center gap-1">
-            <Star className="w-3 h-3" />
+          <div className="px-3 py-1.5 rounded-full bg-secondary-container text-white text-xs font-bold font-label flex items-center gap-1.5">
+            <Star className="w-3 h-3 fill-current" />
             {matchPercentage}% Match
           </div>
         </div>
       </div>
 
-      <p className="text-stone-600 text-sm leading-relaxed mb-4">{rationale}</p>
+      <p className="text-on-surface-variant text-sm leading-relaxed mb-4 italic">
+        "{rationale}"
+      </p>
 
       {trend_relevance &&
         trend_relevance.trim() !== "" &&
         trend_relevance.toLowerCase() !== "none" && (
-          <div className="bg-amber-50 border border-amber-100 rounded-lg p-3 flex items-start gap-2">
-            <TrendingUp className="w-4 h-4 text-amber-600 mt-0.5 shrink-0" />
-            <p className="text-xs text-amber-800 leading-relaxed">
-              <span className="font-semibold">Trend Alert:</span>{" "}
-              {trend_relevance}
-            </p>
+          <div className="bg-surface-container-high border-l-4 border-primary rounded-2xl p-4 flex items-start gap-3">
+            <TrendingUp className="w-4 h-4 text-primary mt-0.5 shrink-0" />
+            <div className="space-y-1">
+              <span className="text-[10px] font-bold uppercase tracking-widest text-primary font-label block">
+                Trend Insight
+              </span>
+              <p className="text-xs text-on-surface-variant leading-relaxed">
+                {trend_relevance}
+              </p>
+            </div>
           </div>
         )}
     </div>
