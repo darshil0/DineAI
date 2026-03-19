@@ -2,6 +2,16 @@
 
 All notable changes to this project will be documented in this file.
 
+## [1.3.1] - 2026-03-19
+
+### Fixed
+- **Invalid Gemini Response Schema** (`src/skills/extractCuisines.ts`): The `responseSchema` was incorrectly defined with `Type.ARRAY` at the root level, which is unsupported by the Gemini API and caused an API error on every call. The schema has been corrected to use a root `Type.OBJECT` wrapping the array under a named `cuisines` property, with parsing updated accordingly.
+- **Unsafe JSON Parsing in Trend Skills** (`src/skills/classifyTrendRelevanceToProfile.ts`, `src/skills/extractTrendsFromSearchResults.ts`): Both skills called `JSON.parse(response.text)` directly, without guarding against an `undefined` response or Gemini's occasional markdown fencing of JSON output. Both now use `cleanJson` with a typed null-safe fallback, eliminating the crash surface.
+- **Missing Null Checks on Skill Registry Lookups** (`src/services/trendAnalyst.ts`): `getSkill()` returns `AgentSkill | undefined`, but `.run()` was called on both `extractTrendsFromSearchResults` and `classifyTrendRelevanceToProfile` without verifying the skills were registered. This guaranteed a `TypeError` at runtime if either skill was absent. Explicit null checks with descriptive error messages have been added.
+- **Type Mismatch in Textarea Submit Handler** (`src/components/ChatInterface.tsx`): The `onKeyDown` handler on the textarea called `handleSubmit(e)`, passing a `React.KeyboardEvent` to a function typed to accept `React.FormEvent`. This also caused `e.preventDefault()` to be invoked on the wrong event type. The core submission logic has been extracted into a dedicated `submitMessage` callback, which both the form's `onSubmit` and the textarea's `onKeyDown` now invoke independently without event-type coercion.
+
+---
+
 ## [1.3.0] - 2026-03-19
 
 ### Added
