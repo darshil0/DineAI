@@ -1,5 +1,5 @@
 import React, { useState, useRef, useEffect } from "react";
-import { Send, Image as ImageIcon, X, ChefHat } from "lucide-react";
+import { Send, Image as ImageIcon, X } from "lucide-react";
 import { motion, AnimatePresence } from "motion/react";
 import { ChatMessage } from "./ChatMessage.js";
 import { RecommendationCard } from "./RecommendationCard.js";
@@ -181,22 +181,9 @@ export default function ChatInterface() {
   };
 
   return (
-    <div className="flex flex-col h-screen max-w-4xl mx-auto bg-stone-50 shadow-2xl overflow-hidden">
-      {/* Header */}
-      <header className="bg-white border-b border-stone-200 px-6 py-4 flex items-center gap-3 z-10">
-        <div className="bg-orange-100 p-2 rounded-xl">
-          <ChefHat className="w-6 h-6 text-orange-600" />
-        </div>
-        <div>
-          <h1 className="text-xl font-bold text-stone-900">DineAI</h1>
-          <p className="text-sm text-stone-500">
-            Multi-Agent Restaurant Recommender
-          </p>
-        </div>
-      </header>
-
+    <div className="flex flex-col min-h-screen max-w-4xl mx-auto bg-background overflow-hidden pt-20">
       {/* Chat Area */}
-      <div className="flex-1 overflow-y-auto p-6">
+      <div className="flex-1 overflow-y-auto p-6 pb-32">
         <AnimatePresence initial={false}>
           {messages.map((msg) => (
             <motion.div
@@ -210,7 +197,7 @@ export default function ChatInterface() {
                   <img
                     src={msg.image}
                     alt="Uploaded food"
-                    className="max-w-xs rounded-2xl object-cover shadow-sm border border-stone-200"
+                    className="max-w-xs rounded-2xl object-cover shadow-sm border border-surface-variant/30"
                   />
                 </div>
               )}
@@ -259,7 +246,7 @@ export default function ChatInterface() {
       </div>
 
       {/* Input Area */}
-      <div className="bg-white border-t border-stone-200 p-4">
+      <div className="bg-background/80 backdrop-blur-xl border-t border-surface-variant/10 p-4 fixed bottom-24 left-0 right-0 max-w-4xl mx-auto z-40">
         <AnimatePresence>
           {imagePreview && (
             <motion.div
@@ -271,11 +258,11 @@ export default function ChatInterface() {
               <img
                 src={imagePreview}
                 alt="Preview"
-                className="h-20 rounded-lg object-cover border border-stone-200 shadow-sm"
+                className="h-20 rounded-lg object-cover border border-surface-variant/30 shadow-sm"
               />
               <button
                 onClick={removeImage}
-                className="absolute -top-2 -right-2 bg-stone-800 text-white rounded-full p-1 hover:bg-stone-700 transition-colors shadow-sm"
+                className="absolute -top-2 -right-2 bg-surface-bright text-on-surface rounded-full p-1 hover:bg-surface-variant transition-colors shadow-sm"
               >
                 <X className="w-3 h-3" />
               </button>
@@ -284,7 +271,7 @@ export default function ChatInterface() {
         </AnimatePresence>
 
         <form onSubmit={handleSubmit} className="flex gap-2 items-end">
-          <div className="flex-1 bg-stone-100 rounded-2xl border border-stone-200 focus-within:border-orange-500 focus-within:ring-1 focus-within:ring-orange-500 transition-all flex items-end p-1">
+          <div className="flex-1 bg-surface-container-high rounded-2xl border border-surface-variant/30 focus-within:border-primary focus-within:ring-1 focus-within:ring-primary transition-all flex items-end p-1">
             <input
               type="file"
               accept="image/*"
@@ -295,7 +282,7 @@ export default function ChatInterface() {
             <button
               type="button"
               onClick={() => fileInputRef.current?.click()}
-              className="p-3 text-stone-400 hover:text-orange-500 transition-colors rounded-xl"
+              className="p-3 text-outline hover:text-primary transition-colors rounded-xl"
               title="Upload image"
             >
               <ImageIcon className="w-5 h-5" />
@@ -309,15 +296,15 @@ export default function ChatInterface() {
                   submitMessage();
                 }
               }}
-              placeholder="I'm looking for a cozy Italian spot for a date night..."
-              className="flex-1 bg-transparent border-none focus:ring-0 resize-none max-h-32 min-h-[44px] py-3 px-2 text-stone-800 placeholder-stone-400 outline-none"
+              placeholder="I'm looking for a cozy Italian spot..."
+              className="flex-1 bg-transparent border-none focus:ring-0 resize-none max-h-32 min-h-[44px] py-3 px-2 text-on-surface placeholder:text-outline/60 outline-none font-label"
               rows={1}
             />
           </div>
           <button
             type="submit"
             disabled={(!input.trim() && !selectedImage) || isLoading}
-            className="bg-orange-600 text-white p-4 rounded-2xl hover:bg-orange-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors shadow-sm flex-shrink-0"
+            className="bg-primary text-on-primary p-4 rounded-2xl hover:bg-primary/90 disabled:opacity-50 disabled:cursor-not-allowed transition-colors shadow-sm flex-shrink-0"
           >
             <Send className="w-5 h-5" />
           </button>
