@@ -12,7 +12,7 @@
 [![React](https://img.shields.io/badge/React-19.2-61DAFB?logo=react&logoColor=black)](https://react.dev/)
 [![Gemini](https://img.shields.io/badge/Gemini-2.0%20Flash-4285F4?logo=google&logoColor=white)](https://ai.google.dev/)
 [![Express](https://img.shields.io/badge/Express-5.2-000000?logo=express&logoColor=white)](https://expressjs.com/)
-[![Version](https://img.shields.io/badge/version-1.3.2-brightgreen)](./CHANGELOG.md)
+[![Version](https://img.shields.io/badge/version-1.4.1-brightgreen)](./CHANGELOG.md)
 
 [View in AI Studio](https://ai.studio/apps/6991651b-a322-44dd-b708-0413e783338e)
 
@@ -65,6 +65,8 @@ User Input
 - **Multimodal photo analysis** — upload a food photo and the vision agent infers cuisine type, plating style, and ambiance signals to enrich your profile.
 - **Structured outputs** — every agent response is validated against a Gemini `responseSchema`, eliminating unparseable JSON in production.
 - **Modular skills registry** — agent capabilities (`extractCuisines`, `generateEmbedding`, `scoreRestaurant`, `analyzeFoodPhoto`) are registered independently and composed at runtime.
+- **Multi-screen navigation** — persistent bottom navigation bar with Home (Chat), Explore, Bookings, and Profile screens.
+- **Explore screen** — browse restaurants by category with search, price, distance, rating, and dietary filters, plus AI-generated per-restaurant insights.
 
 ## Tech Stack
 
@@ -123,6 +125,7 @@ Open [http://localhost:3000](http://localhost:3000). The server will embed all 1
 | `npm run typecheck` | Run TypeScript type-checking with no emit |
 | `npm run lint` | Placeholder — no ESLint config present; use `npm run typecheck` instead |
 | `npm run clean` | Remove the `dist/` directory |
+| `npm test` | Run unit tests for the `cleanJson` utility |
 
 ## Project Structure
 
@@ -130,13 +133,18 @@ Open [http://localhost:3000](http://localhost:3000). The server will embed all 1
 DineAI/
 ├── server.ts                  # Express entry point
 ├── src/
+│   ├── App.tsx                # Root component — screen routing + bottom nav
 │   ├── api/
 │   │   └── chat.ts            # POST /api/chat route
 │   ├── components/            # React UI components
+│   │   ├── BottomNavBar.tsx
 │   │   ├── ChatInterface.tsx
 │   │   ├── ChatMessage.tsx
+│   │   ├── ExploreRestaurantCard.tsx
+│   │   ├── ExploreScreen.tsx
 │   │   ├── RecommendationCard.tsx
-│   │   └── TasteProfileBadge.tsx
+│   │   ├── TasteProfileBadge.tsx
+│   │   └── TopAppBar.tsx
 │   ├── data/
 │   │   └── restaurants.ts     # 120 NYC restaurant records
 │   ├── lib/
@@ -188,3 +196,9 @@ The server loads `.env.local` first and falls back to `.env`, so local developme
 **Rate limiting during ingestion** — restaurant embeddings are generated in concurrent batches of 5 with a 200ms delay between batches. If you hit API quota errors during startup, increase the delay in `src/scripts/ingestRestaurants.ts`.
 
 **Express 5 error handling** — this project uses Express 5, which automatically forwards errors thrown in async route handlers to the error middleware. The global error handler is registered at the bottom of `server.ts`.
+
+**TypeScript strict imports** — the project runs with `isolatedModules: true`. Type-only bindings must be imported with the `type` keyword (e.g. `import { type Screen } from "./components/BottomNavBar"`).
+
+## Changelog
+
+See [CHANGELOG.md](./CHANGELOG.md) for the full version history.
