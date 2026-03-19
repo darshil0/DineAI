@@ -5,6 +5,16 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.4.1] - 2026-03-18
+
+### Fixed
+
+- **Optional field guards in `TasteProfileBadge`** (`src/components/TasteProfileBadge.tsx`) — All fields on `UserTasteProfile` are optional (`cuisines?`, `ambiance?`, `special_occasions?`, `price_range?`), but the component called `.map()` on them unconditionally. Any API response that omitted a field caused a runtime `TypeError: Cannot read properties of undefined (reading 'map')`. Each section is now wrapped in a presence-and-length guard so it only renders when data exists. `price_range` is similarly guarded before rendering.
+- **Type-only import for `Screen`** (`src/App.tsx`) — `Screen` is declared as `export type Screen = …` in `BottomNavBar.tsx`, but was imported without the `type` modifier. With `isolatedModules: true` in `tsconfig.json` this is unsafe and errors under stricter module settings (`verbatimModuleSyntax`). Changed to `import BottomNavBar, { type Screen } from "./components/BottomNavBar"`.
+- **Version mismatch in `package.json`** — `"version"` was still `"1.3.1"` despite `[1.4.0]` being documented as the current release in this changelog. Corrected to `"1.4.0"`.
+
+---
+
 ## [1.4.0] - 2026-03-18
 
 ### Added
