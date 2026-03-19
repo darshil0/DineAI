@@ -23,7 +23,7 @@ export const analyzeFoodPhotoSkill: AgentSkill<AnalyzeFoodPhotoInput, AnalyzeFoo
 Extract the most likely cuisines it represents, the ambiance or vibe it suggests (e.g., casual, fine-dining, cozy), and provide a brief 1-sentence description of the dish.`;
 
     const result = await ai.models.generateContent({
-      model: "gemini-2.5-flash",
+      model: "gemini-3-flash-preview",
       contents: [
         { inlineData: { mimeType, data } },
         { text: prompt }

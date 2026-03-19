@@ -21,6 +21,9 @@ export async function ingestRestaurants() {
       Neighborhood: ${r.neighborhood}
       Tags: ${r.tags.join(", ")}
       Description: ${r.description}
+      ${r.address ? `Address: ${r.address}` : ""}
+      ${r.phone ? `Phone: ${r.phone}` : ""}
+      ${r.hours ? `Hours: ${r.hours}` : ""}
     `.trim();
 
     try {
