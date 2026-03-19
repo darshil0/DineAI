@@ -31,8 +31,12 @@ export async function recommendCandidates(profile: UserTasteProfile): Promise<Re
       const { embedding } = await generateEmbedding.run({ text: queryText });
       const results = await vectorDb.query(embedding, 20); // Get top 20 to re-rank
       
+      // Filter by similarity threshold
+      const filteredResults = results.filter(r => r.score >= 0.1);
+      console.log(`Vector DB returned ${results.length} results, ${filteredResults.length} passed threshold (0.1)`);
+
       const scored = await Promise.all(
-        results.map(async (r) => {
+        filteredResults.map(async (r) => {
           const restaurant = r.metadata as Restaurant;
           const { matchScore } = await scoreRestaurant.run({
             profile,

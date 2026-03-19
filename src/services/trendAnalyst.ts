@@ -25,18 +25,29 @@ export async function analyzeTrends(profile: UserTasteProfile): Promise<string> 
     // 2. Extract structured trends using skill
     const extractSkill = getSkill<any, any>("extractTrendsFromSearchResults");
     if (!extractSkill) {
-      throw new Error("Skill 'extractTrendsFromSearchResults' is not registered.");
+      console.warn("Skill 'extractTrendsFromSearchResults' not found. Using raw results.");
+      return rawSearchResults;
     }
+
     const structuredTrends = await extractSkill.run({
       searchResults: rawSearchResults,
-      city: "New York City" // Defaulting to NYC as per PRD context
+      city: "New York City"
     });
 
     // 3. Classify relevance to user profile using skill
     const classifySkill = getSkill<any, any>("classifyTrendRelevanceToProfile");
     if (!classifySkill) {
-      throw new Error("Skill 'classifyTrendRelevanceToProfile' is not registered.");
+      console.warn("Skill 'classifyTrendRelevanceToProfile' not found. Returning structured trends without personalization.");
+      return `
+### Food Trends in NYC
+${structuredTrends.summary}
+
+**Trending Cuisines:** ${structuredTrends.trendingCuisines.join(", ")}
+**New Openings:** ${structuredTrends.newOpenings.join(", ")}
+**Viral Dishes:** ${structuredTrends.viralDishes.join(", ")}
+      `.trim();
     }
+
     const relevanceReport = await classifySkill.run({
       profile,
       trends: structuredTrends

@@ -2,6 +2,25 @@
 
 All notable changes to this project will be documented in this file.
 
+## [Unreleased]
+
+### Added
+- Implemented `withRetry` utility in `src/lib/utils.ts` to handle 429 rate limit errors with exponential backoff.
+- Added unit tests for `withRetry` (`src/lib/__tests__/utils.test.ts`), `VectorDB` (`src/lib/__tests__/vectorDb.test.ts`), and `scoreRestaurant` (`src/skills/__tests__/scoreRestaurant.test.ts`).
+- Created `SKILLS.md` to document the Agent Skills architecture.
+- Created `src/scripts/verifySystem.ts` for comprehensive system-level verification.
+
+### Fixed
+- Fixed `extractCuisines` skill to correctly wrap the response schema in a root object, resolving an API error.
+- Fixed `isolatedModules` errors in `src/schemas/index.ts` by using explicit `export type` syntax.
+- Hardened trend skills (`classifyTrendRelevanceToProfile`, `extractTrendsFromSearchResults`) with `cleanJson` and null-safe fallbacks.
+- Added null checks for skill registry lookups in `src/services/trendAnalyst.ts`.
+
+### Changed
+- Optimized `VectorDB` performance in `src/lib/vectorDb.ts` by using pre-normalized embeddings and dot-product similarity.
+- Normalized heuristic match weights in `src/skills/scoreRestaurant.ts` to sum to 1.0 (Cuisine: 0.4, Price: 0.3, Ambiance: 0.2, Dietary: 0.1).
+- Implemented a 0.1 similarity threshold for vector search results in `src/services/ragRecommender.ts`.
+
 ## [1.3.1] - 2026-03-19
 
 ### Fixed
