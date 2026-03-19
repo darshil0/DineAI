@@ -10,45 +10,39 @@ class LocalVectorDB {
 
   async upsert(records: VectorRecord[]) {
     for (const record of records) {
-      // Pre-normalize embeddings for faster dot-product similarity
-      const normalized = this.normalize(record.embedding);
-      const normalizedRecord = { ...record, embedding: normalized };
-
-      const existingIdx = this.records.findIndex((r) => r.id === record.id);
+      const existingIdx = this.records.findIndex(r => r.id === record.id);
       if (existingIdx >= 0) {
-        this.records[existingIdx] = normalizedRecord;
+        this.records[existingIdx] = record;
       } else {
-        this.records.push(normalizedRecord);
+        this.records.push(record);
       }
     }
   }
 
   async query(queryEmbedding: number[], topK: number = 10) {
-    const normalizedQuery = this.normalize(queryEmbedding);
-    const scored = this.records.map((record) => {
-      const score = this.dotProduct(normalizedQuery, record.embedding);
+    const scored = this.records.map(record => {
+      const score = this.cosineSimilarity(queryEmbedding, record.embedding);
       return { ...record, score };
     });
-
+    
     // Sort descending by similarity score
     scored.sort((a, b) => b.score - a.score);
     return scored.slice(0, topK);
   }
 
-  private normalize(vec: number[]): number[] {
-    const norm = Math.sqrt(vec.reduce((sum, val) => sum + val * val, 0));
-    if (norm === 0) return vec;
-    return vec.map((val) => val / norm);
-  }
-
-  private dotProduct(vecA: number[], vecB: number[]) {
+  private cosineSimilarity(vecA: number[], vecB: number[]) {
     let dotProduct = 0;
+    let normA = 0;
+    let normB = 0;
     for (let i = 0; i < vecA.length; i++) {
       dotProduct += vecA[i] * vecB[i];
+      normA += vecA[i] * vecA[i];
+      normB += vecB[i] * vecB[i];
     }
-    return dotProduct;
+    if (normA === 0 || normB === 0) return 0;
+    return dotProduct / (Math.sqrt(normA) * Math.sqrt(normB));
   }
-
+  
   async count() {
     return this.records.length;
   }
