@@ -67,6 +67,7 @@ User Input
 - **Modular skills registry** — agent capabilities (`extractCuisines`, `generateEmbedding`, `scoreRestaurant`, `analyzeFoodPhoto`) are registered independently and composed at runtime.
 - **Multi-screen navigation** — persistent bottom navigation bar with Home (Chat), Explore, Bookings, and Profile screens.
 - **Explore screen** — browse restaurants by category with search, price, distance, rating, and dietary filters, plus AI-generated per-restaurant insights.
+- **Robust error handling** — defensive JSON parsing, explicit type checks, and comprehensive null safety throughout the codebase.
 
 ## Tech Stack
 
@@ -74,7 +75,7 @@ User Input
 |---|---|
 | Frontend | React 19.2, Tailwind CSS 4, Lucide React, Motion |
 | Backend | Node.js (v18+), Express 5.2 |
-| AI SDK | `@google/genai` v1.43+ |
+| AI SDK | `@google/genai` SDK v1.43+ |
 | LLM & Vision | `gemini-2.0-flash` |
 | Embeddings | `text-embedding-004` |
 | Vector DB | Custom in-memory DB (cosine similarity, pre-normalized) |
@@ -199,6 +200,26 @@ The server loads `.env.local` first and falls back to `.env`, so local developme
 
 **TypeScript strict imports** — the project runs with `isolatedModules: true`. Type-only bindings must be imported with the `type` keyword (e.g. `import { type Screen } from "./components/BottomNavBar"`).
 
+## Recent Updates (v1.4.1)
+
+**March 19, 2026** — All identified issues have been fixed:
+
+- ✅ Version alignment: `1.4.1` matches CHANGELOG
+- ✅ Fixed missing 5th featured image in Explore screen (caused undefined images)
+- ✅ Refactored hard-coded restaurant indices to safe name-based lookups
+- ✅ Added resilience to data order changes
+- ✅ Improved code maintainability and null safety
+
+See [CHANGELOG.md](./CHANGELOG.md) for detailed fixes.
+
 ## Changelog
 
 See [CHANGELOG.md](./CHANGELOG.md) for the full version history.
+
+## Contributing
+
+This is a showcase project built with Google Gemini. Feel free to fork, modify, and extend for your own use cases.
+
+## License
+
+This project is provided as-is for educational and demonstration purposes.
