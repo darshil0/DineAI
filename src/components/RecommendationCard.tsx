@@ -3,10 +3,39 @@ import { Star, TrendingUp, MapPin, Phone, Clock } from "lucide-react";
 import { Recommendation } from "../schemas/index.js";
 
 interface RecommendationCardProps {
-  recommendation: Recommendation;
+  recommendation?: Recommendation;
+  loading?: boolean;
 }
 
-export const RecommendationCard: React.FC<RecommendationCardProps> = ({ recommendation }) => {
+export const RecommendationCard: React.FC<RecommendationCardProps> = ({ recommendation, loading }) => {
+  if (loading) {
+    return (
+      <div className="bg-white border border-stone-200 rounded-xl p-5 shadow-sm mb-4 animate-pulse">
+        <div className="flex justify-between items-start mb-3">
+          <div className="flex items-center gap-3">
+            <div className="w-8 h-8 rounded-full bg-stone-200" />
+            <div className="h-6 w-32 bg-stone-200 rounded" />
+          </div>
+          <div className="h-6 w-20 bg-stone-100 rounded-full" />
+        </div>
+        
+        <div className="space-y-2 mb-4">
+          <div className="h-4 w-full bg-stone-100 rounded" />
+          <div className="h-4 w-5/6 bg-stone-100 rounded" />
+        </div>
+
+        <div className="space-y-2 mb-4">
+          <div className="h-3 w-48 bg-stone-50 rounded" />
+          <div className="h-3 w-32 bg-stone-50 rounded" />
+        </div>
+
+        <div className="h-12 w-full bg-amber-50/50 rounded-lg border border-amber-100/50" />
+      </div>
+    );
+  }
+
+  if (!recommendation) return null;
+
   const { rank, name, rationale, match_score, trend_relevance, address, phone, hours } = recommendation;
   const matchPercentage = Math.round(match_score * 100);
 

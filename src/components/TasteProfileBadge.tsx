@@ -3,10 +3,28 @@ import { UserTasteProfile } from "../schemas/index.js";
 import { Utensils, DollarSign, Sparkles, AlertCircle, CalendarHeart, MapPin } from "lucide-react";
 
 interface TasteProfileBadgeProps {
-  profile: UserTasteProfile | null;
+  profile?: UserTasteProfile | null;
+  loading?: boolean;
 }
 
-export const TasteProfileBadge: React.FC<TasteProfileBadgeProps> = ({ profile }) => {
+export const TasteProfileBadge: React.FC<TasteProfileBadgeProps> = ({ profile, loading }) => {
+  if (loading) {
+    return (
+      <div className="bg-stone-50 border border-stone-200 rounded-xl p-4 shadow-sm mb-6 max-w-2xl mx-auto animate-pulse">
+        <div className="flex items-center gap-2 mb-3">
+          <div className="w-4 h-4 bg-indigo-200 rounded-full" />
+          <div className="h-4 w-32 bg-stone-200 rounded" />
+        </div>
+        <div className="flex flex-wrap gap-2">
+          <div className="h-6 w-20 bg-indigo-100 rounded-full" />
+          <div className="h-6 w-16 bg-emerald-100 rounded-full" />
+          <div className="h-6 w-24 bg-stone-200 rounded-full" />
+          <div className="h-6 w-20 bg-pink-100 rounded-full" />
+        </div>
+      </div>
+    );
+  }
+
   if (!profile) return null;
 
   const hasCuisines = profile.cuisines && profile.cuisines.length > 0;

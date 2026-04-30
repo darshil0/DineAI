@@ -3,6 +3,7 @@ import { UserTasteProfile } from "../schemas/index.js";
 import { TREND_ANALYST_SYSTEM, buildTrendPrompt } from "../prompts/index.js";
 import { getSkill } from "../skills/registry.js";
 import { AgentServiceError, SkillError } from "../lib/errors.js";
+import { withRetry } from "../lib/utils.js";
 
 export async function analyzeTrends(profile: UserTasteProfile): Promise<string> {
   const ai = getGeminiClient();
@@ -12,14 +13,14 @@ export async function analyzeTrends(profile: UserTasteProfile): Promise<string> 
     const cuisinesStr = Array.isArray(profile.cuisines) ? profile.cuisines.join(", ") : "various cuisines";
     
     // 1. Get raw search results using Google Search
-    const trendResponse = await ai.models.generateContent({
+    const trendResponse = await withRetry(() => ai.models.generateContent({
       model: "gemini-3.1-pro-preview",
       contents: buildTrendPrompt(cuisinesStr),
       config: {
         tools: [{ googleSearch: {} }],
         systemInstruction: TREND_ANALYST_SYSTEM,
       },
-    });
+    }));
 
     const rawSearchResults = trendResponse.text || "No trends found.";
     

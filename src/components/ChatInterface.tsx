@@ -27,6 +27,7 @@ export default function ChatInterface() {
   const [loadingStep, setLoadingStep] = useState<string>('');
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
+  const textareaRef = useRef<HTMLTextAreaElement>(null);
 
   // Load history on mount
   useEffect(() => {
@@ -42,6 +43,13 @@ export default function ChatInterface() {
       setInitialMessage();
     }
   }, []);
+
+  // Autofocus input on load and after loading ends
+  useEffect(() => {
+    if (!isLoading) {
+      textareaRef.current?.focus();
+    }
+  }, [isLoading]);
 
   // Save history on change
   useEffect(() => {
@@ -258,8 +266,19 @@ export default function ChatInterface() {
           <motion.div 
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
+            className="mb-8"
           >
             <ChatMessage role="assistant" content={loadingStep} isLoading={true} />
+            
+            <div className="pl-14 pr-4 space-y-6">
+              <TasteProfileBadge loading={true} />
+              
+              <div className="space-y-4">
+                <RecommendationCard loading={true} />
+                <RecommendationCard loading={true} />
+                <RecommendationCard loading={true} />
+              </div>
+            </div>
           </motion.div>
         )}
         <div ref={messagesEndRef} />
@@ -306,6 +325,7 @@ export default function ChatInterface() {
               <ImageIcon className="w-5 h-5" />
             </button>
             <textarea
+              ref={textareaRef}
               value={input}
               onChange={(e) => setInput(e.target.value)}
               onKeyDown={(e) => {

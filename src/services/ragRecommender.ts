@@ -7,6 +7,7 @@ import { getSkill } from "../skills/registry.js";
 import { GenerateEmbeddingInput, GenerateEmbeddingOutput } from "../skills/generateEmbedding.js";
 import { vectorDb } from "../lib/vectorDb.js";
 import { AgentServiceError, SkillError } from "../lib/errors.js";
+import { withRetry } from "../lib/utils.js";
 
 export async function recommendCandidates(profile: UserTasteProfile): Promise<Restaurant[]> {
   console.log("Running RAG Recommender Agent...");
@@ -62,14 +63,14 @@ export async function recommendCandidates(profile: UserTasteProfile): Promise<Re
   console.log("Using fallback LLM filtering...");
   const ai = getGeminiClient();
   try {
-    const ragResponse = await ai.models.generateContent({
+    const ragResponse = await withRetry(() => ai.models.generateContent({
       model: "gemini-3.1-pro-preview",
       contents: buildRagPrompt(JSON.stringify(profile), JSON.stringify(restaurants)),
       config: {
         responseMimeType: "application/json",
         systemInstruction: RAG_RECOMMENDER_SYSTEM,
       },
-    });
+    }));
 
     const candidateList = JSON.parse(cleanJson(ragResponse.text || "[]"));
     console.log(`Found ${candidateList.length} candidates via fallback.`);

@@ -4,6 +4,7 @@ import { UserTasteProfile, Recommendation, FinalRecommendationsSchema } from "..
 import { Restaurant } from "../data/restaurants.js";
 import { FINALIZER_SYSTEM, buildFinalizerPrompt } from "../prompts/index.js";
 import { AgentServiceError } from "../lib/errors.js";
+import { withRetry } from "../lib/utils.js";
 
 export async function finalizeRecommendations(
   profile: UserTasteProfile,
@@ -16,7 +17,7 @@ export async function finalizeRecommendations(
   console.log("Running Recommendation Finalizer Agent...");
   
   try {
-    const finalizerResponse = await ai.models.generateContent({
+    const finalizerResponse = await withRetry(() => ai.models.generateContent({
       model: "gemini-3.1-pro-preview",
       contents: buildFinalizerPrompt(JSON.stringify(profile), message, JSON.stringify(candidates), trendReport, history),
       config: {
@@ -24,7 +25,7 @@ export async function finalizeRecommendations(
         responseSchema: FinalRecommendationsSchema,
         systemInstruction: FINALIZER_SYSTEM,
       },
-    });
+    }));
 
     const finalData = JSON.parse(cleanJson(finalizerResponse.text || "{}"));
     const finalRecommendations = finalData.recommendations || [];

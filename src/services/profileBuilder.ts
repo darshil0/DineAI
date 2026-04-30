@@ -6,6 +6,7 @@ import { getSkill } from "../skills/registry.js";
 import { ExtractCuisinesInput, ExtractCuisinesOutput } from "../skills/extractCuisines.js";
 import { AnalyzeFoodPhotoInput, AnalyzeFoodPhotoOutput } from "../skills/analyzeFoodPhoto.js";
 import { AgentServiceError, SkillError } from "../lib/errors.js";
+import { withRetry } from "../lib/utils.js";
 
 export async function buildProfile(
   message: string,
@@ -55,7 +56,7 @@ export async function buildProfile(
   }];
 
   try {
-    const profileResponse = await ai.models.generateContent({
+    const profileResponse = await withRetry(() => ai.models.generateContent({
       model: "gemini-3-flash-preview",
       contents: { parts: profileParts },
       config: {
@@ -63,7 +64,7 @@ export async function buildProfile(
         responseSchema: UserTasteProfileSchema,
         systemInstruction: PROFILE_BUILDER_SYSTEM,
       },
-    });
+    }));
 
     const userTasteProfile = JSON.parse(cleanJson(profileResponse.text || "{}"));
     console.log("Taste Profile:", userTasteProfile);
