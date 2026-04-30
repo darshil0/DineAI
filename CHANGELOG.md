@@ -2,6 +2,18 @@
 
 All notable changes to this project will be documented in this file.
 
+## [1.6.0] - 2026-04-30
+
+### Added
+- **Skeleton Loading States**: Implemented polished skeleton screens for `RecommendationCard` and `TasteProfileBadge` components to provide better visual feedback during the multi-agent orchestration process.
+- **Embeddings Cache**: Added a persistent SQLite-based cache (`embeddings_cache.db`) for restaurant embeddings to significantly speed up vector ingestion and reduce API costs.
+
+### Improved
+- **API Resilience**: Integrated robust retry logic with exponential backoff across all agent services (`ProfileBuilder`, `RAGRecommender`, `TrendAnalyst`, and `Finalizer`) to mitigate transient 429 Rate Limit errors.
+- **Ingestion Performance**: Optimized the restaurant ingestion script with batch processing to improve throughput and stability.
+- **Enhanced UX**: Implemented auto-focus functionality for the chat input after loading completes, streamlining the conversational flow.
+- **Perceived Performance**: Integrated skeleton screens directly into the main chat loop to maintain a consistent UI state while background agents are processing.
+
 ## [1.5.0] - 2026-03-19
 
 ### Added

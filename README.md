@@ -8,6 +8,8 @@ The system leverages a custom **Express/Node.js** agent orchestrator with a modu
 
 - **Chat History Persistence**: Conversations are saved to local storage, allowing you to pick up where you left off.
 - **Multi-Agent Orchestration**: A specialized pipeline of agents (Profile Builder, RAG Recommender, Trend Analyst, and Finalizer) working together.
+- **Skeleton Loading & Perceived Performance**: Custom skeleton screens provide immediate visual feedback while agents process in the background.
+- **High Resilience Architecture**: Sophisticated retry logic with exponential backoff ensures stability even during peak API traffic.
 - **Dynamic Taste Profiles**: Automatically infers your preferences from chat history and uploaded food photos.
 - **Neighborhood-Aware Recommendations**: Specify your preferred areas (e.g., "West Village", "SoHo") to get hyper-local suggestions.
 - **Real-Time Trend Analysis**: Integrates live Google Search data to find trending cuisines, new openings, and viral dishes.
