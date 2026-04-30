@@ -1,5 +1,5 @@
 import React, { useState, useRef, useEffect } from 'react';
-import { Send, Image as ImageIcon, X, ChefHat, Trash2 } from 'lucide-react';
+import { Send, Image as ImageIcon, X, ChefHat, Trash2, Mic, MicOff } from 'lucide-react';
 import { motion, AnimatePresence } from 'motion/react';
 import { ChatMessage } from './ChatMessage.js';
 import { RecommendationCard } from './RecommendationCard.js';
@@ -18,16 +18,81 @@ interface Message {
 
 const STORAGE_KEY = 'dineai_chat_history';
 
+// Speech Recognition Types
+interface SpeechRecognitionEvent extends Event {
+  results: {
+    [index: number]: {
+      [index: number]: {
+        transcript: string;
+      };
+    };
+  };
+}
+
+interface SpeechRecognitionErrorEvent extends Event {
+  error: string;
+}
+
 export default function ChatInterface() {
   const [messages, setMessages] = useState<Message[]>([]);
   const [input, setInput] = useState('');
   const [selectedImage, setSelectedImage] = useState<File | null>(null);
   const [imagePreview, setImagePreview] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(false);
+  const [isListening, setIsListening] = useState(false);
   const [loadingStep, setLoadingStep] = useState<string>('');
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
   const textareaRef = useRef<HTMLTextAreaElement>(null);
+  const recognitionRef = useRef<any>(null);
+
+  // Initialize Speech Recognition
+  useEffect(() => {
+    const SpeechRecognition = (window as any).SpeechRecognition || (window as any).webkitSpeechRecognition;
+    if (SpeechRecognition) {
+      const recognition = new SpeechRecognition();
+      recognition.continuous = false;
+      recognition.interimResults = false;
+      recognition.lang = 'en-US';
+
+      recognition.onresult = (event: SpeechRecognitionEvent) => {
+        const transcript = event.results[0][0].transcript;
+        setInput(prev => {
+          const newText = prev.trim() ? `${prev} ${transcript}` : transcript;
+          return newText;
+        });
+        setIsListening(false);
+      };
+
+      recognition.onerror = (event: SpeechRecognitionErrorEvent) => {
+        console.error('Speech recognition error:', event.error);
+        setIsListening(false);
+      };
+
+      recognition.onend = () => {
+        setIsListening(false);
+      };
+
+      recognitionRef.current = recognition;
+    }
+  }, []);
+
+  const toggleListening = () => {
+    if (isListening) {
+      recognitionRef.current?.stop();
+    } else {
+      if (!recognitionRef.current) {
+        alert('Voice recognition is not supported in this browser.');
+        return;
+      }
+      try {
+        recognitionRef.current.start();
+        setIsListening(true);
+      } catch (err) {
+        console.error('Failed to start speech recognition:', err);
+      }
+    }
+  };
 
   // Load history on mount
   useEffect(() => {
@@ -315,6 +380,22 @@ export default function ChatInterface() {
               ref={fileInputRef}
               onChange={handleImageSelect}
             />
+            <button
+              type="button"
+              onClick={toggleListening}
+              className={`p-3 transition-colors rounded-xl relative ${
+                isListening 
+                  ? 'text-red-500 bg-red-50 animate-pulse' 
+                  : 'text-stone-400 hover:text-orange-500'
+              }`}
+              title={isListening ? "Stop listening" : "Start voice to text"}
+              aria-label={isListening ? "Stop listening" : "Start voice to text"}
+            >
+              {isListening ? <MicOff className="w-5 h-5" /> : <Mic className="w-5 h-5" />}
+              {isListening && (
+                <span className="absolute top-2 right-2 w-2 h-2 bg-red-500 rounded-full animate-ping" />
+              )}
+            </button>
             <button
               type="button"
               onClick={() => fileInputRef.current?.click()}
