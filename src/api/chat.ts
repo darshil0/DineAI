@@ -1,5 +1,6 @@
 import { Router } from 'express';
 import multer from 'multer';
+import { z } from 'zod';
 import { buildProfile } from '../services/profileBuilder.js';
 import { recommendCandidates } from '../services/ragRecommender.js';
 import { analyzeTrends } from '../services/trendAnalyst.js';
@@ -7,33 +8,84 @@ import { finalizeRecommendations } from '../services/finalizer.js';
 import { handleApiError, ValidationError } from '../lib/errors.js';
 
 const router = Router();
-const upload = multer({ storage: multer.memoryStorage() });
+
+// Robust Multer configuration
+const upload = multer({
+  storage: multer.memoryStorage(),
+  limits: { fileSize: 5 * 1024 * 1024 }, // 5MB limit
+  fileFilter: (_req, file, cb) => {
+    const allowedMimeTypes = ['image/jpeg', 'image/png', 'image/webp', 'image/gif'];
+    if (allowedMimeTypes.includes(file.mimetype)) {
+      cb(null, true);
+    } else {
+      cb(new ValidationError('Invalid file type. Only JPG, PNG, WEBP, and GIF are allowed.'));
+    }
+  },
+});
+
+// Zod schemas for validation
+const HistorySchema = z.array(
+  z.object({
+    role: z.enum(['user', 'assistant']),
+    content: z.string().max(5000),
+  }),
+);
 
 router.post('/', upload.single('image'), async (req, res) => {
   try {
-    const { message, history, currentProfile } = req.body;
+    const { message, history: historyStr, currentProfile: profileStr } = req.body;
     const imageFile = req.file;
 
-    if (!message) {
-      throw new ValidationError('Message is required.');
+    // 1. Input Validation & Sanitization
+    if (!message || typeof message !== 'string') {
+      throw new ValidationError('Message is required and must be a string.');
     }
 
-    // 1. Profile Builder Agent
-    const userTasteProfile = await buildProfile(message, history, currentProfile, imageFile);
+    const sanitizedMessage = message.trim().slice(0, 2000);
 
-    // 2 & 3. Run RAG Recommender and Trend Analyst in parallel
+    let history = [];
+    if (historyStr) {
+      try {
+        const parsed = JSON.parse(historyStr);
+        history = HistorySchema.parse(parsed);
+      } catch (e) {
+        console.warn('Invalid history format provided, ignoring.', e);
+      }
+    }
+
+    let currentProfile = null;
+    if (profileStr) {
+      try {
+        currentProfile = JSON.parse(profileStr);
+      } catch (e) {
+        console.warn('Invalid profile format provided, ignoring.', e);
+      }
+    }
+
+    // 2. Profile Builder Agent
+    const userTasteProfile = await buildProfile(
+      sanitizedMessage,
+      JSON.stringify(history),
+      currentProfile,
+      imageFile,
+    );
+
+    // 3 & 4. Run RAG Recommender and Trend Analyst in parallel
+    const locationMatch = sanitizedMessage.match(/\[Near my current location: ([\d.-]+), ([\d.-]+)\]/);
+    const trendLocation = locationMatch ? `Area near ${locationMatch[1]}, ${locationMatch[2]}` : 'New York City';
+
     const [candidateList, trendReportText] = await Promise.all([
       recommendCandidates(userTasteProfile),
-      analyzeTrends(userTasteProfile),
+      analyzeTrends(userTasteProfile, trendLocation),
     ]);
 
-    // 4. Recommendation Finalizer Agent
+    // 5. Recommendation Finalizer Agent
     const finalRecommendations = await finalizeRecommendations(
       userTasteProfile,
-      message,
+      sanitizedMessage,
       candidateList,
       trendReportText,
-      history,
+      JSON.stringify(history),
     );
 
     res.json({
@@ -41,7 +93,7 @@ router.post('/', upload.single('image'), async (req, res) => {
       trends: trendReportText,
       recommendations: finalRecommendations,
     });
-  } catch (error: any) {
+  } catch (error: unknown) {
     handleApiError(res, error);
   }
 });

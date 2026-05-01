@@ -2,6 +2,7 @@ import express from 'express';
 import { createServer as createViteServer } from 'vite';
 import dotenv from 'dotenv';
 import path from 'path';
+import cors from 'cors';
 import chatRouter from './src/api/chat.js';
 import { bootstrapSkills } from './src/skills/bootstrap.js';
 import { ingestRestaurants } from './src/scripts/ingestRestaurants.js';
@@ -18,6 +19,7 @@ async function startServer() {
   // Ingest restaurants into Vector DB
   await ingestRestaurants();
 
+  app.use(cors());
   app.use(express.json());
 
   // API routes

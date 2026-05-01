@@ -11,11 +11,11 @@ EXAMPLE:
 User: "I want a cheap vegan place, but no spicy food. Also, skip the West Village, too crowded."
 Output: {
   "cuisines": [],
-  "disliked_cuisines": [],
+  "disliked_cuisines": ["spicy food"],
   "price_range": "$",
   "ambiance": [],
   "dietary_notes": "vegan",
-  "avoid_patterns": ["spicy food", "crowded areas"],
+  "avoid_patterns": ["spicy food", "crowded areas", "West Village"],
   "special_occasions": [],
   "neighborhoods": []
 }`;

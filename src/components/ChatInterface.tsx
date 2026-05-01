@@ -84,6 +84,7 @@ export default function ChatInterface() {
   const fileInputRef = useRef<HTMLInputElement>(null);
   const textareaRef = useRef<HTMLTextAreaElement>(null);
   const recognitionRef = useRef<SpeechRecognition | null>(null);
+  const loadingTimeoutsRef = useRef<NodeJS.Timeout[]>([]);
 
   // Focus management
   useEffect(() => {
@@ -91,6 +92,14 @@ export default function ChatInterface() {
       textareaRef.current?.focus();
     }
   }, [isLoading]);
+
+  // Clean up timeouts on unmount or error
+  useEffect(() => {
+    return () => {
+      loadingTimeoutsRef.current.forEach(clearTimeout);
+      loadingTimeoutsRef.current = [];
+    };
+  }, []);
 
   // Initialize Speech Recognition
   useEffect(() => {
@@ -152,8 +161,7 @@ export default function ChatInterface() {
       async (position) => {
         const { latitude, longitude } = position.coords;
         try {
-          // Use search grounding or a simple reverse geocoding approach
-          // For now, we'll just add a prompt to the input
+          // Provide coordinates to message for LLM context
           setInput((prev) => {
             const locStr = `[Near my current location: ${latitude.toFixed(4)}, ${longitude.toFixed(4)}]`;
             return prev.includes('[Near my current location') ? prev : `${prev} ${locStr}`.trim();
@@ -194,17 +202,12 @@ export default function ChatInterface() {
     }
   }, []);
 
-  // Autofocus input on load and after loading ends
-  useEffect(() => {
-    if (!isLoading) {
-      textareaRef.current?.focus();
-    }
-  }, [isLoading]);
-
-  // Save history on change
+  // Save history on change (with limit)
   useEffect(() => {
     if (messages.length > 0) {
-      localStorage.setItem(STORAGE_KEY, JSON.stringify(messages));
+      // Keep last 30 messages to avoid localStorage bloat
+      const historyToSave = messages.slice(-30);
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(historyToSave));
     }
   }, [messages]);
 
@@ -268,15 +271,19 @@ export default function ChatInterface() {
 
     if (!fullMessage && !selectedImage) return;
 
+    // Ensure there is some text context if sending an image, or prompt builder might struggle
+    const finalContent =
+      !fullMessage && selectedImage ? 'Identify these dishes and find similar restaurants' : fullMessage;
+
     const userMessage: Message = {
       id: Date.now().toString(),
       role: 'user',
-      content: fullMessage,
+      content: finalContent,
       image: imagePreview || undefined,
     };
 
     setMessages((prev) => [...prev, userMessage]);
-    const currentInput = fullMessage;
+    const currentInput = finalContent;
     const currentImage = selectedImage;
     const currentPreview = imagePreview;
 
@@ -306,9 +313,15 @@ export default function ChatInterface() {
       }
 
       // Simulate step updates for better UX
-      setTimeout(() => setLoadingStep('Retrieving candidate restaurants...'), 2000);
-      setTimeout(() => setLoadingStep('Analyzing current food trends...'), 4000);
-      setTimeout(() => setLoadingStep('Finalizing recommendations...'), 6000);
+      loadingTimeoutsRef.current.push(
+        setTimeout(() => setLoadingStep('Retrieving candidate restaurants...'), 2000),
+      );
+      loadingTimeoutsRef.current.push(
+        setTimeout(() => setLoadingStep('Analyzing current food trends...'), 4000),
+      );
+      loadingTimeoutsRef.current.push(
+        setTimeout(() => setLoadingStep('Finalizing recommendations...'), 6000),
+      );
 
       const response = await fetch('/api/chat', {
         method: 'POST',
@@ -343,6 +356,8 @@ export default function ChatInterface() {
         },
       ]);
     } finally {
+      loadingTimeoutsRef.current.forEach(clearTimeout);
+      loadingTimeoutsRef.current = [];
       setIsLoading(false);
       setLoadingStep('');
     }

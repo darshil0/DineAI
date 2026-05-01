@@ -17,22 +17,24 @@ export const scoreRestaurantSkill: AgentSkill<ScoreInput, ScoreOutput> = {
   description: 'Computes an overall match score between a user taste profile and a restaurant.',
   async run({ profile, restaurant, similarity }) {
     let score = 0;
+    const hasSimilarity = typeof similarity === 'number';
 
     // 1. Base on vector similarity if provided
-    if (typeof similarity === 'number') {
-      // similarity assumed [0, 1]; weight it heavily
-      score += similarity * 0.5;
+    if (hasSimilarity) {
+      score += (similarity as number) * 0.5;
     }
 
-    // 2. Cuisine match
+    // 2. Cuisine match (Weight: 0.3 with sim, 0.4 without)
+    const cuisineWeight = hasSimilarity ? 0.3 : 0.4;
     if (profile.cuisines?.length) {
       const lowerCuisines = profile.cuisines.map((c) => c.toLowerCase());
       if (lowerCuisines.includes(restaurant.cuisine.toLowerCase())) {
-        score += 0.3;
+        score += cuisineWeight;
       }
     }
 
-    // 3. Price match
+    // 3. Price match (Weight: 0.2 with sim, 0.3 without)
+    const priceWeight = hasSimilarity ? 0.2 : 0.3;
     if (profile.price_range && restaurant.price_tier) {
       const priceMap: Record<string, number> = { $: 1, $$: 2, $$$: 3, $$$$: 4 };
       const userPrice = priceMap[profile.price_range] || 0;
@@ -41,9 +43,9 @@ export const scoreRestaurantSkill: AgentSkill<ScoreInput, ScoreOutput> = {
       if (userPrice > 0 && restaurantPrice > 0) {
         const diff = Math.abs(userPrice - restaurantPrice);
         if (diff === 0) {
-          score += 0.2; // Exact match
+          score += priceWeight; // Exact match
         } else if (diff === 1) {
-          score += 0.1; // Close match (one tier away)
+          score += priceWeight / 2; // Close match (one tier away)
         } else if (diff >= 3) {
           score -= 0.2; // Significant mismatch
         }

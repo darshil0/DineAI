@@ -5,9 +5,12 @@ import { getSkill } from '../skills/registry.js';
 import { AgentServiceError, SkillError } from '../lib/errors.js';
 import { withRetry } from '../lib/utils.js';
 
-export async function analyzeTrends(profile: UserTasteProfile): Promise<string> {
+export async function analyzeTrends(
+  profile: UserTasteProfile,
+  location: string = 'New York City',
+): Promise<string> {
   const ai = getGeminiClient();
-  console.log('Running Food Trend Analyst Agent with Skills...');
+  console.log(`Running Food Trend Analyst Agent with Skills for ${location}...`);
 
   try {
     const cuisinesStr = Array.isArray(profile.cuisines)
@@ -36,7 +39,7 @@ export async function analyzeTrends(profile: UserTasteProfile): Promise<string> 
     const structuredTrends = await extractSkill
       .run({
         searchResults: rawSearchResults,
-        city: 'New York City', // Defaulting to NYC as per PRD context
+        city: location,
       })
       .catch((e) => {
         throw new SkillError('extractTrendsFromSearchResults', e);
@@ -58,7 +61,7 @@ export async function analyzeTrends(profile: UserTasteProfile): Promise<string> 
 
     // 4. Construct final report
     const finalReport = `
-### Food Trends in NYC
+### Food Trends in ${location}
 ${structuredTrends.summary}
 
 #### Relevant to Your Profile

@@ -25,9 +25,7 @@ export async function ingestRestaurants() {
   let processedCount = 0;
 
   for (const batch of chunks) {
-    const records: VectorRecord[] = [];
-
-    await Promise.all(
+    const batchResults = await Promise.all(
       batch.map(async (r) => {
         const restaurantId = r.id || r.name.toLowerCase().replace(/\s+/g, '-');
 
@@ -54,25 +52,29 @@ export async function ingestRestaurants() {
             embeddingCache.set(restaurantId, embedding);
             console.log(`Generated and Cached: ${r.name}`);
           } catch (e) {
-            console.error(`Failed to embed ${r.name}`, e);
-            return;
+            console.error(`Failed to embed ${r.name}:`, e);
+            return null;
           }
         } else {
           console.log(`Loaded from Cache: ${r.name}`);
         }
 
         if (embedding) {
-          records.push({
+          return {
             id: restaurantId,
             embedding,
             metadata: r,
-          });
+          };
         }
-        processedCount++;
+        return null;
       }),
     );
 
-    await vectorDb.upsert(records);
+    const validRecords = batchResults.filter((r): r is VectorRecord => r !== null);
+    if (validRecords.length > 0) {
+      await vectorDb.upsert(validRecords);
+      processedCount += validRecords.length;
+    }
     console.log(`Batch processed (${processedCount}/${restaurants.length})...`);
   }
 

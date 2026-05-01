@@ -35,11 +35,11 @@ export async function finalizeRecommendations(
       }),
     );
 
-    const finalData = JSON.parse(cleanJson(finalizerResponse.text || '{}'));
+    const finalData = JSON.parse(finalizerResponse.text || '{"recommendations":[]}');
     const finalRecommendations = finalData.recommendations || [];
     console.log(`Generated ${finalRecommendations.length} final recommendations.`);
     return finalRecommendations;
-  } catch (error: any) {
+  } catch (error: unknown) {
     throw new AgentServiceError('Recommendation Finalizer', error);
   }
 }

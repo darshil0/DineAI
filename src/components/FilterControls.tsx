@@ -193,24 +193,38 @@ export const FilterControls: React.FC<FilterControlsProps> = ({
       
       {hasActiveFilters && (
         <div className="flex flex-wrap gap-2 mt-1">
-          {[...filters.cuisines, ...filters.prices, ...filters.neighborhoods].map(active => (
-            <span key={active} className="inline-flex items-center gap-1 px-2 py-0.5 rounded-lg bg-white border border-stone-200 text-[10px] text-stone-500">
-              {active}
-              <button 
-                onClick={() => {
-                  const newC = filters.cuisines.filter(c => c !== active);
-                  const newP = filters.prices.filter(p => p !== active);
-                  const newN = filters.neighborhoods.filter(n => n !== active);
-                  onFilterChange({ cuisines: newC, prices: newP, neighborhoods: newN });
-                }}
-                className="hover:text-stone-800"
-              >
-                <X className="w-2.5 h-2.5" />
-              </button>
-            </span>
+          {filters.cuisines.map((val) => (
+            <FilterChip 
+              key={`c-${val}`} 
+              label={val} 
+              onRemove={() => onFilterChange({ ...filters, cuisines: filters.cuisines.filter(c => c !== val) })} 
+            />
+          ))}
+          {filters.prices.map((val) => (
+            <FilterChip 
+              key={`p-${val}`} 
+              label={val} 
+              onRemove={() => onFilterChange({ ...filters, prices: filters.prices.filter(p => p !== val) })} 
+            />
+          ))}
+          {filters.neighborhoods.map((val) => (
+            <FilterChip 
+              key={`n-${val}`} 
+              label={val} 
+              onRemove={() => onFilterChange({ ...filters, neighborhoods: filters.neighborhoods.filter(n => n !== val) })} 
+            />
           ))}
         </div>
       )}
     </div>
   );
 };
+
+const FilterChip: React.FC<{ label: string; onRemove: () => void }> = ({ label, onRemove }) => (
+  <span className="inline-flex items-center gap-1 rounded-lg border border-stone-200 bg-white px-2 py-0.5 text-[10px] text-stone-500">
+    {label}
+    <button onClick={onRemove} className="hover:text-stone-800">
+      <X className="h-2.5 w-2.5" />
+    </button>
+  </span>
+);

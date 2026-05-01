@@ -78,10 +78,10 @@ export async function buildProfile(
       }),
     );
 
-    const userTasteProfile = JSON.parse(cleanJson(profileResponse.text || '{}'));
+    const userTasteProfile = JSON.parse(profileResponse.text || '{}');
     console.log('Taste Profile:', userTasteProfile);
     return userTasteProfile;
-  } catch (error: any) {
+  } catch (error: unknown) {
     if (error instanceof SkillError) throw error;
     throw new AgentServiceError('Profile Builder', error);
   }
