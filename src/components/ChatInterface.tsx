@@ -10,6 +10,7 @@ import {
   MapPin,
   Filter,
   SlidersHorizontal,
+  Heart,
 } from 'lucide-react';
 import { motion, AnimatePresence } from 'motion/react';
 import { ChatMessage } from './ChatMessage.js';
@@ -37,6 +38,7 @@ interface Filters {
 
 const STORAGE_KEY = 'dineai_chat_history';
 const ONBOARDING_STORAGE_KEY = 'dineai_onboarding_completed';
+const FAVORITES_STORAGE_KEY = 'dineai_favorites';
 
 // Speech Recognition Types
 interface SpeechRecognition extends EventTarget {
@@ -82,6 +84,8 @@ export default function ChatInterface() {
   });
   const [queuedFeedback, setQueuedFeedback] = useState<string[]>([]);
   const [showOnboarding, setShowOnboarding] = useState(false);
+  const [favorites, setFavorites] = useState<Recommendation[]>([]);
+  const [showFavorites, setShowFavorites] = useState(false);
 
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
@@ -95,7 +99,31 @@ export default function ChatInterface() {
     if (!completed) {
       setShowOnboarding(true);
     }
+    
+    // Load favorites
+    const savedFavorites = localStorage.getItem(FAVORITES_STORAGE_KEY);
+    if (savedFavorites) {
+      try {
+        setFavorites(JSON.parse(savedFavorites));
+      } catch (e) {
+        console.error('Failed to parse favorites', e);
+      }
+    }
   }, []);
+
+  useEffect(() => {
+    localStorage.setItem(FAVORITES_STORAGE_KEY, JSON.stringify(favorites));
+  }, [favorites]);
+
+  const handleToggleFavorite = (rec: Recommendation) => {
+    setFavorites((prev) => {
+      const exists = prev.find((f) => f.name === rec.name);
+      if (exists) {
+        return prev.filter((f) => f.name !== rec.name);
+      }
+      return [rec, ...prev];
+    });
+  };
 
   const handleOnboardingComplete = () => {
     localStorage.setItem(ONBOARDING_STORAGE_KEY, 'true');
@@ -403,19 +431,75 @@ export default function ChatInterface() {
             <p className="text-sm text-stone-500">Multi-Agent Restaurant Recommender</p>
           </div>
         </div>
-        <button
-          onClick={clearHistory}
-          className="rounded-lg p-2 text-stone-400 transition-all hover:bg-red-50 hover:text-red-500"
-          title="Clear History"
-          aria-label="Clear conversation history"
-        >
-          <Trash2 className="h-5 w-5" />
-        </button>
+        <div className="flex items-center gap-2">
+          <button
+            onClick={() => setShowFavorites(!showFavorites)}
+            className={`flex items-center gap-2 rounded-lg px-3 py-2 text-sm font-medium transition-all ${
+              showFavorites
+                ? 'bg-red-50 text-red-600'
+                : 'text-stone-500 hover:bg-stone-50 hover:text-stone-900'
+            }`}
+            title={showFavorites ? 'Back to Chat' : 'View Favorites'}
+          >
+            <Heart className={`h-4 w-4 ${showFavorites ? 'fill-current' : ''}`} />
+            <span className="hidden sm:inline">
+              {showFavorites ? 'Chat' : `Favorites (${favorites.length})`}
+            </span>
+          </button>
+          <button
+            onClick={clearHistory}
+            className="rounded-lg p-2 text-stone-400 transition-all hover:bg-red-50 hover:text-red-500"
+            title="Clear History"
+            aria-label="Clear conversation history"
+          >
+            <Trash2 className="h-5 w-5" />
+          </button>
+        </div>
       </header>
 
-      {/* Chat Area */}
+      {/* Chat Area / Favorites Area */}
       <div className="flex-1 overflow-y-auto p-6">
-        <AnimatePresence initial={false}>
+        {showFavorites ? (
+          <motion.div
+            initial={{ opacity: 0, x: 20 }}
+            animate={{ opacity: 1, x: 0 }}
+            className="h-full"
+          >
+            <div className="mb-6 flex items-center justify-between">
+              <h2 className="text-lg font-bold text-stone-900">Your Favorites</h2>
+              <p className="text-sm text-stone-500">{favorites.length} restaurants saved</p>
+            </div>
+
+            {favorites.length === 0 ? (
+              <div className="flex h-64 flex-col items-center justify-center rounded-3xl border-2 border-dashed border-stone-200 bg-stone-50 p-8 text-center">
+                <Heart className="mb-4 h-12 w-12 text-stone-200" />
+                <h3 className="text-lg font-semibold text-stone-900">No favorites yet</h3>
+                <p className="mt-2 max-w-xs text-stone-500">
+                  Save restaurants you love by clicking the heart icon on any recommendation.
+                </p>
+                <button
+                  onClick={() => setShowFavorites(false)}
+                  className="mt-6 font-bold text-orange-600 uppercase hover:underline"
+                >
+                  Start Exploring
+                </button>
+              </div>
+            ) : (
+              <div className="grid grid-cols-1 gap-4 lg:grid-cols-2">
+                {favorites.map((rec) => (
+                  <RecommendationCard
+                    key={`fav-${rec.name}`}
+                    recommendation={rec}
+                    isFavorite={true}
+                    onToggleFavorite={handleToggleFavorite}
+                  />
+                ))}
+              </div>
+            )}
+          </motion.div>
+        ) : (
+          <>
+            <AnimatePresence initial={false}>
           {messages.map((msg) => (
             <motion.div
               key={msg.id}
@@ -479,7 +563,9 @@ export default function ChatInterface() {
                       >
                         <RecommendationCard
                           recommendation={rec}
+                          isFavorite={favorites.some((f) => f.name === rec.name)}
                           onFeedback={handleRecommendationFeedback}
+                          onToggleFavorite={handleToggleFavorite}
                         />
                       </motion.div>
                     ))}
@@ -533,7 +619,9 @@ export default function ChatInterface() {
           </motion.div>
         )}
         <div ref={messagesEndRef} />
-      </div>
+      </>
+    )}
+  </div>
 
       {/* Input Area */}
       <div className="border-t border-stone-200 bg-white p-4">

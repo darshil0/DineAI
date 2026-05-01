@@ -7,6 +7,7 @@ import {
   Clock,
   ThumbsUp,
   ThumbsDown,
+  Heart,
   ExternalLink,
   Navigation,
 } from 'lucide-react';
@@ -15,13 +16,17 @@ import { Recommendation } from '../schemas/index.js';
 interface RecommendationCardProps {
   recommendation?: Recommendation;
   loading?: boolean;
+  isFavorite?: boolean;
   onFeedback?: (name: string, type: 'like' | 'dislike') => void;
+  onToggleFavorite?: (recommendation: Recommendation) => void;
 }
 
 export const RecommendationCard: React.FC<RecommendationCardProps> = ({
   recommendation,
   loading,
+  isFavorite,
   onFeedback,
+  onToggleFavorite,
 }) => {
   const [feedback, setFeedback] = useState<'liked' | 'disliked' | null>(null);
 
@@ -176,6 +181,18 @@ export const RecommendationCard: React.FC<RecommendationCardProps> = ({
             title="Dislike this recommendation"
           >
             <ThumbsDown className={`h-4 w-4 ${feedback === 'disliked' ? 'fill-current' : ''}`} />
+          </button>
+          <button
+            onClick={() => recommendation && onToggleFavorite?.(recommendation)}
+            className={`rounded-lg border p-2 transition-all ${
+              isFavorite
+                ? 'border-red-200 bg-red-50 text-red-500 shadow-sm'
+                : 'border-stone-200 text-stone-400 hover:border-red-100 hover:text-red-400'
+            }`}
+            title={isFavorite ? 'Remove from favorites' : 'Add to favorites'}
+            aria-label={isFavorite ? 'Remove from favorites' : 'Add to favorites'}
+          >
+            <Heart className={`h-4 w-4 ${isFavorite ? 'fill-current' : ''}`} />
           </button>
           <a
             href={googleMapsUrl}
