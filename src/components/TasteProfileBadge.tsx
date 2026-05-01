@@ -1,15 +1,6 @@
 import React from 'react';
 import { UserTasteProfile } from '../schemas/index.js';
-import {
-  Utensils,
-  DollarSign,
-  Sparkles,
-  AlertCircle,
-  CalendarHeart,
-  MapPin,
-  Ban,
-  Heart,
-} from 'lucide-react';
+import { Sparkles, AlertCircle, CalendarHeart, MapPin, Ban, Heart } from 'lucide-react';
 
 interface TasteProfileBadgeProps {
   profile?: UserTasteProfile | null;

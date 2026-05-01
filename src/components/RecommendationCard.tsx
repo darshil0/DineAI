@@ -8,7 +8,6 @@ import {
   ThumbsUp,
   ThumbsDown,
   Heart,
-  ExternalLink,
   Navigation,
 } from 'lucide-react';
 import { Recommendation } from '../schemas/index.js';

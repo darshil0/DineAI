@@ -36,28 +36,28 @@ export async function analyzeTrends(
     if (!extractSkill) {
       throw new Error("Required skill 'extractTrendsFromSearchResults' not found.");
     }
-    const structuredTrends = await extractSkill
-      .run({
+    const structuredTrends = await withRetry(() =>
+      extractSkill.run({
         searchResults: rawSearchResults,
         city: location,
-      })
-      .catch((e) => {
-        throw new SkillError('extractTrendsFromSearchResults', e);
-      });
+      }),
+    ).catch((e) => {
+      throw new SkillError('extractTrendsFromSearchResults', e);
+    });
 
     // 3. Classify relevance to user profile using skill
     const classifySkill = getSkill<any, any>('classifyTrendRelevanceToProfile');
     if (!classifySkill) {
       throw new Error("Required skill 'classifyTrendRelevanceToProfile' not found.");
     }
-    const relevanceReport = await classifySkill
-      .run({
+    const relevanceReport = await withRetry(() =>
+      classifySkill.run({
         profile,
         trends: structuredTrends,
-      })
-      .catch((e) => {
-        throw new SkillError('classifyTrendRelevanceToProfile', e);
-      });
+      }),
+    ).catch((e) => {
+      throw new SkillError('classifyTrendRelevanceToProfile', e);
+    });
 
     // 4. Construct final report
     const finalReport = `
