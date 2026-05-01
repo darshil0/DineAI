@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file.
 
+## [1.9.0] - 2026-05-01
+
+### Added
+- **Dynamic Recommendation Filtering**: Users can now filter restaurant results by cuisine, price tier, and neighborhood in real-time.
+- **Enhanced Data Richness**: Recommendations now explicitly identify cuisine types, price levels, and neighborhood locations.
+- **Smart Refinement UI**: Collaborative filter bar that surface-only options relevant to the current recommendation set.
+
 ## [1.8.0] - 2026-05-01
 
 ### Added

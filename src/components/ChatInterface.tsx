@@ -1,5 +1,5 @@
 import React, { useState, useRef, useEffect } from 'react';
-import { Send, Image as ImageIcon, X, ChefHat, Trash2, Mic, MicOff, MapPin } from 'lucide-react';
+import { Send, Image as ImageIcon, X, ChefHat, Trash2, Mic, MicOff, MapPin, Filter, SlidersHorizontal as Sliders, SlidersHorizontal } from 'lucide-react';
 import { motion, AnimatePresence } from 'motion/react';
 import { ChatMessage } from './ChatMessage.js';
 import { RecommendationCard } from './RecommendationCard.js';
@@ -16,16 +16,35 @@ interface Message {
   trends?: string;
 }
 
+interface Filters {
+  cuisine: string | null;
+  price: string | null;
+  neighborhood: string | null;
+}
+
 const STORAGE_KEY = 'dineai_chat_history';
 
 // Speech Recognition Types
+interface SpeechRecognition extends EventTarget {
+  continuous: boolean;
+  interimResults: boolean;
+  lang: string;
+  onresult: (event: SpeechRecognitionEvent) => void;
+  onerror: (event: SpeechRecognitionErrorEvent) => void;
+  onend: () => void;
+  start: () => void;
+  stop: () => void;
+}
+
 interface SpeechRecognitionEvent extends Event {
   results: {
     [index: number]: {
       [index: number]: {
         transcript: string;
       };
+      length: number;
     };
+    length: number;
   };
 }
 
@@ -42,16 +61,26 @@ export default function ChatInterface() {
   const [isListening, setIsListening] = useState(false);
   const [isLocating, setIsLocating] = useState(false);
   const [loadingStep, setLoadingStep] = useState<string>('');
+  const [filters, setFilters] = useState<Filters>({ cuisine: null, price: null, neighborhood: null });
+  const [queuedFeedback, setQueuedFeedback] = useState<string[]>([]);
+  
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
   const textareaRef = useRef<HTMLTextAreaElement>(null);
-  const recognitionRef = useRef<any>(null);
+  const recognitionRef = useRef<SpeechRecognition | null>(null);
+
+  // Focus management
+  useEffect(() => {
+    if (!isLoading) {
+      textareaRef.current?.focus();
+    }
+  }, [isLoading]);
 
   // Initialize Speech Recognition
   useEffect(() => {
     const SpeechRecognition = (window as any).SpeechRecognition || (window as any).webkitSpeechRecognition;
     if (SpeechRecognition) {
-      const recognition = new SpeechRecognition();
+      const recognition = new SpeechRecognition() as SpeechRecognition;
       recognition.continuous = false;
       recognition.interimResults = false;
       recognition.lang = 'en-US';
@@ -127,16 +156,12 @@ export default function ChatInterface() {
   };
 
   const handleRecommendationFeedback = (name: string, type: 'like' | 'dislike') => {
-    // We send a hidden system message to the backend to update the profile
-    const feedbackMessage = type === 'like' 
-      ? `I really liked the recommendation for ${name}. Please keep it in mind for my profile.`
-      : `I didn't like the recommendation for ${name}. Please avoid similar places in the future.`;
+    const feedbackText = type === 'like' 
+      ? `(Feedback: I loved ${name})`
+      : `(Feedback: I wasn't a fan of ${name})`;
     
-    // Instead of showing it in the chat, we'll just use it in the next request
-    // or trigger a background profile update if we had an API for it.
-    // For now, let's just append it to the next message context or show it briefly.
-    console.log(`Feedback for ${name}: ${type}`);
-    setInput(prev => `${prev} (Feedback: I ${type === 'like' ? 'loved' : 'wasn\'t a fan of'} ${name})`.trim());
+    setQueuedFeedback(prev => [...prev, feedbackText]);
+    console.log(`Feedback queued for ${name}: ${type}`);
   };
 
   // Load history on mount
@@ -222,23 +247,29 @@ export default function ChatInterface() {
   };
 
   const submitMessage = async () => {
-    if (!input.trim() && !selectedImage) return;
+    const fullMessage = queuedFeedback.length > 0 
+      ? `${input} ${queuedFeedback.join(' ')}`.trim()
+      : input.trim();
+
+    if (!fullMessage && !selectedImage) return;
 
     const userMessage: Message = {
       id: Date.now().toString(),
       role: 'user',
-      content: input,
+      content: fullMessage,
       image: imagePreview || undefined,
     };
 
     setMessages(prev => [...prev, userMessage]);
-    const currentInput = input;
+    const currentInput = fullMessage;
     const currentImage = selectedImage;
     const currentPreview = imagePreview;
 
     setInput('');
+    setQueuedFeedback([]);
     setSelectedImage(null);
     setImagePreview(null);
+    setFilters({ cuisine: null, price: null, neighborhood: null });
     setIsLoading(true);
     setLoadingStep('Analyzing taste profile...');
 
@@ -356,7 +387,76 @@ export default function ChatInterface() {
 
               {msg.role === 'assistant' && msg.recommendations && (
                 <div className="pl-14 pr-4 space-y-4">
-                  {msg.recommendations.map((rec) => (
+                  {/* Local filters for this specific set of recommendations */}
+                  {msg.id === messages[messages.length - 1]?.id && (
+                    <div className="flex flex-col gap-3 mb-4 p-4 bg-stone-100/50 rounded-2xl border border-stone-200/50">
+                      <div className="flex items-center justify-between">
+                        <div className="flex items-center gap-2 text-stone-900">
+                          <SlidersHorizontal className="w-4 h-4" />
+                          <span className="text-xs font-bold uppercase tracking-wider">Refine Results</span>
+                        </div>
+                        {(filters.cuisine || filters.price || filters.neighborhood) && (
+                          <button 
+                            onClick={() => setFilters({ cuisine: null, price: null, neighborhood: null })}
+                            className="text-[10px] font-bold text-orange-600 uppercase hover:underline"
+                          >
+                            Clear All
+                          </button>
+                        )}
+                      </div>
+                      
+                      <div className="flex flex-wrap gap-2">
+                        {Array.from(new Set(msg.recommendations.map(r => r.cuisine).filter(Boolean))).map(cuisine => (
+                          <button
+                            key={cuisine}
+                            onClick={() => setFilters(prev => ({ ...prev, cuisine: prev.cuisine === cuisine ? null : cuisine as string }))}
+                            className={`px-3 py-1 rounded-full text-[11px] font-medium transition-all ${
+                              filters.cuisine === cuisine 
+                                ? 'bg-orange-500 text-white border-orange-500 shadow-sm' 
+                                : 'bg-white text-stone-600 border border-stone-200 hover:border-stone-300'
+                            }`}
+                          >
+                            {cuisine}
+                          </button>
+                        ))}
+                        {Array.from(new Set(msg.recommendations.map(r => r.price_level).filter(Boolean))).map(price => (
+                          <button
+                            key={price}
+                            onClick={() => setFilters(prev => ({ ...prev, price: prev.price === price ? null : price as string }))}
+                            className={`px-3 py-1 rounded-full text-[11px] font-medium transition-all ${
+                              filters.price === price 
+                                ? 'bg-emerald-500 text-white border-emerald-500 shadow-sm' 
+                                : 'bg-white text-stone-600 border border-stone-200 hover:border-emerald-200'
+                            }`}
+                          >
+                            {price}
+                          </button>
+                        ))}
+                        {Array.from(new Set(msg.recommendations.map(r => r.neighborhood).filter(Boolean))).map(nb => (
+                          <button
+                            key={nb}
+                            onClick={() => setFilters(prev => ({ ...prev, neighborhood: prev.neighborhood === nb ? null : nb as string }))}
+                            className={`px-3 py-1 rounded-full text-[11px] font-medium transition-all ${
+                              filters.neighborhood === nb 
+                                ? 'bg-blue-500 text-white border-blue-500 shadow-sm' 
+                                : 'bg-white text-stone-600 border border-stone-200 hover:border-blue-200'
+                            }`}
+                          >
+                            {nb}
+                          </button>
+                        ))}
+                      </div>
+                    </div>
+                  )}
+
+                  {msg.recommendations
+                    .filter(r => {
+                      const matchCuisine = !filters.cuisine || r.cuisine === filters.cuisine;
+                      const matchPrice = !filters.price || r.price_level === filters.price;
+                      const matchNeighborhood = !filters.neighborhood || r.neighborhood === filters.neighborhood;
+                      return matchCuisine && matchPrice && matchNeighborhood;
+                    })
+                    .map((rec) => (
                     <motion.div
                       key={`${msg.id}-${rec.name}`}
                       initial={{ opacity: 0, y: 10 }}
@@ -369,6 +469,25 @@ export default function ChatInterface() {
                       />
                     </motion.div>
                   ))}
+
+                  {msg.recommendations && msg.recommendations.length > 0 && 
+                   msg.recommendations.filter(r => {
+                      const matchCuisine = !filters.cuisine || r.cuisine === filters.cuisine;
+                      const matchPrice = !filters.price || r.price_level === filters.price;
+                      const matchNeighborhood = !filters.neighborhood || r.neighborhood === filters.neighborhood;
+                      return matchCuisine && matchPrice && matchNeighborhood;
+                    }).length === 0 && (
+                    <div className="p-8 text-center bg-stone-100 rounded-2xl border border-dashed border-stone-300">
+                      <Filter className="w-8 h-8 text-stone-300 mx-auto mb-2" />
+                      <p className="text-sm text-stone-500">No matches for current filters.</p>
+                      <button 
+                        onClick={() => setFilters({ cuisine: null, price: null, neighborhood: null })}
+                        className="mt-2 text-xs font-bold text-orange-600 uppercase hover:underline"
+                      >
+                        Clear Filters
+                      </button>
+                    </div>
+                  )}
                 </div>
               )}
             </motion.div>

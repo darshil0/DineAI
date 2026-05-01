@@ -38,24 +38,24 @@ export const RecommendationCard: React.FC<RecommendationCardProps> = ({ recommen
   }
 
   if (!recommendation) return null;
-
-  const { rank, name, rationale, match_score, trend_relevance, trend_connection, address, phone, hours } = recommendation;
+ 
+  const { rank, name, rationale, match_score, trend_relevance, trend_connection, address, phone, hours, cuisine, price_level, neighborhood } = recommendation;
   const matchPercentage = Math.round(match_score * 100);
-
+ 
   const handleLike = () => {
     if (feedback === 'liked') return;
     setFeedback('liked');
     onFeedback?.(name, 'like');
   };
-
+ 
   const handleDislike = () => {
     if (feedback === 'disliked') return;
     setFeedback('disliked');
     onFeedback?.(name, 'dislike');
   };
-
+ 
   const googleMapsUrl = `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(`${name} ${address || ''}`)}`;
-
+ 
   return (
     <div className="bg-white border border-stone-200 rounded-xl p-5 shadow-sm hover:shadow-md transition-all mb-4 group relative overflow-hidden">
       {feedback === 'liked' && (
@@ -69,13 +69,29 @@ export const RecommendationCard: React.FC<RecommendationCardProps> = ({ recommen
           <div className="flex items-center justify-center w-8 h-8 rounded-full bg-stone-900 text-white font-bold text-sm">
             #{rank}
           </div>
-          <h3 className="text-lg font-semibold text-stone-900">{name}</h3>
+          <div>
+            <h3 className="text-lg font-semibold text-stone-900 leading-tight">{name}</h3>
+            <div className="flex items-center gap-2 mt-1">
+              {cuisine && (
+                <span className="text-[10px] font-bold text-stone-400 uppercase tracking-wider">{cuisine}</span>
+              )}
+              {neighborhood && (
+                <>
+                  <span className="text-stone-300">|</span>
+                  <span className="text-[10px] font-bold text-stone-400 uppercase tracking-wider italic">{neighborhood}</span>
+                </>
+              )}
+            </div>
+          </div>
         </div>
         <div className="flex flex-col items-end gap-2">
           <div className="px-2.5 py-1 rounded-full bg-emerald-100 text-emerald-800 text-xs font-semibold flex items-center gap-1">
             <Star className="w-3 h-3" />
             {matchPercentage}% Match
           </div>
+          {price_level && (
+            <span className="text-xs font-bold text-emerald-600 tracking-widest">{price_level}</span>
+          )}
         </div>
       </div>
       

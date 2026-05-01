@@ -10,6 +10,9 @@ export interface Recommendation {
   address?: string;
   phone?: string;
   hours?: string;
+  cuisine?: string;
+  price_level?: string;
+  neighborhood?: string;
 }
 
 export const FinalRecommendationsSchema = {
@@ -28,7 +31,10 @@ export const FinalRecommendationsSchema = {
           trend_connection: { type: Type.STRING, description: "A detailed explanation of why this identified trend specifically relates to the user's tastes and dining habits." },
           address: { type: Type.STRING, description: "Physical address of the restaurant" },
           phone: { type: Type.STRING, description: "Contact phone number" },
-          hours: { type: Type.STRING, description: "Operating hours" }
+          hours: { type: Type.STRING, description: "Operating hours" },
+          cuisine: { type: Type.STRING, description: "Primary cuisine type" },
+          price_level: { type: Type.STRING, description: "Price level ($, $$, $$$, $$$$)" },
+          neighborhood: { type: Type.STRING, description: "Neighborhood location" }
         },
         required: ["rank", "name", "rationale", "match_score", "trend_relevance", "trend_connection"]
       }

@@ -38,6 +38,17 @@ The chat input textarea should automatically regain focus whenever:
 - The page first loads.
 - A loading operation completes, allowing the user to continue the conversation immediately.
 
+### 3. Feedback Loop
+Users can provide "Like" or "Dislike" feedback on recommendations. This feedback is:
+- Queued in the `ChatInterface` state.
+- Automatically appended as high-priority natural language context to the next user message sent to the Profile Builder.
+- Used to explicitly populate `disliked_cuisines` and `avoid_patterns` in the taste profile.
+
+### 4. Dynamic Filtering
+The `ChatInterface` implements a client-side filtering layer for the latest assistant message:
+- Valid facets are extracted dynamically from the current recommendation set (Cuisine, Price Level, Neighborhood).
+- Filters are reset automatically upon submitting a new request to ensure consistency.
+
 ## 💾 Data & Vector DB
 
 - **Vector DB**: A custom implementation in `src/lib/vectorDb.ts` using cosine similarity.

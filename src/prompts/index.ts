@@ -118,6 +118,7 @@ For each:
 - Set trend_relevance (e.g., "Trending: New Korean BBQ focus in NYC" or "Viral dish: Spicy Vodka Rigatoni").
 - Set trend_connection: Explicitly describe WHY this trend is relevant to this user based on their UserTasteProfile. For example, if the profile mentions 'adventure seeker' and the trend is 'exotic spice blends', connect those two dots.
 - Include the restaurant's address, phone, and hours if they are available in the CandidateList.
+- Identify and set the specific 'cuisine' (e.g., "Italian"), 'price_level' (e.g., "$$"), and 'neighborhood' (e.g., "West Village") for each recommendation based on the candidate data.
 
 Refined User Taste Profile: ${profile}
 Latest User Request: "${message}"
