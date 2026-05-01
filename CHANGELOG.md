@@ -2,6 +2,23 @@
 
 All notable changes to this project will be documented in this file.
 
+## [2.2.0] - 2026-05-01
+
+### Added
+- **Interactive Onboarding Tutorial**: A multi-step guide explaining the "Multi-Agent" orchestrator, Taste Profiles, and Trend Analysis.
+- **Favorites Management**: Users can now "Heart" restaurants to save them to a persistent favorites list.
+- **Conversation Persistence**: Chat history is now automatically saved and restored from `localStorage`.
+- **Per-Agent Telemetry**: Added server-side latency logging for each stage of the agent pipeline.
+
+### Fixed
+- **Issue #15**: Corrected ambiguous example in `ProfileBuilder` system prompt regarding negative constraints.
+- **Memory Leaks**: Cleaned up dangling timeouts in `ChatInterface` on component unmount.
+- **Cold-Start Optimization**: Restricted `ingestRestaurants` to run only if the vector index is empty or corrupted.
+
+### Changed
+- **Persistence Strategy**: Vector index now serializes to `vector_index.json` on graceful shutdown and loads on startup.
+- **History Sanitization**: Enforced a 10-exchange depth limit and assistant-role verification before processing.
+
 ## [2.1.0] - 2026-05-01
 
 ### Added

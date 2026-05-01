@@ -6,6 +6,8 @@ The system leverages a custom **Express/Node.js** agent orchestrator with a modu
 
 ## 🚀 Key Features
 
+- **Personalized Onboarding**: An interactive tutorial that guides new users through DineAI's unique multi-agent features.
+- **Favorites Gallery**: Save restaurants you love and view your curated collection in a dedicated favorites tab.
 - **Chat History Persistence**: Conversations are saved to local storage, allowing you to pick up where you left off.
 - **Multi-Agent Orchestration**: A specialized pipeline of agents (Profile Builder, RAG Recommender, Trend Analyst, and Finalizer) working together.
 - **Adaptive Feedback Loop**: "Like" and "Dislike" system that refines your taste profile in real-time.

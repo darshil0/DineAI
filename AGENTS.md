@@ -61,6 +61,18 @@ The `ChatInterface` implements a client-side filtering layer for the latest assi
 - Valid facets are extracted dynamically from the current recommendation set (Cuisine, Price Level, Neighborhood).
 - Filters are reset automatically upon submitting a new request to ensure consistency.
 
+### 5. Onboarding & Education
+
+The `OnboardingTutorial` component is triggered on first visit:
+- **Persistence**: Completion is tracked in `localStorage` under `dineai_onboarding_completed`.
+- **Interaction**: Uses `motion/react` for smooth step transitions and dismissible behavior.
+
+### 6. Favorites Management
+
+Users can bookmark recommendations for later:
+- **Persistence**: Favorited restaurants are stored in `localStorage` under `dineai_favorites`.
+- **UI**: A global toggle in the header switches between the live chat and the favorites gallery.
+
 ## 💾 Data & Vector DB
 
 - **Vector DB**: A custom implementation in `src/lib/vectorDb.ts` using cosine similarity.
