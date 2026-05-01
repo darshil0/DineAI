@@ -11,16 +11,16 @@ class LocalVectorDB {
   private normalize(vec: number[]): number[] {
     const norm = Math.sqrt(vec.reduce((sum, val) => sum + val * val, 0));
     if (norm === 0) return vec;
-    return vec.map(val => val / norm);
+    return vec.map((val) => val / norm);
   }
 
   async upsert(records: VectorRecord[]) {
     for (const record of records) {
       const normalizedRecord = {
         ...record,
-        embedding: this.normalize(record.embedding)
+        embedding: this.normalize(record.embedding),
       };
-      const existingIdx = this.records.findIndex(r => r.id === record.id);
+      const existingIdx = this.records.findIndex((r) => r.id === record.id);
       if (existingIdx >= 0) {
         this.records[existingIdx] = normalizedRecord;
       } else {
@@ -31,11 +31,11 @@ class LocalVectorDB {
 
   async query(queryEmbedding: number[], topK: number = 10) {
     const normalizedQuery = this.normalize(queryEmbedding);
-    const scored = this.records.map(record => {
+    const scored = this.records.map((record) => {
       const score = this.dotProduct(normalizedQuery, record.embedding);
       return { ...record, score };
     });
-    
+
     // Sort descending by similarity score
     scored.sort((a, b) => b.score - a.score);
     return scored.slice(0, topK);
@@ -48,7 +48,7 @@ class LocalVectorDB {
     }
     return dotProduct;
   }
-  
+
   async count() {
     return this.records.length;
   }

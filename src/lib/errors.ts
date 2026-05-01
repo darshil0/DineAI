@@ -6,7 +6,8 @@ export class AppError extends Error {
     super(message);
     this.name = this.constructor.name;
     this.statusCode = statusCode;
-    this.userFriendlyMessage = userFriendlyMessage || "An unexpected error occurred. Please try again later.";
+    this.userFriendlyMessage =
+      userFriendlyMessage || 'An unexpected error occurred. Please try again later.';
     Error.captureStackTrace(this, this.constructor);
   }
 }
@@ -34,7 +35,7 @@ export class ValidationError extends AppError {
 }
 
 export function handleApiError(res: any, error: any) {
-  console.error("API Error:", error);
+  console.error('API Error:', error);
 
   if (error instanceof AppError) {
     return res.status(error.statusCode).json({
@@ -45,7 +46,7 @@ export function handleApiError(res: any, error: any) {
 
   // Default error response
   return res.status(500).json({
-    error: error.message || "Internal Server Error",
-    userMessage: "Something went wrong on our end. Please try again.",
+    error: error.message || 'Internal Server Error',
+    userMessage: 'Something went wrong on our end. Please try again.',
   });
 }

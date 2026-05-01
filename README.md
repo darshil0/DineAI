@@ -9,7 +9,7 @@ The system leverages a custom **Express/Node.js** agent orchestrator with a modu
 - **Chat History Persistence**: Conversations are saved to local storage, allowing you to pick up where you left off.
 - **Multi-Agent Orchestration**: A specialized pipeline of agents (Profile Builder, RAG Recommender, Trend Analyst, and Finalizer) working together.
 - **Adaptive Feedback Loop**: "Like" and "Dislike" system that refines your taste profile in real-time.
-- **Dynamic Filtering Engine**: Instantly refine recommendations by cuisine, price tier, and neighborhood.
+- **Advanced Multi-Select Filtering**: Instantly refine recommendations by multiple cuisines, price tiers, and neighborhoods simultaneously via an intuitive dropdown interface.
 - **Geolocation Awareness**: One-click neighborhood detection for hyper-local NYC recommendations.
 - **Skeleton Loading & Perceived Performance**: Custom skeleton screens provide immediate visual feedback while agents process in the background.
 - **High Resilience Architecture**: Sophisticated retry logic with exponential backoff ensures stability even during peak API traffic.
@@ -23,32 +23,32 @@ The system leverages a custom **Express/Node.js** agent orchestrator with a modu
 
 ## 🛠️ Technology Stack
 
-| Category | Technology | Version / Notes |
-|-----------|-------------|----------------|
-| Frontend | React + Tailwind CSS | Vite build system, Lucide Icons |
-| Backend | Node.js + Express | Custom Agent Orchestrator |
-| AI/LLM | Google Gemini API | `@google/genai` SDK |
-| Models | `gemini-3-flash-preview` | Text & Vision analysis |
-| Reasoning | `gemini-3.1-pro-preview` | Complex agent reasoning |
-| Embeddings | `gemini-embedding-2-preview` | Used for semantic search |
-| Vector DB | Custom In-Memory DB | Local semantic storage |
-| Web Search | Gemini Google Search Tool | Real-time trend retrieval |
-| Error Handling | Custom AppError System | Centralized, user-friendly feedback |
+| Category       | Technology                   | Version / Notes                     |
+| -------------- | ---------------------------- | ----------------------------------- |
+| Frontend       | React + Tailwind CSS         | Vite build system, Lucide Icons     |
+| Backend        | Node.js + Express            | Custom Agent Orchestrator           |
+| AI/LLM         | Google Gemini API            | `@google/genai` SDK                 |
+| Models         | `gemini-3-flash-preview`     | Text & Vision analysis              |
+| Reasoning      | `gemini-3.1-pro-preview`     | Complex agent reasoning             |
+| Embeddings     | `gemini-embedding-2-preview` | Used for semantic search            |
+| Vector DB      | Custom In-Memory DB          | Local semantic storage              |
+| Web Search     | Gemini Google Search Tool    | Real-time trend retrieval           |
+| Error Handling | Custom AppError System       | Centralized, user-friendly feedback |
 
 ## 🏗️ System Architecture
 
 DineAI comprises four coordinated layers that can operate sequentially or in parallel:
 
-| Layer | Component | Technology |
-|--------|------------|------------|
-| Data Ingestion | Restaurant knowledge base | Local in-memory Vector DB (`vectorDb.ts`) |
-| Agent Orchestration | Multi-agent coordination | Express.js custom orchestrator |
-| Agent Capabilities | Modular Agent Skills | Composable TypeScript functions (`/src/skills`) |
-| Retrieval | Semantic similarity search | Gemini Embeddings + Cosine Similarity |
-| Trend Analysis | Real-time web search | Gemini Google Search Tool |
-| Vision Analysis | Dining photo interpretation | Gemini Multimodal (`analyzeFoodPhoto` skill) |
-| Output Validation | Structured agent responses | Gemini `responseSchema` |
-| User Interface | Conversational chatbot | React + Tailwind CSS |
+| Layer               | Component                   | Technology                                      |
+| ------------------- | --------------------------- | ----------------------------------------------- |
+| Data Ingestion      | Restaurant knowledge base   | Local in-memory Vector DB (`vectorDb.ts`)       |
+| Agent Orchestration | Multi-agent coordination    | Express.js custom orchestrator                  |
+| Agent Capabilities  | Modular Agent Skills        | Composable TypeScript functions (`/src/skills`) |
+| Retrieval           | Semantic similarity search  | Gemini Embeddings + Cosine Similarity           |
+| Trend Analysis      | Real-time web search        | Gemini Google Search Tool                       |
+| Vision Analysis     | Dining photo interpretation | Gemini Multimodal (`analyzeFoodPhoto` skill)    |
+| Output Validation   | Structured agent responses  | Gemini `responseSchema`                         |
+| User Interface      | Conversational chatbot      | React + Tailwind CSS                            |
 
 ### Agent Design
 
@@ -60,10 +60,12 @@ DineAI comprises four coordinated layers that can operate sequentially or in par
 ## 🚦 Getting Started
 
 ### Prerequisites
+
 - Node.js (v18+)
 - A Google Gemini API Key
 
 ### Installation
+
 1. Clone the repository.
 2. Install dependencies:
    ```bash
@@ -79,12 +81,14 @@ DineAI comprises four coordinated layers that can operate sequentially or in par
    ```
 
 ## 📊 Success Metrics
-| Metric | Target |
-|--------|---------|
-| Retrieval Precision@5 | ≥ 70% |
-| Recommendation Relevance | ≥ 4.0 / 5.0 |
-| End-to-end Latency | < 15 seconds (P95) |
-| Agent Output Validity | 100% |
+
+| Metric                   | Target             |
+| ------------------------ | ------------------ |
+| Retrieval Precision@5    | ≥ 70%              |
+| Recommendation Relevance | ≥ 4.0 / 5.0        |
+| End-to-end Latency       | < 15 seconds (P95) |
+| Agent Output Validity    | 100%               |
 
 ## 📄 License
+
 MIT

@@ -18,7 +18,9 @@ interface CacheRow {
 
 export const embeddingCache = {
   get(id: string): number[] | null {
-    const row = db.prepare('SELECT embedding FROM embedding_cache WHERE id = ?').get(id) as CacheRow | undefined;
+    const row = db.prepare('SELECT embedding FROM embedding_cache WHERE id = ?').get(id) as
+      | CacheRow
+      | undefined;
     if (row) {
       return JSON.parse(row.embedding);
     }
@@ -26,6 +28,9 @@ export const embeddingCache = {
   },
 
   set(id: string, embedding: number[]) {
-    db.prepare('INSERT OR REPLACE INTO embedding_cache (id, embedding) VALUES (?, ?)').run(id, JSON.stringify(embedding));
-  }
+    db.prepare('INSERT OR REPLACE INTO embedding_cache (id, embedding) VALUES (?, ?)').run(
+      id,
+      JSON.stringify(embedding),
+    );
+  },
 };

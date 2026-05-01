@@ -1,40 +1,48 @@
-import { getGeminiClient } from "../lib/geminiClient.js";
-import { cleanJson } from "../lib/utils.js";
-import { UserTasteProfileSchema, UserTasteProfile } from "../schemas/index.js";
-import { PROFILE_BUILDER_SYSTEM, buildProfilePrompt } from "../prompts/index.js";
-import { getSkill } from "../skills/registry.js";
-import { ExtractCuisinesInput, ExtractCuisinesOutput } from "../skills/extractCuisines.js";
-import { AnalyzeFoodPhotoInput, AnalyzeFoodPhotoOutput } from "../skills/analyzeFoodPhoto.js";
-import { AgentServiceError, SkillError } from "../lib/errors.js";
-import { withRetry } from "../lib/utils.js";
+import { getGeminiClient } from '../lib/geminiClient.js';
+import { cleanJson } from '../lib/utils.js';
+import { UserTasteProfileSchema, UserTasteProfile } from '../schemas/index.js';
+import { PROFILE_BUILDER_SYSTEM, buildProfilePrompt } from '../prompts/index.js';
+import { getSkill } from '../skills/registry.js';
+import { ExtractCuisinesInput, ExtractCuisinesOutput } from '../skills/extractCuisines.js';
+import { AnalyzeFoodPhotoInput, AnalyzeFoodPhotoOutput } from '../skills/analyzeFoodPhoto.js';
+import { AgentServiceError, SkillError } from '../lib/errors.js';
+import { withRetry } from '../lib/utils.js';
 
 export async function buildProfile(
   message: string,
   history: string,
   currentProfile: string,
-  imageFile?: Express.Multer.File
+  imageFile?: Express.Multer.File,
 ): Promise<UserTasteProfile> {
   const ai = getGeminiClient();
-  console.log("Running Profile Builder Agent...");
-  
+  console.log('Running Profile Builder Agent...');
+
   // 1. Run Skills in parallel to gather insights
-  const extractCuisines = getSkill<ExtractCuisinesInput, ExtractCuisinesOutput>("extractCuisines");
-  const analyzeFoodPhoto = getSkill<AnalyzeFoodPhotoInput, AnalyzeFoodPhotoOutput>("analyzeFoodPhoto");
+  const extractCuisines = getSkill<ExtractCuisinesInput, ExtractCuisinesOutput>('extractCuisines');
+  const analyzeFoodPhoto = getSkill<AnalyzeFoodPhotoInput, AnalyzeFoodPhotoOutput>(
+    'analyzeFoodPhoto',
+  );
 
   if (!extractCuisines || !analyzeFoodPhoto) {
-    throw new Error("Required skills are not registered.");
+    throw new Error('Required skills are not registered.');
   }
 
   const skillPromises: Promise<any>[] = [
-    extractCuisines.run({ text: message }).catch(e => { throw new SkillError("extractCuisines", e); })
+    extractCuisines.run({ text: message }).catch((e) => {
+      throw new SkillError('extractCuisines', e);
+    }),
   ];
 
   if (imageFile) {
     skillPromises.push(
-      analyzeFoodPhoto.run({
-        mimeType: imageFile.mimetype,
-        data: imageFile.buffer.toString("base64")
-      }).catch(e => { throw new SkillError("analyzeFoodPhoto", e); })
+      analyzeFoodPhoto
+        .run({
+          mimeType: imageFile.mimetype,
+          data: imageFile.buffer.toString('base64'),
+        })
+        .catch((e) => {
+          throw new SkillError('analyzeFoodPhoto', e);
+        }),
     );
   }
 
@@ -42,35 +50,39 @@ export async function buildProfile(
 
   // 2. Combine insights and run the final Profile Builder Agent
   let enrichedMessage = message;
-  
+
   if (cuisinesOutput && cuisinesOutput.cuisines.length > 0) {
-    enrichedMessage += `\n\n[Skill Insight: User explicitly mentioned these cuisines: ${cuisinesOutput.cuisines.join(", ")}]`;
+    enrichedMessage += `\n\n[Skill Insight: User explicitly mentioned these cuisines: ${cuisinesOutput.cuisines.join(', ')}]`;
   }
 
   if (photoOutput) {
-    enrichedMessage += `\n\n[Skill Insight: User uploaded a photo of ${photoOutput.description}. Inferred cuisines: ${photoOutput.cuisines.join(", ")}. Inferred ambiance: ${photoOutput.ambiance.join(", ")}]`;
+    enrichedMessage += `\n\n[Skill Insight: User uploaded a photo of ${photoOutput.description}. Inferred cuisines: ${photoOutput.cuisines.join(', ')}. Inferred ambiance: ${photoOutput.ambiance.join(', ')}]`;
   }
 
-  const profileParts: any[] = [{ 
-    text: buildProfilePrompt(currentProfile, history, enrichedMessage)
-  }];
+  const profileParts: any[] = [
+    {
+      text: buildProfilePrompt(currentProfile, history, enrichedMessage),
+    },
+  ];
 
   try {
-    const profileResponse = await withRetry(() => ai.models.generateContent({
-      model: "gemini-3-flash-preview",
-      contents: { parts: profileParts },
-      config: {
-        responseMimeType: "application/json",
-        responseSchema: UserTasteProfileSchema,
-        systemInstruction: PROFILE_BUILDER_SYSTEM,
-      },
-    }));
+    const profileResponse = await withRetry(() =>
+      ai.models.generateContent({
+        model: 'gemini-3-flash-preview',
+        contents: { parts: profileParts },
+        config: {
+          responseMimeType: 'application/json',
+          responseSchema: UserTasteProfileSchema,
+          systemInstruction: PROFILE_BUILDER_SYSTEM,
+        },
+      }),
+    );
 
-    const userTasteProfile = JSON.parse(cleanJson(profileResponse.text || "{}"));
-    console.log("Taste Profile:", userTasteProfile);
+    const userTasteProfile = JSON.parse(cleanJson(profileResponse.text || '{}'));
+    console.log('Taste Profile:', userTasteProfile);
     return userTasteProfile;
   } catch (error: any) {
     if (error instanceof SkillError) throw error;
-    throw new AgentServiceError("Profile Builder", error);
+    throw new AgentServiceError('Profile Builder', error);
   }
 }

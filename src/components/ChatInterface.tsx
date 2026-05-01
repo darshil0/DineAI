@@ -1,9 +1,22 @@
 import React, { useState, useRef, useEffect } from 'react';
-import { Send, Image as ImageIcon, X, ChefHat, Trash2, Mic, MicOff, MapPin, Filter, SlidersHorizontal as Sliders, SlidersHorizontal } from 'lucide-react';
+import {
+  Send,
+  Image as ImageIcon,
+  X,
+  ChefHat,
+  Trash2,
+  Mic,
+  MicOff,
+  MapPin,
+  Filter,
+  SlidersHorizontal as Sliders,
+  SlidersHorizontal,
+} from 'lucide-react';
 import { motion, AnimatePresence } from 'motion/react';
 import { ChatMessage } from './ChatMessage.js';
 import { RecommendationCard } from './RecommendationCard.js';
 import { TasteProfileBadge } from './TasteProfileBadge.js';
+import { FilterControls } from './FilterControls.js';
 import { Recommendation, UserTasteProfile } from '../schemas/index.js';
 
 interface Message {
@@ -17,9 +30,9 @@ interface Message {
 }
 
 interface Filters {
-  cuisine: string | null;
-  price: string | null;
-  neighborhood: string | null;
+  cuisines: string[];
+  prices: string[];
+  neighborhoods: string[];
 }
 
 const STORAGE_KEY = 'dineai_chat_history';
@@ -61,9 +74,13 @@ export default function ChatInterface() {
   const [isListening, setIsListening] = useState(false);
   const [isLocating, setIsLocating] = useState(false);
   const [loadingStep, setLoadingStep] = useState<string>('');
-  const [filters, setFilters] = useState<Filters>({ cuisine: null, price: null, neighborhood: null });
+  const [filters, setFilters] = useState<Filters>({
+    cuisines: [],
+    prices: [],
+    neighborhoods: [],
+  });
   const [queuedFeedback, setQueuedFeedback] = useState<string[]>([]);
-  
+
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
   const textareaRef = useRef<HTMLTextAreaElement>(null);
@@ -78,7 +95,8 @@ export default function ChatInterface() {
 
   // Initialize Speech Recognition
   useEffect(() => {
-    const SpeechRecognition = (window as any).SpeechRecognition || (window as any).webkitSpeechRecognition;
+    const SpeechRecognition =
+      (window as any).SpeechRecognition || (window as any).webkitSpeechRecognition;
     if (SpeechRecognition) {
       const recognition = new SpeechRecognition() as SpeechRecognition;
       recognition.continuous = false;
@@ -87,7 +105,7 @@ export default function ChatInterface() {
 
       recognition.onresult = (event: SpeechRecognitionEvent) => {
         const transcript = event.results[0][0].transcript;
-        setInput(prev => {
+        setInput((prev) => {
           const newText = prev.trim() ? `${prev} ${transcript}` : transcript;
           return newText;
         });
@@ -137,7 +155,7 @@ export default function ChatInterface() {
         try {
           // Use search grounding or a simple reverse geocoding approach
           // For now, we'll just add a prompt to the input
-          setInput(prev => {
+          setInput((prev) => {
             const locStr = `[Near my current location: ${latitude.toFixed(4)}, ${longitude.toFixed(4)}]`;
             return prev.includes('[Near my current location') ? prev : `${prev} ${locStr}`.trim();
           });
@@ -151,16 +169,15 @@ export default function ChatInterface() {
         console.error('Geolocation error:', error);
         alert(`Failed to get location: ${error.message}`);
         setIsLocating(false);
-      }
+      },
     );
   };
 
   const handleRecommendationFeedback = (name: string, type: 'like' | 'dislike') => {
-    const feedbackText = type === 'like' 
-      ? `(Feedback: I loved ${name})`
-      : `(Feedback: I wasn't a fan of ${name})`;
-    
-    setQueuedFeedback(prev => [...prev, feedbackText]);
+    const feedbackText =
+      type === 'like' ? `(Feedback: I loved ${name})` : `(Feedback: I wasn't a fan of ${name})`;
+
+    setQueuedFeedback((prev) => [...prev, feedbackText]);
     console.log(`Feedback queued for ${name}: ${type}`);
   };
 
@@ -198,8 +215,9 @@ export default function ChatInterface() {
       {
         id: '1',
         role: 'assistant',
-        content: "Hi! I'm DineAI, your personal restaurant recommendation agent. Tell me what you're craving, your budget, or upload a photo of a dish you love, and I'll find the perfect spot for you in NYC!"
-      }
+        content:
+          "Hi! I'm DineAI, your personal restaurant recommendation agent. Tell me what you're craving, your budget, or upload a photo of a dish you love, and I'll find the perfect spot for you in NYC!",
+      },
     ]);
   };
 
@@ -247,9 +265,8 @@ export default function ChatInterface() {
   };
 
   const submitMessage = async () => {
-    const fullMessage = queuedFeedback.length > 0 
-      ? `${input} ${queuedFeedback.join(' ')}`.trim()
-      : input.trim();
+    const fullMessage =
+      queuedFeedback.length > 0 ? `${input} ${queuedFeedback.join(' ')}`.trim() : input.trim();
 
     if (!fullMessage && !selectedImage) return;
 
@@ -260,7 +277,7 @@ export default function ChatInterface() {
       image: imagePreview || undefined,
     };
 
-    setMessages(prev => [...prev, userMessage]);
+    setMessages((prev) => [...prev, userMessage]);
     const currentInput = fullMessage;
     const currentImage = selectedImage;
     const currentPreview = imagePreview;
@@ -269,16 +286,19 @@ export default function ChatInterface() {
     setQueuedFeedback([]);
     setSelectedImage(null);
     setImagePreview(null);
-    setFilters({ cuisine: null, price: null, neighborhood: null });
+    setFilters({ cuisines: [], prices: [], neighborhoods: [] });
     setIsLoading(true);
     setLoadingStep('Analyzing taste profile...');
 
     try {
       const formData = new FormData();
       formData.append('message', currentInput);
-      formData.append('history', JSON.stringify(messages.map(m => ({ role: m.role, content: m.content }))));
-      
-      const lastProfileMessage = [...messages].reverse().find(m => m.profile);
+      formData.append(
+        'history',
+        JSON.stringify(messages.map((m) => ({ role: m.role, content: m.content }))),
+      );
+
+      const lastProfileMessage = [...messages].reverse().find((m) => m.profile);
       if (lastProfileMessage?.profile) {
         formData.append('currentProfile', JSON.stringify(lastProfileMessage.profile));
       }
@@ -307,21 +327,23 @@ export default function ChatInterface() {
       const assistantMessage: Message = {
         id: (Date.now() + 1).toString(),
         role: 'assistant',
-        content: "Here are my top recommendations based on your taste profile and current trends:",
+        content: 'Here are my top recommendations based on your taste profile and current trends:',
         recommendations: data.recommendations,
         profile: data.profile,
         trends: data.trends,
       };
 
-      setMessages(prev => [...prev, assistantMessage]);
-
+      setMessages((prev) => [...prev, assistantMessage]);
     } catch (error: any) {
       console.error('Error:', error);
-      setMessages(prev => [...prev, {
-        id: (Date.now() + 1).toString(),
-        role: 'assistant',
-        content: `Sorry, I encountered an error: ${error.message}`
-      }]);
+      setMessages((prev) => [
+        ...prev,
+        {
+          id: (Date.now() + 1).toString(),
+          role: 'assistant',
+          content: `Sorry, I encountered an error: ${error.message}`,
+        },
+      ]);
     } finally {
       setIsLoading(false);
       setLoadingStep('');
@@ -334,12 +356,12 @@ export default function ChatInterface() {
   };
 
   return (
-    <div className="flex flex-col h-screen max-w-4xl mx-auto bg-stone-50 shadow-2xl overflow-hidden">
+    <div className="mx-auto flex h-screen max-w-4xl flex-col overflow-hidden bg-stone-50 shadow-2xl">
       {/* Header */}
-      <header className="bg-white border-b border-stone-200 px-6 py-4 flex items-center justify-between z-10">
+      <header className="z-10 flex items-center justify-between border-b border-stone-200 bg-white px-6 py-4">
         <div className="flex items-center gap-3">
-          <div className="bg-orange-100 p-2 rounded-xl">
-            <ChefHat className="w-6 h-6 text-orange-600" />
+          <div className="rounded-xl bg-orange-100 p-2">
+            <ChefHat className="h-6 w-6 text-orange-600" />
           </div>
           <div>
             <h1 className="text-xl font-bold text-stone-900">DineAI</h1>
@@ -348,11 +370,11 @@ export default function ChatInterface() {
         </div>
         <button
           onClick={clearHistory}
-          className="p-2 text-stone-400 hover:text-red-500 hover:bg-red-50 transition-all rounded-lg"
+          className="rounded-lg p-2 text-stone-400 transition-all hover:bg-red-50 hover:text-red-500"
           title="Clear History"
           aria-label="Clear conversation history"
         >
-          <Trash2 className="w-5 h-5" />
+          <Trash2 className="h-5 w-5" />
         </button>
       </header>
 
@@ -367,127 +389,93 @@ export default function ChatInterface() {
               className="mb-6"
             >
               {msg.role === 'user' && msg.image && (
-                <div className="flex justify-end mb-2">
-                  <img src={msg.image} alt="Uploaded food" className="max-w-xs rounded-2xl object-cover shadow-sm border border-stone-200" />
+                <div className="mb-2 flex justify-end">
+                  <img
+                    src={msg.image}
+                    alt="Uploaded food"
+                    className="max-w-xs rounded-2xl border border-stone-200 object-cover shadow-sm"
+                  />
                 </div>
               )}
-              
+
               <ChatMessage role={msg.role} content={msg.content} />
 
               {msg.role === 'assistant' && msg.profile && (
-                <motion.div 
+                <motion.div
                   initial={{ opacity: 0, scale: 0.95 }}
                   animate={{ opacity: 1, scale: 1 }}
                   transition={{ delay: 0.2 }}
-                  className="pl-14 pr-4"
+                  className="pr-4 pl-14"
                 >
                   <TasteProfileBadge profile={msg.profile} />
                 </motion.div>
               )}
 
               {msg.role === 'assistant' && msg.recommendations && (
-                <div className="pl-14 pr-4 space-y-4">
-                  {/* Local filters for this specific set of recommendations */}
+                <div className="space-y-4 pr-4 pl-14">
+                  {/* Advanced Multi-select filters */}
                   {msg.id === messages[messages.length - 1]?.id && (
-                    <div className="flex flex-col gap-3 mb-4 p-4 bg-stone-100/50 rounded-2xl border border-stone-200/50">
-                      <div className="flex items-center justify-between">
-                        <div className="flex items-center gap-2 text-stone-900">
-                          <SlidersHorizontal className="w-4 h-4" />
-                          <span className="text-xs font-bold uppercase tracking-wider">Refine Results</span>
-                        </div>
-                        {(filters.cuisine || filters.price || filters.neighborhood) && (
-                          <button 
-                            onClick={() => setFilters({ cuisine: null, price: null, neighborhood: null })}
-                            className="text-[10px] font-bold text-orange-600 uppercase hover:underline"
-                          >
-                            Clear All
-                          </button>
-                        )}
-                      </div>
-                      
-                      <div className="flex flex-wrap gap-2">
-                        {Array.from(new Set(msg.recommendations.map(r => r.cuisine).filter(Boolean))).map(cuisine => (
-                          <button
-                            key={cuisine}
-                            onClick={() => setFilters(prev => ({ ...prev, cuisine: prev.cuisine === cuisine ? null : cuisine as string }))}
-                            className={`px-3 py-1 rounded-full text-[11px] font-medium transition-all ${
-                              filters.cuisine === cuisine 
-                                ? 'bg-orange-500 text-white border-orange-500 shadow-sm' 
-                                : 'bg-white text-stone-600 border border-stone-200 hover:border-stone-300'
-                            }`}
-                          >
-                            {cuisine}
-                          </button>
-                        ))}
-                        {Array.from(new Set(msg.recommendations.map(r => r.price_level).filter(Boolean))).map(price => (
-                          <button
-                            key={price}
-                            onClick={() => setFilters(prev => ({ ...prev, price: prev.price === price ? null : price as string }))}
-                            className={`px-3 py-1 rounded-full text-[11px] font-medium transition-all ${
-                              filters.price === price 
-                                ? 'bg-emerald-500 text-white border-emerald-500 shadow-sm' 
-                                : 'bg-white text-stone-600 border border-stone-200 hover:border-emerald-200'
-                            }`}
-                          >
-                            {price}
-                          </button>
-                        ))}
-                        {Array.from(new Set(msg.recommendations.map(r => r.neighborhood).filter(Boolean))).map(nb => (
-                          <button
-                            key={nb}
-                            onClick={() => setFilters(prev => ({ ...prev, neighborhood: prev.neighborhood === nb ? null : nb as string }))}
-                            className={`px-3 py-1 rounded-full text-[11px] font-medium transition-all ${
-                              filters.neighborhood === nb 
-                                ? 'bg-blue-500 text-white border-blue-500 shadow-sm' 
-                                : 'bg-white text-stone-600 border border-stone-200 hover:border-blue-200'
-                            }`}
-                          >
-                            {nb}
-                          </button>
-                        ))}
-                      </div>
-                    </div>
+                    <FilterControls
+                      recommendations={msg.recommendations}
+                      filters={filters}
+                      onFilterChange={setFilters}
+                    />
                   )}
 
                   {msg.recommendations
-                    .filter(r => {
-                      const matchCuisine = !filters.cuisine || r.cuisine === filters.cuisine;
-                      const matchPrice = !filters.price || r.price_level === filters.price;
-                      const matchNeighborhood = !filters.neighborhood || r.neighborhood === filters.neighborhood;
+                    .filter((r) => {
+                      const matchCuisine =
+                        filters.cuisines.length === 0 ||
+                        (r.cuisine && filters.cuisines.includes(r.cuisine));
+                      const matchPrice =
+                        filters.prices.length === 0 ||
+                        (r.price_level && filters.prices.includes(r.price_level));
+                      const matchNeighborhood =
+                        filters.neighborhoods.length === 0 ||
+                        (r.neighborhood && filters.neighborhoods.includes(r.neighborhood));
                       return matchCuisine && matchPrice && matchNeighborhood;
                     })
                     .map((rec) => (
-                    <motion.div
-                      key={`${msg.id}-${rec.name}`}
-                      initial={{ opacity: 0, y: 10 }}
-                      animate={{ opacity: 1, y: 0 }}
-                      transition={{ delay: 0.3 }}
-                    >
-                      <RecommendationCard 
-                        recommendation={rec} 
-                        onFeedback={handleRecommendationFeedback}
-                      />
-                    </motion.div>
-                  ))}
+                      <motion.div
+                        key={`${msg.id}-${rec.name}`}
+                        initial={{ opacity: 0, y: 10 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        transition={{ delay: 0.3 }}
+                      >
+                        <RecommendationCard
+                          recommendation={rec}
+                          onFeedback={handleRecommendationFeedback}
+                        />
+                      </motion.div>
+                    ))}
 
-                  {msg.recommendations && msg.recommendations.length > 0 && 
-                   msg.recommendations.filter(r => {
-                      const matchCuisine = !filters.cuisine || r.cuisine === filters.cuisine;
-                      const matchPrice = !filters.price || r.price_level === filters.price;
-                      const matchNeighborhood = !filters.neighborhood || r.neighborhood === filters.neighborhood;
+                  {msg.recommendations &&
+                    msg.recommendations.length > 0 &&
+                    msg.recommendations.filter((r) => {
+                      const matchCuisine =
+                        filters.cuisines.length === 0 ||
+                        (r.cuisine && filters.cuisines.includes(r.cuisine));
+                      const matchPrice =
+                        filters.prices.length === 0 ||
+                        (r.price_level && filters.prices.includes(r.price_level));
+                      const matchNeighborhood =
+                        filters.neighborhoods.length === 0 ||
+                        (r.neighborhood && filters.neighborhoods.includes(r.neighborhood));
                       return matchCuisine && matchPrice && matchNeighborhood;
                     }).length === 0 && (
-                    <div className="p-8 text-center bg-stone-100 rounded-2xl border border-dashed border-stone-300">
-                      <Filter className="w-8 h-8 text-stone-300 mx-auto mb-2" />
-                      <p className="text-sm text-stone-500">No matches for current filters.</p>
-                      <button 
-                        onClick={() => setFilters({ cuisine: null, price: null, neighborhood: null })}
-                        className="mt-2 text-xs font-bold text-orange-600 uppercase hover:underline"
-                      >
-                        Clear Filters
-                      </button>
-                    </div>
-                  )}
+                      <div className="rounded-2xl border border-dashed border-stone-300 bg-stone-100 p-8 text-center">
+                        <Filter className="mx-auto mb-2 h-8 w-8 text-stone-300" />
+                        <p className="text-sm text-stone-500">No matches for current filters.</p>
+                        <button
+                          onClick={() =>
+                            setFilters({ cuisines: [], prices: [], neighborhoods: [] })
+                          }
+                          className="mt-2 text-xs font-bold text-orange-600 uppercase hover:underline"
+                        >
+                          Clear Filters
+                        </button>
+                      </div>
+                    )}
                 </div>
               )}
             </motion.div>
@@ -495,16 +483,12 @@ export default function ChatInterface() {
         </AnimatePresence>
 
         {isLoading && (
-          <motion.div 
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            className="mb-8"
-          >
+          <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="mb-8">
             <ChatMessage role="assistant" content={loadingStep} isLoading={true} />
-            
-            <div className="pl-14 pr-4 space-y-6">
+
+            <div className="space-y-6 pr-4 pl-14">
               <TasteProfileBadge loading={true} />
-              
+
               <div className="space-y-4">
                 <RecommendationCard loading={true} />
                 <RecommendationCard loading={true} />
@@ -517,29 +501,33 @@ export default function ChatInterface() {
       </div>
 
       {/* Input Area */}
-      <div className="bg-white border-t border-stone-200 p-4">
+      <div className="border-t border-stone-200 bg-white p-4">
         <AnimatePresence>
           {imagePreview && (
-            <motion.div 
+            <motion.div
               initial={{ opacity: 0, y: 10, height: 0 }}
               animate={{ opacity: 1, y: 0, height: 'auto' }}
               exit={{ opacity: 0, y: 10, height: 0 }}
-              className="mb-3 relative inline-block"
+              className="relative mb-3 inline-block"
             >
-              <img src={imagePreview} alt="Preview" className="h-20 rounded-lg object-cover border border-stone-200 shadow-sm" />
+              <img
+                src={imagePreview}
+                alt="Preview"
+                className="h-20 rounded-lg border border-stone-200 object-cover shadow-sm"
+              />
               <button
                 onClick={removeImage}
-                className="absolute -top-2 -right-2 bg-stone-800 text-white rounded-full p-1 hover:bg-stone-700 transition-colors shadow-sm"
+                className="absolute -top-2 -right-2 rounded-full bg-stone-800 p-1 text-white shadow-sm transition-colors hover:bg-stone-700"
                 aria-label="Remove image"
               >
-                <X className="w-3 h-3" />
+                <X className="h-3 w-3" />
               </button>
             </motion.div>
           )}
         </AnimatePresence>
 
-        <form onSubmit={handleSubmit} className="flex gap-2 items-end">
-          <div className="flex-1 bg-stone-100 rounded-2xl border border-stone-200 focus-within:border-orange-500 focus-within:ring-1 focus-within:ring-orange-500 transition-all flex items-end p-1">
+        <form onSubmit={handleSubmit} className="flex items-end gap-2">
+          <div className="flex flex-1 items-end rounded-2xl border border-stone-200 bg-stone-100 p-1 transition-all focus-within:border-orange-500 focus-within:ring-1 focus-within:ring-orange-500">
             <input
               type="file"
               accept="image/*"
@@ -550,39 +538,41 @@ export default function ChatInterface() {
             <button
               type="button"
               onClick={toggleListening}
-              className={`p-3 transition-colors rounded-xl relative ${
-                isListening 
-                  ? 'text-red-500 bg-red-50 animate-pulse' 
+              className={`relative rounded-xl p-3 transition-colors ${
+                isListening
+                  ? 'animate-pulse bg-red-50 text-red-500'
                   : 'text-stone-400 hover:text-orange-500'
               }`}
-              title={isListening ? "Stop listening" : "Start voice to text"}
-              aria-label={isListening ? "Stop listening" : "Start voice to text"}
+              title={isListening ? 'Stop listening' : 'Start voice to text'}
+              aria-label={isListening ? 'Stop listening' : 'Start voice to text'}
             >
-              {isListening ? <MicOff className="w-5 h-5" /> : <Mic className="w-5 h-5" />}
+              {isListening ? <MicOff className="h-5 w-5" /> : <Mic className="h-5 w-5" />}
               {isListening && (
-                <span className="absolute top-2 right-2 w-2 h-2 bg-red-500 rounded-full animate-ping" />
+                <span className="absolute top-2 right-2 h-2 w-2 animate-ping rounded-full bg-red-500" />
               )}
             </button>
             <button
               type="button"
               onClick={detectLocation}
               disabled={isLocating}
-              className={`p-3 transition-colors rounded-xl ${
-                isLocating ? 'text-orange-500 animate-pulse' : 'text-stone-400 hover:text-orange-500'
+              className={`rounded-xl p-3 transition-colors ${
+                isLocating
+                  ? 'animate-pulse text-orange-500'
+                  : 'text-stone-400 hover:text-orange-500'
               }`}
               title="Detect current neighborhood"
               aria-label="Detect current neighborhood"
             >
-              <MapPin className="w-5 h-5" />
+              <MapPin className="h-5 w-5" />
             </button>
             <button
               type="button"
               onClick={() => fileInputRef.current?.click()}
-              className="p-3 text-stone-400 hover:text-orange-500 transition-colors rounded-xl"
+              className="rounded-xl p-3 text-stone-400 transition-colors hover:text-orange-500"
               title="Upload image"
               aria-label="Upload image"
             >
-              <ImageIcon className="w-5 h-5" />
+              <ImageIcon className="h-5 w-5" />
             </button>
             <textarea
               ref={textareaRef}
@@ -595,17 +585,17 @@ export default function ChatInterface() {
                 }
               }}
               placeholder="I'm looking for a cozy Italian spot for a date night..."
-              className="flex-1 bg-transparent border-none focus:ring-0 resize-none max-h-32 min-h-[44px] py-3 px-2 text-stone-800 placeholder-stone-400 outline-none"
+              className="max-h-32 min-h-[44px] flex-1 resize-none border-none bg-transparent px-2 py-3 text-stone-800 placeholder-stone-400 outline-none focus:ring-0"
               rows={1}
             />
           </div>
           <button
             type="submit"
             disabled={(!input.trim() && !selectedImage) || isLoading}
-            className="bg-orange-600 text-white p-4 rounded-2xl hover:bg-orange-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors shadow-sm flex-shrink-0"
+            className="flex-shrink-0 rounded-2xl bg-orange-600 p-4 text-white shadow-sm transition-colors hover:bg-orange-700 disabled:cursor-not-allowed disabled:opacity-50"
             aria-label="Send message"
           >
-            <Send className="w-5 h-5" />
+            <Send className="h-5 w-5" />
           </button>
         </form>
       </div>

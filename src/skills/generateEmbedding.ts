@@ -1,5 +1,5 @@
-import { AgentSkill } from "./types.js";
-import { getGeminiClient } from "../lib/geminiClient.js";
+import { AgentSkill } from './types.js';
+import { getGeminiClient } from '../lib/geminiClient.js';
 
 export interface GenerateEmbeddingInput {
   text: string;
@@ -10,19 +10,23 @@ export interface GenerateEmbeddingOutput {
 }
 
 export const generateEmbeddingSkill: AgentSkill<GenerateEmbeddingInput, GenerateEmbeddingOutput> = {
-  name: "generateEmbedding",
-  description: "Generates a vector embedding for a given text string using Gemini.",
+  name: 'generateEmbedding',
+  description: 'Generates a vector embedding for a given text string using Gemini.',
   async run({ text }) {
     const ai = getGeminiClient();
     const response = await ai.models.embedContent({
-      model: "gemini-embedding-2-preview",
+      model: 'gemini-embedding-2-preview',
       contents: text,
     });
-    
-    if (!response.embeddings || response.embeddings.length === 0 || !response.embeddings[0].values) {
-      throw new Error("Failed to generate embedding");
+
+    if (
+      !response.embeddings ||
+      response.embeddings.length === 0 ||
+      !response.embeddings[0].values
+    ) {
+      throw new Error('Failed to generate embedding');
     }
-    
+
     return { embedding: response.embeddings[0].values };
   },
 };

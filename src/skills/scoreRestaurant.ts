@@ -1,6 +1,6 @@
-import { AgentSkill } from "./types.js";
-import { UserTasteProfile } from "../schemas/index.js";
-import { Restaurant } from "../data/restaurants.js";
+import { AgentSkill } from './types.js';
+import { UserTasteProfile } from '../schemas/index.js';
+import { Restaurant } from '../data/restaurants.js';
 
 interface ScoreInput {
   profile: UserTasteProfile;
@@ -13,20 +13,20 @@ interface ScoreOutput {
 }
 
 export const scoreRestaurantSkill: AgentSkill<ScoreInput, ScoreOutput> = {
-  name: "scoreRestaurant",
-  description: "Computes an overall match score between a user taste profile and a restaurant.",
+  name: 'scoreRestaurant',
+  description: 'Computes an overall match score between a user taste profile and a restaurant.',
   async run({ profile, restaurant, similarity }) {
     let score = 0;
 
     // 1. Base on vector similarity if provided
-    if (typeof similarity === "number") {
+    if (typeof similarity === 'number') {
       // similarity assumed [0, 1]; weight it heavily
       score += similarity * 0.5;
     }
 
     // 2. Cuisine match
     if (profile.cuisines?.length) {
-      const lowerCuisines = profile.cuisines.map(c => c.toLowerCase());
+      const lowerCuisines = profile.cuisines.map((c) => c.toLowerCase());
       if (lowerCuisines.includes(restaurant.cuisine.toLowerCase())) {
         score += 0.3;
       }
@@ -34,7 +34,7 @@ export const scoreRestaurantSkill: AgentSkill<ScoreInput, ScoreOutput> = {
 
     // 3. Price match
     if (profile.price_range && restaurant.price_tier) {
-      const priceMap: Record<string, number> = { "$": 1, "$$": 2, "$$$": 3, "$$$$": 4 };
+      const priceMap: Record<string, number> = { $: 1, $$: 2, $$$: 3, $$$$: 4 };
       const userPrice = priceMap[profile.price_range] || 0;
       const restaurantPrice = priceMap[restaurant.price_tier] || 0;
 
@@ -52,7 +52,7 @@ export const scoreRestaurantSkill: AgentSkill<ScoreInput, ScoreOutput> = {
 
     // 4. Ambiance overlap
     if (profile.ambiance?.length && restaurant.tags?.length) {
-      const lowerTags = restaurant.tags.map(t => t.toLowerCase());
+      const lowerTags = restaurant.tags.map((t) => t.toLowerCase());
       const hasAmbianceMatch = profile.ambiance.some((a) => lowerTags.includes(a.toLowerCase()));
       if (hasAmbianceMatch) {
         score += 0.2;
@@ -61,17 +61,21 @@ export const scoreRestaurantSkill: AgentSkill<ScoreInput, ScoreOutput> = {
 
     // 5. Neighborhood match
     if (profile.neighborhoods?.length && restaurant.neighborhood) {
-      const lowerNeighborhoods = profile.neighborhoods.map(n => n.toLowerCase());
+      const lowerNeighborhoods = profile.neighborhoods.map((n) => n.toLowerCase());
       if (lowerNeighborhoods.includes(restaurant.neighborhood.toLowerCase())) {
         score += 0.2;
       }
     }
 
     // 6. Dietary compatibility
-    if (profile.dietary_notes && profile.dietary_notes.toLowerCase() !== "none" && restaurant.tags?.length) {
-      const lowerTags = restaurant.tags.map(t => t.toLowerCase());
+    if (
+      profile.dietary_notes &&
+      profile.dietary_notes.toLowerCase() !== 'none' &&
+      restaurant.tags?.length
+    ) {
+      const lowerTags = restaurant.tags.map((t) => t.toLowerCase());
       const dietaryNote = profile.dietary_notes.toLowerCase();
-      if (lowerTags.some(tag => tag.includes(dietaryNote) || dietaryNote.includes(tag))) {
+      if (lowerTags.some((tag) => tag.includes(dietaryNote) || dietaryNote.includes(tag))) {
         score += 0.1;
       }
     }

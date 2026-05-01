@@ -14,12 +14,16 @@ The application uses a sequential pipeline of specialized agents to deliver high
 ## 🛡️ Reliability & Resilience
 
 ### 1. API Retry Logic
+
 To handle transient `429 Too Many Requests` errors from the Gemini API, **all model calls must be wrapped in the `withRetry` utility** found in `src/lib/utils.ts`.
+
 - **Standard Pattern**: `await withRetry(() => ai.models.generateContent({ ... }))`
 - **Configuration**: Uses exponential backoff (starting at 1s) with a maximum of 3 retries.
 
 ### 2. Embeddings Cache
+
 The application uses a persistent SQLite cache for vector embeddings (`embeddings_cache.db`) to:
+
 - Avoid redundant API calls for static restaurant data.
 - Speed up the `ingestRestaurants` script significantly.
 - Minimize development costs and latency.
@@ -28,24 +32,32 @@ The application uses a persistent SQLite cache for vector embeddings (`embedding
 ## 🎨 Frontend & UX Patterns
 
 ### 1. Skeleton Loading
+
 To improve perceived performance during the multi-agent processing loop, use the `loading` prop on these components:
+
 - `TasteProfileBadge`: Shows a shimmering identity skeleton.
 - `RecommendationCard`: Shows a shimmering card skeleton.
 - These are integrated into `ChatInterface.tsx` when `isLoading` is true.
 
 ### 2. Auto-Focus
+
 The chat input textarea should automatically regain focus whenever:
+
 - The page first loads.
 - A loading operation completes, allowing the user to continue the conversation immediately.
 
 ### 3. Feedback Loop
+
 Users can provide "Like" or "Dislike" feedback on recommendations. This feedback is:
+
 - Queued in the `ChatInterface` state.
 - Automatically appended as high-priority natural language context to the next user message sent to the Profile Builder.
 - Used to explicitly populate `disliked_cuisines` and `avoid_patterns` in the taste profile.
 
 ### 4. Dynamic Filtering
+
 The `ChatInterface` implements a client-side filtering layer for the latest assistant message:
+
 - Valid facets are extracted dynamically from the current recommendation set (Cuisine, Price Level, Neighborhood).
 - Filters are reset automatically upon submitting a new request to ensure consistency.
 
@@ -58,6 +70,7 @@ The `ChatInterface` implements a client-side filtering layer for the latest assi
 ## 🧪 Testing Utilities
 
 When modifying core logic, run the built-in tests to ensure stability:
+
 ```bash
 npx tsx src/lib/__tests__/utils.test.ts
 npx tsx src/lib/__tests__/vectorDb.test.ts

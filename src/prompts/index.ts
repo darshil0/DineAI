@@ -21,11 +21,13 @@ Output: {
 }`;
 
 export const buildProfilePrompt = (currentProfile: string, history: string, message: string) => {
-  let formattedHistory = "None";
-  if (history && history !== "None") {
+  let formattedHistory = 'None';
+  if (history && history !== 'None') {
     try {
       const historyArr = JSON.parse(history);
-      formattedHistory = historyArr.map((m: any) => `${m.role.toUpperCase()}: ${m.content}`).join("\n");
+      formattedHistory = historyArr
+        .map((m: any) => `${m.role.toUpperCase()}: ${m.content}`)
+        .join('\n');
     } catch (e) {
       formattedHistory = history;
     }
@@ -99,12 +101,20 @@ CRITICAL RULES:
 EXAMPLE RATIONALE:
 "L'Artusi is a perfect match for your date night in the West Village. It hits your budget ($$$) and offers the lively, romantic ambiance you're looking for, plus their house-made pasta is legendary."`;
 
-export const buildFinalizerPrompt = (profile: string, message: string, candidates: string, trends: string, history: string) => {
-  let formattedHistory = "None";
-  if (history && history !== "None") {
+export const buildFinalizerPrompt = (
+  profile: string,
+  message: string,
+  candidates: string,
+  trends: string,
+  history: string,
+) => {
+  let formattedHistory = 'None';
+  if (history && history !== 'None') {
     try {
       const historyArr = JSON.parse(history);
-      formattedHistory = historyArr.map((m: any) => `${m.role.toUpperCase()}: ${m.content}`).join("\n");
+      formattedHistory = historyArr
+        .map((m: any) => `${m.role.toUpperCase()}: ${m.content}`)
+        .join('\n');
     } catch (e) {
       formattedHistory = history;
     }

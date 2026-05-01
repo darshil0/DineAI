@@ -1,6 +1,15 @@
-import React from "react";
-import { UserTasteProfile } from "../schemas/index.js";
-import { Utensils, DollarSign, Sparkles, AlertCircle, CalendarHeart, MapPin, Ban, Heart } from "lucide-react";
+import React from 'react';
+import { UserTasteProfile } from '../schemas/index.js';
+import {
+  Utensils,
+  DollarSign,
+  Sparkles,
+  AlertCircle,
+  CalendarHeart,
+  MapPin,
+  Ban,
+  Heart,
+} from 'lucide-react';
 
 interface TasteProfileBadgeProps {
   profile?: UserTasteProfile | null;
@@ -10,16 +19,16 @@ interface TasteProfileBadgeProps {
 export const TasteProfileBadge: React.FC<TasteProfileBadgeProps> = ({ profile, loading }) => {
   if (loading) {
     return (
-      <div className="bg-stone-50 border border-stone-200 rounded-xl p-4 shadow-sm mb-6 max-w-2xl mx-auto animate-pulse">
-        <div className="flex items-center gap-2 mb-3">
-          <div className="w-4 h-4 bg-indigo-200 rounded-full" />
-          <div className="h-4 w-32 bg-stone-200 rounded" />
+      <div className="mx-auto mb-6 max-w-2xl animate-pulse rounded-xl border border-stone-200 bg-stone-50 p-4 shadow-sm">
+        <div className="mb-3 flex items-center gap-2">
+          <div className="h-4 w-4 rounded-full bg-indigo-200" />
+          <div className="h-4 w-32 rounded bg-stone-200" />
         </div>
         <div className="flex flex-wrap gap-2">
-          <div className="h-6 w-20 bg-indigo-100 rounded-full" />
-          <div className="h-6 w-16 bg-emerald-100 rounded-full" />
-          <div className="h-6 w-24 bg-stone-200 rounded-full" />
-          <div className="h-6 w-20 bg-pink-100 rounded-full" />
+          <div className="h-6 w-20 rounded-full bg-indigo-100" />
+          <div className="h-6 w-16 rounded-full bg-emerald-100" />
+          <div className="h-6 w-24 rounded-full bg-stone-200" />
+          <div className="h-6 w-20 rounded-full bg-pink-100" />
         </div>
       </div>
     );
@@ -35,59 +44,81 @@ export const TasteProfileBadge: React.FC<TasteProfileBadgeProps> = ({ profile, l
   const hasAvoidPatterns = profile.avoid_patterns && profile.avoid_patterns.length > 0;
 
   return (
-    <div className="bg-white border border-stone-200 rounded-xl p-5 shadow-sm mb-6 max-w-2xl mx-auto">
-      <div className="flex items-center justify-between mb-4 pb-3 border-b border-stone-100">
+    <div className="mx-auto mb-6 max-w-2xl rounded-xl border border-stone-200 bg-white p-5 shadow-sm">
+      <div className="mb-4 flex items-center justify-between border-b border-stone-100 pb-3">
         <div className="flex items-center gap-2">
-          <Sparkles className="w-4 h-4 text-indigo-600" />
-          <h4 className="text-xs font-bold text-stone-900 uppercase tracking-[0.1em]">Taste Profile</h4>
+          <Sparkles className="h-4 w-4 text-indigo-600" />
+          <h4 className="text-xs font-bold tracking-[0.1em] text-stone-900 uppercase">
+            Taste Profile
+          </h4>
         </div>
-        <div className="flex items-center gap-1.5 px-2 py-1 rounded-md bg-stone-100 text-[10px] font-bold text-stone-500 uppercase tracking-wider">
-          <Heart className="w-3 h-3 text-rose-500 fill-current" />
+        <div className="flex items-center gap-1.5 rounded-md bg-stone-100 px-2 py-1 text-[10px] font-bold tracking-wider text-stone-500 uppercase">
+          <Heart className="h-3 w-3 fill-current text-rose-500" />
           Refined
         </div>
       </div>
-      
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+
+      <div className="grid grid-cols-1 gap-6 md:grid-cols-2">
         <div className="space-y-4">
           <div>
-            <p className="text-[10px] font-bold text-stone-400 uppercase tracking-widest mb-2">Preferences</p>
+            <p className="mb-2 text-[10px] font-bold tracking-widest text-stone-400 uppercase">
+              Preferences
+            </p>
             <div className="flex flex-wrap gap-1.5">
-              {hasCuisines && profile.cuisines!.map((cuisine) => (
-                <span key={cuisine} className="inline-flex items-center gap-1 px-2 py-0.5 rounded-lg bg-indigo-50 text-indigo-700 text-[11px] font-medium border border-indigo-100">
-                  {cuisine}
-                </span>
-              ))}
-              
+              {hasCuisines &&
+                profile.cuisines!.map((cuisine) => (
+                  <span
+                    key={cuisine}
+                    className="inline-flex items-center gap-1 rounded-lg border border-indigo-100 bg-indigo-50 px-2 py-0.5 text-[11px] font-medium text-indigo-700"
+                  >
+                    {cuisine}
+                  </span>
+                ))}
+
               {profile.price_range && (
-                <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-lg bg-emerald-50 text-emerald-700 text-[11px] font-medium border border-emerald-100">
+                <span className="inline-flex items-center gap-1 rounded-lg border border-emerald-100 bg-emerald-50 px-2 py-0.5 text-[11px] font-medium text-emerald-700">
                   {profile.price_range}
                 </span>
               )}
 
-              {hasAmbiance && profile.ambiance!.map((amb) => (
-                <span key={amb} className="inline-flex items-center gap-1 px-2 py-0.5 rounded-lg bg-stone-100 text-stone-700 text-[11px] font-medium border border-stone-200">
-                  {amb}
-                </span>
-              ))}
+              {hasAmbiance &&
+                profile.ambiance!.map((amb) => (
+                  <span
+                    key={amb}
+                    className="inline-flex items-center gap-1 rounded-lg border border-stone-200 bg-stone-100 px-2 py-0.5 text-[11px] font-medium text-stone-700"
+                  >
+                    {amb}
+                  </span>
+                ))}
             </div>
           </div>
 
           {(hasNeighborhoods || hasOccasions) && (
             <div>
-              <p className="text-[10px] font-bold text-stone-400 uppercase tracking-widest mb-2">Context</p>
+              <p className="mb-2 text-[10px] font-bold tracking-widest text-stone-400 uppercase">
+                Context
+              </p>
               <div className="flex flex-wrap gap-1.5">
-                {hasNeighborhoods && profile.neighborhoods!.map((nb) => (
-                  <span key={nb} className="inline-flex items-center gap-1 px-2 py-0.5 rounded-lg bg-blue-50 text-blue-700 text-[11px] font-medium border border-blue-100">
-                    <MapPin className="w-2.5 h-2.5" />
-                    {nb}
-                  </span>
-                ))}
-                {hasOccasions && profile.special_occasions!.map((occ) => (
-                  <span key={occ} className="inline-flex items-center gap-1 px-2 py-0.5 rounded-lg bg-rose-50 text-rose-700 text-[11px] font-medium border border-rose-100">
-                    <CalendarHeart className="w-2.5 h-2.5" />
-                    {occ}
-                  </span>
-                ))}
+                {hasNeighborhoods &&
+                  profile.neighborhoods!.map((nb) => (
+                    <span
+                      key={nb}
+                      className="inline-flex items-center gap-1 rounded-lg border border-blue-100 bg-blue-50 px-2 py-0.5 text-[11px] font-medium text-blue-700"
+                    >
+                      <MapPin className="h-2.5 w-2.5" />
+                      {nb}
+                    </span>
+                  ))}
+                {hasOccasions &&
+                  profile.special_occasions!.map((occ) => (
+                    <span
+                      key={occ}
+                      className="inline-flex items-center gap-1 rounded-lg border border-rose-100 bg-rose-50 px-2 py-0.5 text-[11px] font-medium text-rose-700"
+                    >
+                      <CalendarHeart className="h-2.5 w-2.5" />
+                      {occ}
+                    </span>
+                  ))}
               </div>
             </div>
           )}
@@ -95,28 +126,40 @@ export const TasteProfileBadge: React.FC<TasteProfileBadgeProps> = ({ profile, l
 
         <div className="space-y-4">
           <div>
-            <p className="text-[10px] font-bold text-stone-400 uppercase tracking-widest mb-2">Avoids</p>
+            <p className="mb-2 text-[10px] font-bold tracking-widest text-stone-400 uppercase">
+              Avoids
+            </p>
             <div className="flex flex-wrap gap-1.5">
-              {hasDislikedCuisines && profile.disliked_cuisines!.map((cuisine) => (
-                <span key={cuisine} className="inline-flex items-center gap-1 px-2 py-0.5 rounded-lg bg-stone-50 text-stone-400 text-[11px] font-medium border border-stone-200 line-through decoration-stone-300">
-                  {cuisine}
-                </span>
-              ))}
-              {hasAvoidPatterns && profile.avoid_patterns!.map((pattern) => (
-                <span key={pattern} className="inline-flex items-center gap-1 px-2 py-0.5 rounded-lg bg-stone-50 text-stone-400 text-[11px] font-medium border border-stone-200">
-                  <Ban className="w-2.5 h-2.5" />
-                  {pattern}
-                </span>
-              ))}
-              {profile.dietary_notes && profile.dietary_notes.toLowerCase() !== "none" && (
-                <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-lg bg-stone-50 text-stone-500 text-[11px] font-medium border border-stone-200">
-                  <AlertCircle className="w-2.5 h-2.5" />
+              {hasDislikedCuisines &&
+                profile.disliked_cuisines!.map((cuisine) => (
+                  <span
+                    key={cuisine}
+                    className="inline-flex items-center gap-1 rounded-lg border border-stone-200 bg-stone-50 px-2 py-0.5 text-[11px] font-medium text-stone-400 line-through decoration-stone-300"
+                  >
+                    {cuisine}
+                  </span>
+                ))}
+              {hasAvoidPatterns &&
+                profile.avoid_patterns!.map((pattern) => (
+                  <span
+                    key={pattern}
+                    className="inline-flex items-center gap-1 rounded-lg border border-stone-200 bg-stone-50 px-2 py-0.5 text-[11px] font-medium text-stone-400"
+                  >
+                    <Ban className="h-2.5 w-2.5" />
+                    {pattern}
+                  </span>
+                ))}
+              {profile.dietary_notes && profile.dietary_notes.toLowerCase() !== 'none' && (
+                <span className="inline-flex items-center gap-1 rounded-lg border border-stone-200 bg-stone-50 px-2 py-0.5 text-[11px] font-medium text-stone-500">
+                  <AlertCircle className="h-2.5 w-2.5" />
                   {profile.dietary_notes}
                 </span>
               )}
-              {(!hasDislikedCuisines && !hasAvoidPatterns && (!profile.dietary_notes || profile.dietary_notes.toLowerCase() === "none")) && (
-                <p className="text-[11px] text-stone-400 italic">No restrictions.</p>
-              )}
+              {!hasDislikedCuisines &&
+                !hasAvoidPatterns &&
+                (!profile.dietary_notes || profile.dietary_notes.toLowerCase() === 'none') && (
+                  <p className="text-[11px] text-stone-400 italic">No restrictions.</p>
+                )}
             </div>
           </div>
         </div>
