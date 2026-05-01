@@ -76,3 +76,22 @@ npx tsx src/lib/__tests__/utils.test.ts
 npx tsx src/lib/__tests__/vectorDb.test.ts
 npx tsx src/skills/__tests__/scoreRestaurant.test.ts
 ```
+
+## 🛡️ Security & Constraints
+
+### 1. Architectural Decisions
+- **Runtime (`tsx`)**: The application uses `tsx` in production to support the fast-iteration lifecycle of AI Studio. While functional, standalone high-scale deployments should migrate to `tsc` (pre-compiled `dist/`) for optimized performance.
+- **Persistence**:
+    - `embeddings_cache.db`: A persistent SQLite cache for vector embeddings. This is **tracked** as it contains pre-computed infrastructure data.
+    - `vector_index.json`: A runtime persistence file for the in-memory vector index. This is **ignored** via `.gitignore` as it is a derived artifact populated at runtime or during ingestion.
+
+### 2. Security Invariants
+- **Key Isolation**: All API keys (Gemini, etc.) are restricted to `server.ts`. No keys are ever exposed to the client-side bundle.
+- **Payload Validation**: The `Chat` API uses `zod` for rigorous schema enforcement of incoming user messages and conversation history.
+- **Context Poisoning Mitigation**: 
+    - Conversation history is strictly truncated to the **last 10 exchanges** before processing.
+    - Assistant roles are enforced via validation to prevent users from injecting spoofed LLM responses into the history buffer.
+- **CORS & Headers**: The server implements strict CSRF-avoidance patterns by restricting origins and enforcing JSON content types.
+
+### 3. Known Limitations
+- **Cold-Start Ingestion**: On the first run without a `vector_index.json`, the server performs a one-time ingestion of restaurant data. This is guarded by a the `embeddings_cache.db` to ensure zero-cost API calls during this phase.
