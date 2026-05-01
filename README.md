@@ -14,7 +14,8 @@ The system leverages a custom **Express/Node.js** agent orchestrator with a modu
 - **Advanced Multi-Select Filtering**: Instantly refine recommendations by multiple cuisines, price tiers, and neighborhoods simultaneously via an intuitive dropdown interface.
 - **Geolocation Awareness**: One-click neighborhood detection for hyper-local NYC recommendations.
 - **Skeleton Loading & Perceived Performance**: Custom skeleton screens provide immediate visual feedback while agents process in the background.
-- **High Resilience Architecture**: Sophisticated retry logic with exponential backoff ensures stability even during peak API traffic.
+- **High Resilience Architecture**: Sophisticated retry logic with exponential backoff and localized error handling ensures high availability across the entire agent pipeline.
+- **Optimized Multi-Agent Synergy**: Intelligent context management ensures that Profile, Trend, and RAG agents share a unified, validated world-view for consistent recommendations.
 - **Dynamic Taste Profiles**: Automatically infers your preferences from chat history and uploaded food photos.
 - **Neighborhood-Aware Recommendations**: Specify your preferred areas (e.g., "West Village", "SoHo") to get hyper-local suggestions.
 - **Real-Time Trend Analysis**: Integrates live Google Search data to find trending cuisines, new openings, and viral dishes.

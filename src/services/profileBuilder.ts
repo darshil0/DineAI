@@ -27,21 +27,25 @@ export async function buildProfile(
   }
 
   const skillPromises: Promise<any>[] = [
-    extractCuisines.run({ text: message }).catch((e) => {
-      throw new SkillError('extractCuisines', e);
-    }),
+    withRetry(() =>
+      extractCuisines.run({ text: message }).catch((e) => {
+        throw new SkillError('extractCuisines', e);
+      }),
+    ),
   ];
 
   if (imageFile) {
     skillPromises.push(
-      analyzeFoodPhoto
-        .run({
-          mimeType: imageFile.mimetype,
-          data: imageFile.buffer.toString('base64'),
-        })
-        .catch((e) => {
-          throw new SkillError('analyzeFoodPhoto', e);
-        }),
+      withRetry(() =>
+        analyzeFoodPhoto
+          .run({
+            mimeType: imageFile.mimetype,
+            data: imageFile.buffer.toString('base64'),
+          })
+          .catch((e) => {
+            throw new SkillError('analyzeFoodPhoto', e);
+          }),
+      ),
     );
   }
 

@@ -11,6 +11,9 @@ All notable changes to this project will be documented in this file.
 - **Per-Agent Telemetry**: Added server-side latency logging for each stage of the agent pipeline.
 
 ### Fixed
+- **Critical Hoisting Bug**: Fixed `setInitialMessage` being undefined on mount in `ChatInterface.tsx` by converting it to a `useCallback` and hoisting its definition.
+- **Profile Serialization Bug**: Fixed `[object Object]` interpolation in `ProfileBuilder` prompt by correctly typing and stringifying the `currentProfile` object.
+- **Missing Retry Logic**: Comprehensive application of `withRetry` wrappers to all critical skill calls including `generateEmbedding`, `extractCuisines`, `analyzeFoodPhoto`, `extractTrendsFromSearchResults`, and `classifyTrendRelevanceToProfile`.
 - **Issue #15**: Corrected ambiguous example in `ProfileBuilder` system prompt regarding negative constraints.
 - **Memory Leaks**: Cleaned up dangling timeouts in `ChatInterface` on component unmount.
 - **Cold-Start Optimization**: Restricted `ingestRestaurants` to run only if the vector index is empty or corrupted.
@@ -18,6 +21,7 @@ All notable changes to this project will be documented in this file.
 ### Changed
 - **Persistence Strategy**: Vector index now serializes to `vector_index.json` on graceful shutdown and loads on startup.
 - **History Sanitization**: Enforced a 10-exchange depth limit and assistant-role verification before processing.
+- **Code Cleanup**: Removed multiple unused imports and variables across the codebase (`ChatInterface.tsx`, `profileBuilder.ts`, `finalizer.ts`, `ragRecommender.ts`, etc.).
 
 ## [2.1.0] - 2026-05-01
 
