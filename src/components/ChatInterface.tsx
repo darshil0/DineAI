@@ -1,4 +1,4 @@
-import React, { useState, useRef, useEffect } from 'react';
+import React, { useState, useRef, useEffect, useCallback } from 'react';
 import {
   Send,
   Image as ImageIcon,
@@ -9,7 +9,6 @@ import {
   MicOff,
   MapPin,
   Filter,
-  SlidersHorizontal,
   Heart,
 } from 'lucide-react';
 import { motion, AnimatePresence } from 'motion/react';
@@ -92,6 +91,18 @@ export default function ChatInterface() {
   const textareaRef = useRef<HTMLTextAreaElement>(null);
   const recognitionRef = useRef<SpeechRecognition | null>(null);
   const loadingTimeoutsRef = useRef<NodeJS.Timeout[]>([]);
+  
+  // Define setInitialMessage before the useEffect that calls it
+  const setInitialMessage = useCallback(() => {
+    setMessages([
+      {
+        id: '1',
+        role: 'assistant',
+        content:
+          "Hi! I'm DineAI, your personal restaurant recommendation agent. Tell me what you're craving, your budget, or upload a photo of a dish you love, and I'll find the perfect spot for you in NYC!",
+      },
+    ]);
+  }, []);
 
   // Check onboarding status
   useEffect(() => {
@@ -244,7 +255,7 @@ export default function ChatInterface() {
     } else {
       setInitialMessage();
     }
-  }, []);
+  }, [setInitialMessage]);
 
   // Save history on change (with limit)
   useEffect(() => {
@@ -254,17 +265,6 @@ export default function ChatInterface() {
       localStorage.setItem(STORAGE_KEY, JSON.stringify(historyToSave));
     }
   }, [messages]);
-
-  const setInitialMessage = () => {
-    setMessages([
-      {
-        id: '1',
-        role: 'assistant',
-        content:
-          "Hi! I'm DineAI, your personal restaurant recommendation agent. Tell me what you're craving, your budget, or upload a photo of a dish you love, and I'll find the perfect spot for you in NYC!",
-      },
-    ]);
-  };
 
   const clearHistory = () => {
     if (window.confirm('Are you sure you want to clear your conversation history?')) {
@@ -334,7 +334,6 @@ export default function ChatInterface() {
     setMessages((prev) => [...prev, userMessage]);
     const currentInput = finalContent;
     const currentImage = selectedImage;
-    const currentPreview = imagePreview;
 
     setInput('');
     setQueuedFeedback([]);

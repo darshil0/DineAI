@@ -1,5 +1,4 @@
 import { getGeminiClient } from '../lib/geminiClient.js';
-import { cleanJson } from '../lib/utils.js';
 import { UserTasteProfileSchema, UserTasteProfile } from '../schemas/index.js';
 import { PROFILE_BUILDER_SYSTEM, buildProfilePrompt } from '../prompts/index.js';
 import { getSkill } from '../skills/registry.js';
@@ -11,12 +10,12 @@ import { withRetry } from '../lib/utils.js';
 export async function buildProfile(
   message: string,
   history: string,
-  currentProfile: string,
+  currentProfile: UserTasteProfile | null,
   imageFile?: Express.Multer.File,
 ): Promise<UserTasteProfile> {
   const ai = getGeminiClient();
   console.log('Running Profile Builder Agent...');
-
+  
   // 1. Run Skills in parallel to gather insights
   const extractCuisines = getSkill<ExtractCuisinesInput, ExtractCuisinesOutput>('extractCuisines');
   const analyzeFoodPhoto = getSkill<AnalyzeFoodPhotoInput, AnalyzeFoodPhotoOutput>(
@@ -61,7 +60,7 @@ export async function buildProfile(
 
   const profileParts: any[] = [
     {
-      text: buildProfilePrompt(currentProfile, history, enrichedMessage),
+      text: buildProfilePrompt(JSON.stringify(currentProfile || {}), history, enrichedMessage),
     },
   ];
 

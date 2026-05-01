@@ -1,5 +1,4 @@
 import { getGeminiClient } from '../lib/geminiClient.js';
-import { cleanJson } from '../lib/utils.js';
 import { UserTasteProfile, Recommendation, FinalRecommendationsSchema } from '../schemas/index.js';
 import { Restaurant } from '../data/restaurants.js';
 import { FINALIZER_SYSTEM, buildFinalizerPrompt } from '../prompts/index.js';

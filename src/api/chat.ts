@@ -6,6 +6,7 @@ import { recommendCandidates } from '../services/ragRecommender.js';
 import { analyzeTrends } from '../services/trendAnalyst.js';
 import { finalizeRecommendations } from '../services/finalizer.js';
 import { handleApiError, ValidationError } from '../lib/errors.js';
+import { UserTasteProfile } from '../schemas/index.js';
 
 const router = Router();
 
@@ -44,7 +45,7 @@ router.post('/', upload.single('image'), async (req, res) => {
     const sanitizedMessage = message.trim().slice(0, 2000);
     const startTotal = Date.now();
 
-    let history = [];
+    let history: { role: 'user' | 'assistant'; content: string }[] = [];
     if (historyStr) {
       try {
         const parsed = JSON.parse(historyStr);
@@ -57,7 +58,7 @@ router.post('/', upload.single('image'), async (req, res) => {
       }
     }
 
-    let currentProfile = null;
+    let currentProfile: UserTasteProfile | null = null;
     if (profileStr) {
       try {
         currentProfile = JSON.parse(profileStr);

@@ -35,7 +35,7 @@ export async function recommendCandidates(profile: UserTasteProfile): Promise<Re
         Neighborhoods: ${profile.neighborhoods?.join(', ') || 'Any'}
       `.trim();
 
-      const { embedding } = await generateEmbedding.run({ text: queryText }).catch((e) => {
+      const { embedding } = await withRetry(() => generateEmbedding.run({ text: queryText })).catch((e) => {
         throw new SkillError('generateEmbedding', e);
       });
       const results = await vectorDb.query(embedding, 20); // Get top 20 to re-rank
@@ -45,15 +45,15 @@ export async function recommendCandidates(profile: UserTasteProfile): Promise<Re
       const scored = await Promise.all(
         filteredResults.map(async (r) => {
           const restaurant = r.metadata as Restaurant;
-          const { matchScore } = await scoreRestaurant
-            .run({
+          const { matchScore } = await withRetry(() =>
+            scoreRestaurant.run({
               profile,
               restaurant,
               similarity: r.score,
-            })
-            .catch((e) => {
-              throw new SkillError('scoreRestaurant', e);
-            });
+            }),
+          ).catch((e) => {
+            throw new SkillError('scoreRestaurant', e);
+          });
           return { ...restaurant, match_score: matchScore, embedding_score: r.score };
         }),
       );
