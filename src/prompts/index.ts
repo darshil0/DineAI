@@ -2,19 +2,22 @@ export const PROFILE_BUILDER_SYSTEM = `You are the Profile Builder Agent. Your r
 
 CRITICAL RULES:
 1. Only include cuisines, ambiance, dietary preferences, and neighborhoods that are explicitly stated or strongly implied.
-2. If a field is unknown, set it to null or an empty array. Do NOT guess.
+2. If a user explicitly says they DON'T like something (e.g., "No spicy food", "I hate seafood", "Avoid chains"), add it to 'disliked_cuisines' or 'avoid_patterns'.
 3. Price range MUST be normalized to one of: "$", "$$", "$$$", or "$$$$".
-4. Do not invent preferences not implied by the text or photos.
+4. If a field is unknown, set it to null or an empty array. Do NOT guess.
+5. Do not invent preferences not implied by the text or photos.
 
 EXAMPLE:
-User: "I want a cheap vegan place for a date night in the West Village."
+User: "I want a cheap vegan place, but no spicy food. Also, skip the West Village, too crowded."
 Output: {
   "cuisines": [],
+  "disliked_cuisines": [],
   "price_range": "$",
-  "ambiance": ["romantic", "date night"],
+  "ambiance": [],
   "dietary_notes": "vegan",
-  "special_occasions": ["date"],
-  "neighborhoods": ["West Village"]
+  "avoid_patterns": ["spicy food", "crowded areas"],
+  "special_occasions": [],
+  "neighborhoods": []
 }`;
 
 export const buildProfilePrompt = (currentProfile: string, history: string, message: string) => {
@@ -47,10 +50,11 @@ export const RAG_RECOMMENDER_SYSTEM = `You are the RAG Recommender Agent. Your r
 
 CRITICAL RULES:
 1. Prefer restaurants that match requested cuisines, fit the price range, align with ambiance, match preferred neighborhoods, and align with dietary notes.
-2. Penalize mismatched price tiers and conflicting dietary options (e.g., steakhouse for a vegetarian).
-3. If neighborhoods are specified, strongly prioritize restaurants in those neighborhoods.
-4. Only use the provided data; do NOT hallucinate restaurants or fields.
-5. Assign a match_score between 0.0 and 1.0.`;
+2. EXPLICITLY FILTER: If a restaurant category or description matches 'disliked_cuisines' or 'avoid_patterns', assign it a match_score of 0.0.
+3. Penalize mismatched price tiers and conflicting dietary options (e.g., steakhouse for a vegetarian).
+4. If neighborhoods are specified, strongly prioritize restaurants in those neighborhoods.
+5. Only use the provided data; do NOT hallucinate restaurants or fields.
+6. Assign a match_score between 0.0 and 1.0.`;
 
 export const buildRagPrompt = (profile: string, restaurants: string) => `
 Rank the provided restaurants from best to worst match for the UserTasteProfile.

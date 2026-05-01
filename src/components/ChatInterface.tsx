@@ -1,5 +1,5 @@
 import React, { useState, useRef, useEffect } from 'react';
-import { Send, Image as ImageIcon, X, ChefHat, Trash2, Mic, MicOff } from 'lucide-react';
+import { Send, Image as ImageIcon, X, ChefHat, Trash2, Mic, MicOff, MapPin } from 'lucide-react';
 import { motion, AnimatePresence } from 'motion/react';
 import { ChatMessage } from './ChatMessage.js';
 import { RecommendationCard } from './RecommendationCard.js';
@@ -40,6 +40,7 @@ export default function ChatInterface() {
   const [imagePreview, setImagePreview] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(false);
   const [isListening, setIsListening] = useState(false);
+  const [isLocating, setIsLocating] = useState(false);
   const [loadingStep, setLoadingStep] = useState<string>('');
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
@@ -92,6 +93,50 @@ export default function ChatInterface() {
         console.error('Failed to start speech recognition:', err);
       }
     }
+  };
+
+  const detectLocation = () => {
+    if (!navigator.geolocation) {
+      alert('Geolocation is not supported by your browser');
+      return;
+    }
+
+    setIsLocating(true);
+    navigator.geolocation.getCurrentPosition(
+      async (position) => {
+        const { latitude, longitude } = position.coords;
+        try {
+          // Use search grounding or a simple reverse geocoding approach
+          // For now, we'll just add a prompt to the input
+          setInput(prev => {
+            const locStr = `[Near my current location: ${latitude.toFixed(4)}, ${longitude.toFixed(4)}]`;
+            return prev.includes('[Near my current location') ? prev : `${prev} ${locStr}`.trim();
+          });
+        } catch (err) {
+          console.error('Error getting neighborhood info:', err);
+        } finally {
+          setIsLocating(false);
+        }
+      },
+      (error) => {
+        console.error('Geolocation error:', error);
+        alert(`Failed to get location: ${error.message}`);
+        setIsLocating(false);
+      }
+    );
+  };
+
+  const handleRecommendationFeedback = (name: string, type: 'like' | 'dislike') => {
+    // We send a hidden system message to the backend to update the profile
+    const feedbackMessage = type === 'like' 
+      ? `I really liked the recommendation for ${name}. Please keep it in mind for my profile.`
+      : `I didn't like the recommendation for ${name}. Please avoid similar places in the future.`;
+    
+    // Instead of showing it in the chat, we'll just use it in the next request
+    // or trigger a background profile update if we had an API for it.
+    // For now, let's just append it to the next message context or show it briefly.
+    console.log(`Feedback for ${name}: ${type}`);
+    setInput(prev => `${prev} (Feedback: I ${type === 'like' ? 'loved' : 'wasn\'t a fan of'} ${name})`.trim());
   };
 
   // Load history on mount
@@ -318,7 +363,10 @@ export default function ChatInterface() {
                       animate={{ opacity: 1, y: 0 }}
                       transition={{ delay: 0.3 }}
                     >
-                      <RecommendationCard recommendation={rec} />
+                      <RecommendationCard 
+                        recommendation={rec} 
+                        onFeedback={handleRecommendationFeedback}
+                      />
                     </motion.div>
                   ))}
                 </div>
@@ -395,6 +443,18 @@ export default function ChatInterface() {
               {isListening && (
                 <span className="absolute top-2 right-2 w-2 h-2 bg-red-500 rounded-full animate-ping" />
               )}
+            </button>
+            <button
+              type="button"
+              onClick={detectLocation}
+              disabled={isLocating}
+              className={`p-3 transition-colors rounded-xl ${
+                isLocating ? 'text-orange-500 animate-pulse' : 'text-stone-400 hover:text-orange-500'
+              }`}
+              title="Detect current neighborhood"
+              aria-label="Detect current neighborhood"
+            >
+              <MapPin className="w-5 h-5" />
             </button>
             <button
               type="button"

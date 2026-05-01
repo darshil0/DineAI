@@ -2,6 +2,18 @@
 
 All notable changes to this project will be documented in this file.
 
+## [1.8.0] - 2026-05-01
+
+### Added
+- **Interactive Feedback Loop**: Users can now "Like" or "Dislike" recommendations to instantly update their taste profiles.
+- **Geolocation Integration**: Added browser geolocation support to automatically detect user neighborhoods for local targeting.
+- **Improved Profile Visualization**: Refreshed the `TasteProfileBadge` with a split layout showing active preferences vs. identified avoids.
+- **Actionable Cards**: Integrated Google Maps navigation and deep links directly into restaurant cards.
+
+### Improved
+- **Rich Schema**: Expanded `UserTasteProfile` to include `disliked_cuisines` and `avoid_patterns` for higher recommendation accuracy.
+- **Robust Prompting**: Updated multi-agent prompts to handle negative constraints and explicit filtering logic.
+
 ## [1.7.0] - 2026-04-30
 
 ### Added

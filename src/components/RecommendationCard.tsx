@@ -1,13 +1,16 @@
-import React from "react";
-import { Star, TrendingUp, MapPin, Phone, Clock } from "lucide-react";
+import React, { useState } from "react";
+import { Star, TrendingUp, MapPin, Phone, Clock, ThumbsUp, ThumbsDown, ExternalLink, Navigation } from "lucide-react";
 import { Recommendation } from "../schemas/index.js";
 
 interface RecommendationCardProps {
   recommendation?: Recommendation;
   loading?: boolean;
+  onFeedback?: (name: string, type: 'like' | 'dislike') => void;
 }
 
-export const RecommendationCard: React.FC<RecommendationCardProps> = ({ recommendation, loading }) => {
+export const RecommendationCard: React.FC<RecommendationCardProps> = ({ recommendation, loading, onFeedback }) => {
+  const [feedback, setFeedback] = useState<'liked' | 'disliked' | null>(null);
+
   if (loading) {
     return (
       <div className="bg-white border border-stone-200 rounded-xl p-5 shadow-sm mb-4 animate-pulse">
@@ -39,8 +42,28 @@ export const RecommendationCard: React.FC<RecommendationCardProps> = ({ recommen
   const { rank, name, rationale, match_score, trend_relevance, trend_connection, address, phone, hours } = recommendation;
   const matchPercentage = Math.round(match_score * 100);
 
+  const handleLike = () => {
+    if (feedback === 'liked') return;
+    setFeedback('liked');
+    onFeedback?.(name, 'like');
+  };
+
+  const handleDislike = () => {
+    if (feedback === 'disliked') return;
+    setFeedback('disliked');
+    onFeedback?.(name, 'dislike');
+  };
+
+  const googleMapsUrl = `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(`${name} ${address || ''}`)}`;
+
   return (
-    <div className="bg-white border border-stone-200 rounded-xl p-5 shadow-sm hover:shadow-md transition-shadow mb-4">
+    <div className="bg-white border border-stone-200 rounded-xl p-5 shadow-sm hover:shadow-md transition-all mb-4 group relative overflow-hidden">
+      {feedback === 'liked' && (
+        <div className="absolute top-0 right-0 p-1 bg-emerald-50 text-emerald-600 rounded-bl-lg">
+          <Star className="w-4 h-4 fill-current" />
+        </div>
+      )}
+      
       <div className="flex justify-between items-start mb-3">
         <div className="flex items-center gap-3">
           <div className="flex items-center justify-center w-8 h-8 rounded-full bg-stone-900 text-white font-bold text-sm">
@@ -60,25 +83,59 @@ export const RecommendationCard: React.FC<RecommendationCardProps> = ({ recommen
         {rationale}
       </p>
 
-      <div className="space-y-2 mb-4">
-        {address && (
-          <div className="flex items-center gap-2 text-xs text-stone-500">
-            <MapPin className="w-3.5 h-3.5 text-stone-400" />
-            <span>{address}</span>
-          </div>
-        )}
-        {phone && (
-          <div className="flex items-center gap-2 text-xs text-stone-500">
-            <Phone className="w-3.5 h-3.5 text-stone-400" />
-            <span>{phone}</span>
-          </div>
-        )}
-        {hours && (
-          <div className="flex items-center gap-2 text-xs text-stone-500">
-            <Clock className="w-3.5 h-3.5 text-stone-400" />
-            <span>{hours}</span>
-          </div>
-        )}
+      <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-4">
+        <div className="space-y-2">
+          {address && (
+            <div className="flex items-center gap-2 text-xs text-stone-500">
+              <MapPin className="w-3.5 h-3.5 text-stone-400" />
+              <span className="truncate">{address}</span>
+            </div>
+          )}
+          {phone && (
+            <div className="flex items-center gap-2 text-xs text-stone-500">
+              <Phone className="w-3.5 h-3.5 text-stone-400" />
+              <span>{phone}</span>
+            </div>
+          )}
+          {hours && (
+            <div className="flex items-center gap-2 text-xs text-stone-500">
+              <Clock className="w-3.5 h-3.5 text-stone-400" />
+              <span>{hours}</span>
+            </div>
+          )}
+        </div>
+
+        <div className="flex items-center justify-end gap-2">
+          <button 
+            onClick={handleLike}
+            disabled={!!feedback}
+            className={`p-2 rounded-lg border transition-all ${
+              feedback === 'liked' ? 'bg-emerald-50 border-emerald-200 text-emerald-600' : 'border-stone-200 text-stone-400 hover:border-emerald-200 hover:text-emerald-600'
+            }`}
+            title="Like this recommendation"
+          >
+            <ThumbsUp className={`w-4 h-4 ${feedback === 'liked' ? 'fill-current' : ''}`} />
+          </button>
+          <button 
+            onClick={handleDislike}
+            disabled={!!feedback}
+            className={`p-2 rounded-lg border transition-all ${
+              feedback === 'disliked' ? 'bg-red-50 border-red-200 text-red-600' : 'border-stone-200 text-stone-400 hover:border-red-200 hover:text-red-600'
+            }`}
+            title="Dislike this recommendation"
+          >
+            <ThumbsDown className={`w-4 h-4 ${feedback === 'disliked' ? 'fill-current' : ''}`} />
+          </button>
+          <a
+            href={googleMapsUrl}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="flex items-center gap-1.5 px-3 py-2 bg-stone-900 text-white rounded-lg text-xs font-medium hover:bg-stone-800 transition-colors shadow-sm"
+          >
+            <Navigation className="w-3.5 h-3.5" />
+            Go
+          </a>
+        </div>
       </div>
 
       {trend_relevance && trend_relevance.trim() !== "" && trend_relevance.toLowerCase() !== "none" && (
