@@ -9,7 +9,6 @@ import {
   MicOff,
   MapPin,
   Filter,
-  SlidersHorizontal as Sliders,
   SlidersHorizontal,
 } from 'lucide-react';
 import { motion, AnimatePresence } from 'motion/react';
@@ -167,7 +166,6 @@ export default function ChatInterface() {
       },
       (error) => {
         console.error('Geolocation error:', error);
-        alert(`Failed to get location: ${error.message}`);
         setIsLocating(false);
       },
     );
@@ -527,14 +525,36 @@ export default function ChatInterface() {
         </AnimatePresence>
 
         <form onSubmit={handleSubmit} className="flex items-end gap-2">
-          <div className="flex flex-1 items-end rounded-2xl border border-stone-200 bg-stone-100 p-1 transition-all focus-within:border-orange-500 focus-within:ring-1 focus-within:ring-orange-500">
-            <input
-              type="file"
-              accept="image/*"
-              className="hidden"
-              ref={fileInputRef}
-              onChange={handleImageSelect}
-            />
+          <div className="flex flex-1 flex-col rounded-2xl border border-stone-200 bg-stone-100 p-1 transition-all focus-within:border-orange-500 focus-within:ring-1 focus-within:ring-orange-500">
+            {queuedFeedback.length > 0 && (
+              <div className="flex flex-wrap gap-1 px-2 pt-2 pb-1">
+                {queuedFeedback.map((fb, idx) => (
+                  <span
+                    key={idx}
+                    className="inline-flex items-center gap-1 rounded-md bg-stone-200 px-1.5 py-0.5 text-[10px] font-medium text-stone-600"
+                  >
+                    {fb}
+                    <button
+                      type="button"
+                      onClick={() =>
+                        setQueuedFeedback((prev) => prev.filter((_, i) => i !== idx))
+                      }
+                      className="hover:text-stone-900"
+                    >
+                      <X className="h-2 w-2" />
+                    </button>
+                  </span>
+                ))}
+              </div>
+            )}
+            <div className="flex items-end">
+              <input
+                type="file"
+                accept="image/*"
+                className="hidden"
+                ref={fileInputRef}
+                onChange={handleImageSelect}
+              />
             <button
               type="button"
               onClick={toggleListening}
@@ -577,7 +597,12 @@ export default function ChatInterface() {
             <textarea
               ref={textareaRef}
               value={input}
-              onChange={(e) => setInput(e.target.value)}
+              onChange={(e) => {
+                setInput(e.target.value);
+                // Auto-resize
+                e.target.style.height = 'auto';
+                e.target.style.height = `${e.target.scrollHeight}px`;
+              }}
               onKeyDown={(e) => {
                 if (e.key === 'Enter' && !e.shiftKey) {
                   e.preventDefault();
@@ -589,6 +614,7 @@ export default function ChatInterface() {
               rows={1}
             />
           </div>
+        </div>
           <button
             type="submit"
             disabled={(!input.trim() && !selectedImage) || isLoading}

@@ -2,6 +2,8 @@ import React, { useState, useRef, useEffect } from 'react';
 import { ChevronDown, Check, X, Filter } from 'lucide-react';
 import { motion, AnimatePresence } from 'motion/react';
 
+import { Recommendation } from '../schemas/index.js';
+
 interface FilterOption {
   label: string;
   value: string;
@@ -14,9 +16,18 @@ interface MultiSelectProps {
   selected: string[];
   onChange: (values: string[]) => void;
   colorClass: string;
+  align?: 'left' | 'right';
 }
 
-const MultiSelect: React.FC<MultiSelectProps> = ({ label, icon, options, selected, onChange, colorClass }) => {
+const MultiSelect: React.FC<MultiSelectProps> = ({
+  label,
+  icon,
+  options,
+  selected,
+  onChange,
+  colorClass,
+  align = 'left',
+}) => {
   const [isOpen, setIsOpen] = useState(false);
   const containerRef = useRef<HTMLDivElement>(null);
 
@@ -32,7 +43,7 @@ const MultiSelect: React.FC<MultiSelectProps> = ({ label, icon, options, selecte
 
   const toggleOption = (value: string) => {
     if (selected.includes(value)) {
-      onChange(selected.filter(v => v !== value));
+      onChange(selected.filter((v) => v !== value));
     } else {
       onChange([...selected, value]);
     }
@@ -43,20 +54,20 @@ const MultiSelect: React.FC<MultiSelectProps> = ({ label, icon, options, selecte
       <button
         type="button"
         onClick={() => setIsOpen(!isOpen)}
-        className={`flex items-center gap-2 px-3 py-1.5 rounded-xl border text-xs font-medium transition-all ${
-          selected.length > 0 
-            ? `${colorClass} border-transparent shadow-sm` 
-            : 'bg-white border-stone-200 text-stone-600 hover:border-stone-300'
+        className={`flex items-center gap-2 rounded-xl border px-3 py-1.5 text-xs font-medium transition-all ${
+          selected.length > 0
+            ? `${colorClass} border-transparent shadow-sm`
+            : 'border-stone-200 bg-white text-stone-600 hover:border-stone-300'
         }`}
       >
         {icon}
         <span>{label}</span>
         {selected.length > 0 && (
-          <span className="flex items-center justify-center w-4 h-4 rounded-full bg-white/20 text-[10px]">
+          <span className="flex h-4 w-4 items-center justify-center rounded-full bg-white/20 text-[10px]">
             {selected.length}
           </span>
         )}
-        <ChevronDown className={`w-3 h-3 transition-transform ${isOpen ? 'rotate-180' : ''}`} />
+        <ChevronDown className={`h-3 w-3 transition-transform ${isOpen ? 'rotate-180' : ''}`} />
       </button>
 
       <AnimatePresence>
@@ -65,33 +76,39 @@ const MultiSelect: React.FC<MultiSelectProps> = ({ label, icon, options, selecte
             initial={{ opacity: 0, y: 4 }}
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: 4 }}
-            className="absolute z-20 mt-2 min-w-[200px] bg-white rounded-xl shadow-xl border border-stone-100 p-2 overflow-hidden"
+            className={`absolute z-50 mt-2 min-w-[180px] md:min-w-[200px] overflow-hidden rounded-xl border border-stone-100 bg-white p-2 shadow-xl ${
+              align === 'right' ? 'right-0' : 'left-0'
+            }`}
           >
             <div className="max-h-[250px] overflow-y-auto px-1 py-1">
               {options.length === 0 ? (
-                <p className="p-2 text-xs text-stone-400 italic">No options available</p>
+                <p className="p-2 text-xs italic text-stone-400">No options available</p>
               ) : (
                 options.map((opt) => (
                   <button
                     key={opt.value}
                     onClick={() => toggleOption(opt.value)}
-                    className="w-full flex items-center justify-between px-3 py-2 rounded-lg text-xs hover:bg-stone-50 transition-colors group"
+                    className="flex w-full items-center justify-between rounded-lg px-3 py-2 text-xs transition-colors hover:bg-stone-50 group"
                   >
-                    <span className={selected.includes(opt.value) ? 'font-semibold text-stone-900' : 'text-stone-600'}>
+                    <span
+                      className={
+                        selected.includes(opt.value) ? 'font-semibold text-stone-900' : 'text-stone-600'
+                      }
+                    >
                       {opt.label}
                     </span>
                     {selected.includes(opt.value) && (
-                      <Check className="w-3.5 h-3.5 text-stone-900" />
+                      <Check className="h-3.5 w-3.5 text-stone-900" />
                     )}
                   </button>
                 ))
               )}
             </div>
             {selected.length > 0 && (
-              <div className="mt-1 pt-2 border-t border-stone-50 px-2 flex justify-between items-center">
-                 <button 
+              <div className="mt-1 flex items-center justify-between border-t border-stone-50 px-2 pt-2">
+                <button
                   onClick={() => onChange([])}
-                  className="text-[10px] font-bold text-stone-400 hover:text-stone-600 uppercase"
+                  className="text-[10px] font-bold text-stone-400 uppercase hover:text-stone-600"
                 >
                   Clear Selection
                 </button>
@@ -105,7 +122,7 @@ const MultiSelect: React.FC<MultiSelectProps> = ({ label, icon, options, selecte
 };
 
 interface FilterControlsProps {
-  recommendations: any[];
+  recommendations: Recommendation[];
   filters: {
     cuisines: string[];
     prices: string[];
@@ -147,29 +164,30 @@ export const FilterControls: React.FC<FilterControlsProps> = ({
       </div>
 
       <div className="flex flex-wrap gap-2">
-        <MultiSelect 
+        <MultiSelect
           label="Cuisine"
-          icon={<Filter className="w-3 h-3" />}
-          options={cuisines.map(c => ({ label: c, value: c }))}
+          icon={<Filter className="h-3 w-3" />}
+          options={cuisines.map((c) => ({ label: c, value: c }))}
           selected={filters.cuisines}
           onChange={(val) => onFilterChange({ ...filters, cuisines: val })}
           colorClass="bg-orange-500 text-white"
         />
-        <MultiSelect 
+        <MultiSelect
           label="Price"
-          icon={<Filter className="w-3 h-3" />}
-          options={prices.map(p => ({ label: p, value: p }))}
+          icon={<Filter className="h-3 w-3" />}
+          options={prices.map((p) => ({ label: p, value: p }))}
           selected={filters.prices}
           onChange={(val) => onFilterChange({ ...filters, prices: val })}
           colorClass="bg-emerald-500 text-white"
         />
-        <MultiSelect 
+        <MultiSelect
           label="Neighborhood"
-          icon={<Filter className="w-3 h-3" />}
-          options={neighborhoods.map(n => ({ label: n, value: n }))}
+          icon={<Filter className="h-3 w-3" />}
+          options={neighborhoods.map((n) => ({ label: n, value: n }))}
           selected={filters.neighborhoods}
           onChange={(val) => onFilterChange({ ...filters, neighborhoods: val })}
           colorClass="bg-blue-500 text-white"
+          align="right"
         />
       </div>
       
