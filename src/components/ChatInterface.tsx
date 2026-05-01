@@ -16,6 +16,7 @@ import { ChatMessage } from './ChatMessage.js';
 import { RecommendationCard } from './RecommendationCard.js';
 import { TasteProfileBadge } from './TasteProfileBadge.js';
 import { FilterControls } from './FilterControls.js';
+import { OnboardingTutorial } from './OnboardingTutorial.js';
 import { Recommendation, UserTasteProfile } from '../schemas/index.js';
 
 interface Message {
@@ -35,6 +36,7 @@ interface Filters {
 }
 
 const STORAGE_KEY = 'dineai_chat_history';
+const ONBOARDING_STORAGE_KEY = 'dineai_onboarding_completed';
 
 // Speech Recognition Types
 interface SpeechRecognition extends EventTarget {
@@ -79,12 +81,26 @@ export default function ChatInterface() {
     neighborhoods: [],
   });
   const [queuedFeedback, setQueuedFeedback] = useState<string[]>([]);
+  const [showOnboarding, setShowOnboarding] = useState(false);
 
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
   const textareaRef = useRef<HTMLTextAreaElement>(null);
   const recognitionRef = useRef<SpeechRecognition | null>(null);
   const loadingTimeoutsRef = useRef<NodeJS.Timeout[]>([]);
+
+  // Check onboarding status
+  useEffect(() => {
+    const completed = localStorage.getItem(ONBOARDING_STORAGE_KEY);
+    if (!completed) {
+      setShowOnboarding(true);
+    }
+  }, []);
+
+  const handleOnboardingComplete = () => {
+    localStorage.setItem(ONBOARDING_STORAGE_KEY, 'true');
+    setShowOnboarding(false);
+  };
 
   // Focus management
   useEffect(() => {
@@ -370,6 +386,7 @@ export default function ChatInterface() {
 
   return (
     <div className="mx-auto flex h-screen max-w-4xl flex-col overflow-hidden bg-stone-50 shadow-2xl">
+      {showOnboarding && <OnboardingTutorial onComplete={handleOnboardingComplete} />}
       {/* Header */}
       <header className="z-10 flex items-center justify-between border-b border-stone-200 bg-white px-6 py-4">
         <div className="flex items-center gap-3">
