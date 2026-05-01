@@ -7,8 +7,8 @@ import ChatInterface from './components/ChatInterface';
 
 export default function App() {
   return (
-    <main className="min-h-screen bg-stone-100 font-sans">
+    <div className="min-h-screen bg-stone-100 font-sans">
       <ChatInterface />
-    </main>
+    </div>
   );
 }
