@@ -13,6 +13,8 @@ The system leverages a custom **Express/Node.js** agent orchestrator with a modu
 - **Dynamic Taste Profiles**: Automatically infers your preferences from chat history and uploaded food photos.
 - **Neighborhood-Aware Recommendations**: Specify your preferred areas (e.g., "West Village", "SoHo") to get hyper-local suggestions.
 - **Real-Time Trend Analysis**: Integrates live Google Search data to find trending cuisines, new openings, and viral dishes.
+- **Trend Synergy Explanations**: Deeply analyzes and explains exactly why a current trend matches your unique taste profile.
+- **Voice-to-Text Integration**: Hands-free interaction with the chat interface using built-in speech recognition.
 - **Semantic Search (RAG)**: Uses Gemini embeddings and a vector database for high-precision restaurant retrieval.
 - **Explainable AI**: Every recommendation comes with a personalized rationale explaining exactly why it fits your taste.
 

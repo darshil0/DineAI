@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file.
 
+## [1.7.0] - 2026-04-30
+
+### Added
+- **Trend Synergy Explanations**: The Recommendation Finalizer now explicitly explains how identified food trends connect to your specific taste profile.
+- **Enhanced UI**: Added a dedicated "Trend Synergy" section to recommendation cards to visualize the link between viral trends and personal preferences.
+- **Detailed Schema**: Updated recommendation schema with `trend_connection` to ensure structured delivery of profile-trend cross-analysis.
+
 ## [1.6.0] - 2026-04-30
 
 ### Added

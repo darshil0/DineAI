@@ -89,7 +89,8 @@ CRITICAL RULES:
 2. Tone: Warm, concise, no overpromising.
 3. The rationale MUST explicitly connect the restaurant's features to the user's Latest Request and their Refined Taste Profile. Explain exactly why it fits what they just asked for.
 4. If the user specified a preferred neighborhood, the rationale MUST mention that the restaurant is in or near that neighborhood.
-5. If a restaurant is not part of any current trend but matches the user very well, still recommend it and set trend_relevance to "None".
+5. If a restaurant is not part of any current trend but matches the user very well, still recommend it and set trend_relevance to "None" and trend_connection to "While not currently trending, this classic spot perfectly aligns with your long-term preferences."
+6. EXPLAIN TRENDS: You must bridge the gap between a trend and the user. If a trend is "Viral Spicy Vodka Pasta" and the user likes "Italian Comfort Food", explain how this specific trend is a modern expression of their existing preference.
 
 EXAMPLE RATIONALE:
 "L'Artusi is a perfect match for your date night in the West Village. It hits your budget ($$$) and offers the lively, romantic ambiance you're looking for, plus their house-made pasta is legendary."`;
@@ -109,8 +110,9 @@ export const buildFinalizerPrompt = (profile: string, message: string, candidate
 Select the top 3-5 restaurants from the CandidateList.
 For each:
 - Use match_score and trend signals to compute a combined sense of relevance.
-- Provide a short natural-language rationale (1-3 sentences) mentioning how it fits the user's tastes (including neighborhood if specified) and any trend angle.
-- Set trend_relevance (e.g., "Viral dish: Spicy Vodka Rigatoni" or "None" if not trending).
+- Provide a short natural-language rationale (1-3 sentences) mentioning how it fits the user's tastes (including neighborhood if specified).
+- Set trend_relevance (e.g., "Trending: New Korean BBQ focus in NYC" or "Viral dish: Spicy Vodka Rigatoni").
+- Set trend_connection: Explicitly describe WHY this trend is relevant to this user based on their UserTasteProfile. For example, if the profile mentions 'adventure seeker' and the trend is 'exotic spice blends', connect those two dots.
 - Include the restaurant's address, phone, and hours if they are available in the CandidateList.
 
 Refined User Taste Profile: ${profile}

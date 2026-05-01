@@ -36,7 +36,7 @@ export const RecommendationCard: React.FC<RecommendationCardProps> = ({ recommen
 
   if (!recommendation) return null;
 
-  const { rank, name, rationale, match_score, trend_relevance, address, phone, hours } = recommendation;
+  const { rank, name, rationale, match_score, trend_relevance, trend_connection, address, phone, hours } = recommendation;
   const matchPercentage = Math.round(match_score * 100);
 
   return (
@@ -82,11 +82,18 @@ export const RecommendationCard: React.FC<RecommendationCardProps> = ({ recommen
       </div>
 
       {trend_relevance && trend_relevance.trim() !== "" && trend_relevance.toLowerCase() !== "none" && (
-        <div className="bg-amber-50 border border-amber-100 rounded-lg p-3 flex items-start gap-2">
-          <TrendingUp className="w-4 h-4 text-amber-600 mt-0.5 shrink-0" />
-          <p className="text-xs text-amber-800 leading-relaxed">
-            <span className="font-semibold">Trend Alert:</span> {trend_relevance}
-          </p>
+        <div className="bg-amber-50 border border-amber-100 rounded-lg p-3 space-y-2">
+          <div className="flex items-start gap-2">
+            <TrendingUp className="w-4 h-4 text-amber-600 mt-0.5 shrink-0" />
+            <p className="text-xs text-amber-800 leading-relaxed italic">
+              <span className="font-semibold not-italic tracking-wide uppercase text-[10px]">Trend:</span> {trend_relevance}
+            </p>
+          </div>
+          {trend_connection && (
+            <p className="text-xs text-amber-900/80 leading-relaxed border-t border-amber-200/50 pt-2 pl-6">
+              {trend_connection}
+            </p>
+          )}
         </div>
       )}
     </div>
