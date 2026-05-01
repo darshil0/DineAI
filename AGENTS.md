@@ -15,10 +15,13 @@ The application uses a sequential pipeline of specialized agents to deliver high
 
 ### 1. API Retry Logic
 
-To handle transient `429 Too Many Requests` errors from the Gemini API, **all model calls must be wrapped in the `withRetry` utility** found in `src/lib/utils.ts`.
+To handle transient `429 Too Many Requests` errors from the Gemini API, **all model calls and skill executions must be wrapped in the `withRetry` utility** found in `src/lib/utils.ts`.
 
-- **Standard Pattern**: `await withRetry(() => ai.models.generateContent({ ... }))`
+- **Standard Pattern**: `await withRetry(() => ai.models.generateContent({ ... }))` or `await withRetry(() => mySkill.run({ ... }))`
 - **Configuration**: Uses exponential backoff (starting at 1s) with a maximum of 3 retries.
+
+### 2. Prompt Serialization
+When passing state objects (like the `UserTasteProfile`) into LLM prompts, **always explicitly stringify the objects** (e.g., `JSON.stringify(profile)`). Native template literal interpolation may result in `[object Object]` strings, which can degrade model performance.
 
 ### 2. Embeddings Cache
 
@@ -39,12 +42,10 @@ To improve perceived performance during the multi-agent processing loop, use the
 - `RecommendationCard`: Shows a shimmering card skeleton.
 - These are integrated into `ChatInterface.tsx` when `isLoading` is true.
 
-### 2. Auto-Focus
+### 2. Auto-Focus & Stable Initial State
 
-The chat input textarea should automatically regain focus whenever:
-
-- The page first loads.
-- A loading operation completes, allowing the user to continue the conversation immediately.
+- **Auto-Focus**: The chat input textarea should automatically regain focus whenever the page loads or a loading operation completes.
+- **Initial State Hoisting**: Any function that initializes the message history (e.g., `setInitialMessage`) should be wrapped in `useCallback` and defined before its use in `useEffect` to ensure stable references and avoid linting/runtime errors.
 
 ### 3. Feedback Loop
 
