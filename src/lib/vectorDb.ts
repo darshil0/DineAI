@@ -1,12 +1,21 @@
 // A simple in-memory Vector DB to simulate a real service like Pinecone or Qdrant
+import fs from 'fs';
+import path from 'path';
+
 export interface VectorRecord {
   id: string;
   embedding: number[];
   metadata: any;
 }
 
+const INDEX_FILE = path.join(process.cwd(), 'vector_index.json');
+
 class LocalVectorDB {
   private records: VectorRecord[] = [];
+
+  constructor() {
+    this.loadFromIndex();
+  }
 
   private normalize(vec: number[]): number[] {
     const norm = Math.sqrt(vec.reduce((sum, val) => sum + val * val, 0));
@@ -51,6 +60,28 @@ class LocalVectorDB {
 
   async count() {
     return this.records.length;
+  }
+
+  saveToIndex() {
+    try {
+      fs.writeFileSync(INDEX_FILE, JSON.stringify(this.records), 'utf8');
+      console.log(`Vector index saved to ${INDEX_FILE} (${this.records.length} records)`);
+    } catch (e) {
+      console.error('Failed to save vector index:', e);
+    }
+  }
+
+  private loadFromIndex() {
+    try {
+      if (fs.existsSync(INDEX_FILE)) {
+        const data = fs.readFileSync(INDEX_FILE, 'utf8');
+        this.records = JSON.parse(data);
+        console.log(`Vector index loaded from ${INDEX_FILE} (${this.records.length} records)`);
+      }
+    } catch (e) {
+      console.error('Failed to load vector index:', e);
+      this.records = [];
+    }
   }
 }
 

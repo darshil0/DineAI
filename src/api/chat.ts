@@ -42,12 +42,16 @@ router.post('/', upload.single('image'), async (req, res) => {
     }
 
     const sanitizedMessage = message.trim().slice(0, 2000);
+    const startTotal = Date.now();
 
     let history = [];
     if (historyStr) {
       try {
         const parsed = JSON.parse(historyStr);
-        history = HistorySchema.parse(parsed);
+        // Validating shape first
+        const validated = HistorySchema.parse(parsed);
+        // Sanitization: last 10 exchanges only
+        history = validated.slice(-10);
       } catch (e) {
         console.warn('Invalid history format provided, ignoring.', e);
       }
@@ -63,23 +67,30 @@ router.post('/', upload.single('image'), async (req, res) => {
     }
 
     // 2. Profile Builder Agent
+    const startProfile = Date.now();
     const userTasteProfile = await buildProfile(
       sanitizedMessage,
       JSON.stringify(history),
       currentProfile,
       imageFile,
     );
+    const profileDuration = Date.now() - startProfile;
+    console.log(`[Telemetry] ProfileBuilder lat=${profileDuration}ms`);
 
     // 3 & 4. Run RAG Recommender and Trend Analyst in parallel
     const locationMatch = sanitizedMessage.match(/\[Near my current location: ([\d.-]+), ([\d.-]+)\]/);
     const trendLocation = locationMatch ? `Area near ${locationMatch[1]}, ${locationMatch[2]}` : 'New York City';
 
+    const startParallel = Date.now();
     const [candidateList, trendReportText] = await Promise.all([
       recommendCandidates(userTasteProfile),
       analyzeTrends(userTasteProfile, trendLocation),
     ]);
+    const parallelDuration = Date.now() - startParallel;
+    console.log(`[Telemetry] RAG+Trends lat=${parallelDuration}ms`);
 
     // 5. Recommendation Finalizer Agent
+    const startFinalizer = Date.now();
     const finalRecommendations = await finalizeRecommendations(
       userTasteProfile,
       sanitizedMessage,
@@ -87,6 +98,11 @@ router.post('/', upload.single('image'), async (req, res) => {
       trendReportText,
       JSON.stringify(history),
     );
+    const finalizerDuration = Date.now() - startFinalizer;
+    console.log(`[Telemetry] Finalizer lat=${finalizerDuration}ms`);
+
+    const totalDuration = Date.now() - startTotal;
+    console.log(`[Telemetry] Total lat=${totalDuration}ms`);
 
     res.json({
       profile: userTasteProfile,

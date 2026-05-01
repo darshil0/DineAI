@@ -6,6 +6,7 @@ import cors from 'cors';
 import chatRouter from './src/api/chat.js';
 import { bootstrapSkills } from './src/skills/bootstrap.js';
 import { ingestRestaurants } from './src/scripts/ingestRestaurants.js';
+import { vectorDb } from './src/lib/vectorDb.js';
 
 dotenv.config();
 
@@ -18,6 +19,16 @@ async function startServer() {
 
   // Ingest restaurants into Vector DB
   await ingestRestaurants();
+
+  // Graceful shutdown
+  const shutdown = () => {
+    console.log('Shutting down...');
+    vectorDb.saveToIndex();
+    process.exit(0);
+  };
+
+  process.on('SIGINT', shutdown);
+  process.on('SIGTERM', shutdown);
 
   app.use(cors());
   app.use(express.json());
