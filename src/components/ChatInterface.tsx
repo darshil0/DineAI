@@ -242,6 +242,11 @@ export default function ChatInterface() {
     if (window.confirm('Are you sure you want to clear your conversation history?')) {
       localStorage.removeItem(STORAGE_KEY);
       setInitialMessage();
+      setInput('');
+      setSelectedImage(null);
+      setImagePreview(null);
+      setFilters({ cuisines: [], prices: [], neighborhoods: [] });
+      setQueuedFeedback([]);
     }
   };
 
