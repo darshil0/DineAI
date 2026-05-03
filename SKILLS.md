@@ -24,6 +24,7 @@ Skills are registered during the bootstrap phase and can be retrieved by name:
 ## Best Practices
 
 ### 1. Resilience with `withRetry`
+
 Due to potential transient errors (like `429 Too Many Requests`) when skills interact with the Gemini API, **all skill executions MUST be wrapped in the `withRetry` utility**.
 
 ```typescript
@@ -35,6 +36,7 @@ const result = await withRetry(() => skill.run(input));
 ```
 
 ### 2. Error Handling
+
 Skills should catch internal errors and throw descriptive `SkillError` instances. The calling agent will handle these errors to provide graceful degradation.
 
 ## Core Skills

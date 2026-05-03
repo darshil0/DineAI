@@ -35,9 +35,11 @@ export async function recommendCandidates(profile: UserTasteProfile): Promise<Re
         Neighborhoods: ${profile.neighborhoods?.join(', ') || 'Any'}
       `.trim();
 
-      const { embedding } = await withRetry(() => generateEmbedding.run({ text: queryText })).catch((e) => {
-        throw new SkillError('generateEmbedding', e);
-      });
+      const { embedding } = await withRetry(() => generateEmbedding.run({ text: queryText })).catch(
+        (e) => {
+          throw new SkillError('generateEmbedding', e);
+        },
+      );
       const results = await vectorDb.query(embedding, 20); // Get top 20 to re-rank
 
       const filteredResults = results.filter((r) => r.score >= 0.1);

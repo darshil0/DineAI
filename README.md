@@ -6,6 +6,8 @@ The system leverages a custom **Express/Node.js** agent orchestrator with a modu
 
 ## 🚀 Key Features
 
+- **Health & Stability**: Optimized environment with resolved dependency conflicts and restored CI/CD health.
+- **Normalized Scoring Engine**: Precisely weighted multi-factor scoring (Cuisine, Price, Ambiance, Dietary) for more predictable recommendations.
 - **Personalized Onboarding**: An interactive tutorial that guides new users through DineAI's unique multi-agent features.
 - **Favorites Gallery**: Save restaurants you love and view your curated collection in a dedicated favorites tab.
 - **Chat History Persistence**: Conversations are saved to local storage, allowing you to pick up where you left off.

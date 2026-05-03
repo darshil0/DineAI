@@ -76,23 +76,25 @@ const MultiSelect: React.FC<MultiSelectProps> = ({
             initial={{ opacity: 0, y: 4 }}
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: 4 }}
-            className={`absolute z-50 mt-2 min-w-[180px] md:min-w-[200px] overflow-hidden rounded-xl border border-stone-100 bg-white p-2 shadow-xl ${
+            className={`absolute z-50 mt-2 min-w-[180px] overflow-hidden rounded-xl border border-stone-100 bg-white p-2 shadow-xl md:min-w-[200px] ${
               align === 'right' ? 'right-0' : 'left-0'
             }`}
           >
             <div className="max-h-[250px] overflow-y-auto px-1 py-1">
               {options.length === 0 ? (
-                <p className="p-2 text-xs italic text-stone-400">No options available</p>
+                <p className="p-2 text-xs text-stone-400 italic">No options available</p>
               ) : (
                 options.map((opt) => (
                   <button
                     key={opt.value}
                     onClick={() => toggleOption(opt.value)}
-                    className="flex w-full items-center justify-between rounded-lg px-3 py-2 text-xs transition-colors hover:bg-stone-50 group"
+                    className="group flex w-full items-center justify-between rounded-lg px-3 py-2 text-xs transition-colors hover:bg-stone-50"
                   >
                     <span
                       className={
-                        selected.includes(opt.value) ? 'font-semibold text-stone-900' : 'text-stone-600'
+                        selected.includes(opt.value)
+                          ? 'font-semibold text-stone-900'
+                          : 'text-stone-600'
                       }
                     >
                       {opt.label}
@@ -135,26 +137,35 @@ interface FilterControlsProps {
   }) => void;
 }
 
-export const FilterControls: React.FC<FilterControlsProps> = ({ 
-  recommendations, 
-  filters, 
-  onFilterChange 
+export const FilterControls: React.FC<FilterControlsProps> = ({
+  recommendations,
+  filters,
+  onFilterChange,
 }) => {
-  const cuisines = Array.from(new Set(recommendations.map(r => r.cuisine).filter(Boolean))) as string[];
-  const prices = Array.from(new Set(recommendations.map(r => r.price_level).filter(Boolean))) as string[];
-  const neighborhoods = Array.from(new Set(recommendations.map(r => r.neighborhood).filter(Boolean))) as string[];
+  const cuisines = Array.from(
+    new Set(recommendations.map((r) => r.cuisine).filter(Boolean)),
+  ) as string[];
+  const prices = Array.from(
+    new Set(recommendations.map((r) => r.price_level).filter(Boolean)),
+  ) as string[];
+  const neighborhoods = Array.from(
+    new Set(recommendations.map((r) => r.neighborhood).filter(Boolean)),
+  ) as string[];
 
-  const hasActiveFilters = filters.cuisines.length > 0 || filters.prices.length > 0 || filters.neighborhoods.length > 0;
+  const hasActiveFilters =
+    filters.cuisines.length > 0 || filters.prices.length > 0 || filters.neighborhoods.length > 0;
 
   return (
-    <div className="flex flex-col gap-3 p-4 bg-stone-100/50 rounded-2xl border border-stone-200/50 mb-4 transition-all">
+    <div className="mb-4 flex flex-col gap-3 rounded-2xl border border-stone-200/50 bg-stone-100/50 p-4 transition-all">
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-2 text-stone-900">
-          <Filter className="w-4 h-4" />
-          <span className="text-[10px] font-bold uppercase tracking-[0.1em]">Advanced Filtering</span>
+          <Filter className="h-4 w-4" />
+          <span className="text-[10px] font-bold tracking-[0.1em] uppercase">
+            Advanced Filtering
+          </span>
         </div>
         {hasActiveFilters && (
-          <button 
+          <button
             onClick={() => onFilterChange({ cuisines: [], prices: [], neighborhoods: [] })}
             className="text-[10px] font-bold text-orange-600 uppercase hover:underline"
           >
@@ -190,28 +201,37 @@ export const FilterControls: React.FC<FilterControlsProps> = ({
           align="right"
         />
       </div>
-      
+
       {hasActiveFilters && (
-        <div className="flex flex-wrap gap-2 mt-1">
+        <div className="mt-1 flex flex-wrap gap-2">
           {filters.cuisines.map((val) => (
-            <FilterChip 
-              key={`c-${val}`} 
-              label={val} 
-              onRemove={() => onFilterChange({ ...filters, cuisines: filters.cuisines.filter(c => c !== val) })} 
+            <FilterChip
+              key={`c-${val}`}
+              label={val}
+              onRemove={() =>
+                onFilterChange({ ...filters, cuisines: filters.cuisines.filter((c) => c !== val) })
+              }
             />
           ))}
           {filters.prices.map((val) => (
-            <FilterChip 
-              key={`p-${val}`} 
-              label={val} 
-              onRemove={() => onFilterChange({ ...filters, prices: filters.prices.filter(p => p !== val) })} 
+            <FilterChip
+              key={`p-${val}`}
+              label={val}
+              onRemove={() =>
+                onFilterChange({ ...filters, prices: filters.prices.filter((p) => p !== val) })
+              }
             />
           ))}
           {filters.neighborhoods.map((val) => (
-            <FilterChip 
-              key={`n-${val}`} 
-              label={val} 
-              onRemove={() => onFilterChange({ ...filters, neighborhoods: filters.neighborhoods.filter(n => n !== val) })} 
+            <FilterChip
+              key={`n-${val}`}
+              label={val}
+              onRemove={() =>
+                onFilterChange({
+                  ...filters,
+                  neighborhoods: filters.neighborhoods.filter((n) => n !== val),
+                })
+              }
             />
           ))}
         </div>

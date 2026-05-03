@@ -91,7 +91,7 @@ export default function ChatInterface() {
   const textareaRef = useRef<HTMLTextAreaElement>(null);
   const recognitionRef = useRef<SpeechRecognition | null>(null);
   const loadingTimeoutsRef = useRef<NodeJS.Timeout[]>([]);
-  
+
   // Define setInitialMessage before the useEffect that calls it
   const setInitialMessage = useCallback(() => {
     setMessages([
@@ -110,7 +110,7 @@ export default function ChatInterface() {
     if (!completed) {
       setShowOnboarding(true);
     }
-    
+
     // Load favorites
     const savedFavorites = localStorage.getItem(FAVORITES_STORAGE_KEY);
     if (savedFavorites) {
@@ -322,7 +322,9 @@ export default function ChatInterface() {
 
     // Ensure there is some text context if sending an image, or prompt builder might struggle
     const finalContent =
-      !fullMessage && selectedImage ? 'Identify these dishes and find similar restaurants' : fullMessage;
+      !fullMessage && selectedImage
+        ? 'Identify these dishes and find similar restaurants'
+        : fullMessage;
 
     const userMessage: Message = {
       id: Date.now().toString(),
@@ -499,128 +501,130 @@ export default function ChatInterface() {
         ) : (
           <>
             <AnimatePresence initial={false}>
-          {messages.map((msg) => (
-            <motion.div
-              key={msg.id}
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              className="mb-6"
-            >
-              {msg.role === 'user' && msg.image && (
-                <div className="mb-2 flex justify-end">
-                  <img
-                    src={msg.image}
-                    alt="Uploaded food"
-                    className="max-w-xs rounded-2xl border border-stone-200 object-cover shadow-sm"
-                  />
-                </div>
-              )}
-
-              <ChatMessage role={msg.role} content={msg.content} />
-
-              {msg.role === 'assistant' && msg.profile && (
+              {messages.map((msg) => (
                 <motion.div
-                  initial={{ opacity: 0, scale: 0.95 }}
-                  animate={{ opacity: 1, scale: 1 }}
-                  transition={{ delay: 0.2 }}
-                  className="pr-4 pl-14"
+                  key={msg.id}
+                  initial={{ opacity: 0, y: 20 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  className="mb-6"
                 >
-                  <TasteProfileBadge profile={msg.profile} />
-                </motion.div>
-              )}
-
-              {msg.role === 'assistant' && msg.recommendations && (
-                <div className="space-y-4 pr-4 pl-14">
-                  {/* Advanced Multi-select filters */}
-                  {msg.id === messages[messages.length - 1]?.id && (
-                    <FilterControls
-                      recommendations={msg.recommendations}
-                      filters={filters}
-                      onFilterChange={setFilters}
-                    />
+                  {msg.role === 'user' && msg.image && (
+                    <div className="mb-2 flex justify-end">
+                      <img
+                        src={msg.image}
+                        alt="Uploaded food"
+                        className="max-w-xs rounded-2xl border border-stone-200 object-cover shadow-sm"
+                      />
+                    </div>
                   )}
 
-                  {msg.recommendations
-                    .filter((r) => {
-                      const matchCuisine =
-                        filters.cuisines.length === 0 ||
-                        (r.cuisine && filters.cuisines.includes(r.cuisine));
-                      const matchPrice =
-                        filters.prices.length === 0 ||
-                        (r.price_level && filters.prices.includes(r.price_level));
-                      const matchNeighborhood =
-                        filters.neighborhoods.length === 0 ||
-                        (r.neighborhood && filters.neighborhoods.includes(r.neighborhood));
-                      return matchCuisine && matchPrice && matchNeighborhood;
-                    })
-                    .map((rec) => (
-                      <motion.div
-                        key={`${msg.id}-${rec.name}`}
-                        initial={{ opacity: 0, y: 10 }}
-                        animate={{ opacity: 1, y: 0 }}
-                        transition={{ delay: 0.3 }}
-                      >
-                        <RecommendationCard
-                          recommendation={rec}
-                          isFavorite={favorites.some((f) => f.name === rec.name)}
-                          onFeedback={handleRecommendationFeedback}
-                          onToggleFavorite={handleToggleFavorite}
+                  <ChatMessage role={msg.role} content={msg.content} />
+
+                  {msg.role === 'assistant' && msg.profile && (
+                    <motion.div
+                      initial={{ opacity: 0, scale: 0.95 }}
+                      animate={{ opacity: 1, scale: 1 }}
+                      transition={{ delay: 0.2 }}
+                      className="pr-4 pl-14"
+                    >
+                      <TasteProfileBadge profile={msg.profile} />
+                    </motion.div>
+                  )}
+
+                  {msg.role === 'assistant' && msg.recommendations && (
+                    <div className="space-y-4 pr-4 pl-14">
+                      {/* Advanced Multi-select filters */}
+                      {msg.id === messages[messages.length - 1]?.id && (
+                        <FilterControls
+                          recommendations={msg.recommendations}
+                          filters={filters}
+                          onFilterChange={setFilters}
                         />
-                      </motion.div>
-                    ))}
+                      )}
 
-                  {msg.recommendations &&
-                    msg.recommendations.length > 0 &&
-                    msg.recommendations.filter((r) => {
-                      const matchCuisine =
-                        filters.cuisines.length === 0 ||
-                        (r.cuisine && filters.cuisines.includes(r.cuisine));
-                      const matchPrice =
-                        filters.prices.length === 0 ||
-                        (r.price_level && filters.prices.includes(r.price_level));
-                      const matchNeighborhood =
-                        filters.neighborhoods.length === 0 ||
-                        (r.neighborhood && filters.neighborhoods.includes(r.neighborhood));
-                      return matchCuisine && matchPrice && matchNeighborhood;
-                    }).length === 0 && (
-                      <div className="rounded-2xl border border-dashed border-stone-300 bg-stone-100 p-8 text-center">
-                        <Filter className="mx-auto mb-2 h-8 w-8 text-stone-300" />
-                        <p className="text-sm text-stone-500">No matches for current filters.</p>
-                        <button
-                          onClick={() =>
-                            setFilters({ cuisines: [], prices: [], neighborhoods: [] })
-                          }
-                          className="mt-2 text-xs font-bold text-orange-600 uppercase hover:underline"
-                        >
-                          Clear Filters
-                        </button>
-                      </div>
-                    )}
+                      {msg.recommendations
+                        .filter((r) => {
+                          const matchCuisine =
+                            filters.cuisines.length === 0 ||
+                            (r.cuisine && filters.cuisines.includes(r.cuisine));
+                          const matchPrice =
+                            filters.prices.length === 0 ||
+                            (r.price_level && filters.prices.includes(r.price_level));
+                          const matchNeighborhood =
+                            filters.neighborhoods.length === 0 ||
+                            (r.neighborhood && filters.neighborhoods.includes(r.neighborhood));
+                          return matchCuisine && matchPrice && matchNeighborhood;
+                        })
+                        .map((rec) => (
+                          <motion.div
+                            key={`${msg.id}-${rec.name}`}
+                            initial={{ opacity: 0, y: 10 }}
+                            animate={{ opacity: 1, y: 0 }}
+                            transition={{ delay: 0.3 }}
+                          >
+                            <RecommendationCard
+                              recommendation={rec}
+                              isFavorite={favorites.some((f) => f.name === rec.name)}
+                              onFeedback={handleRecommendationFeedback}
+                              onToggleFavorite={handleToggleFavorite}
+                            />
+                          </motion.div>
+                        ))}
+
+                      {msg.recommendations &&
+                        msg.recommendations.length > 0 &&
+                        msg.recommendations.filter((r) => {
+                          const matchCuisine =
+                            filters.cuisines.length === 0 ||
+                            (r.cuisine && filters.cuisines.includes(r.cuisine));
+                          const matchPrice =
+                            filters.prices.length === 0 ||
+                            (r.price_level && filters.prices.includes(r.price_level));
+                          const matchNeighborhood =
+                            filters.neighborhoods.length === 0 ||
+                            (r.neighborhood && filters.neighborhoods.includes(r.neighborhood));
+                          return matchCuisine && matchPrice && matchNeighborhood;
+                        }).length === 0 && (
+                          <div className="rounded-2xl border border-dashed border-stone-300 bg-stone-100 p-8 text-center">
+                            <Filter className="mx-auto mb-2 h-8 w-8 text-stone-300" />
+                            <p className="text-sm text-stone-500">
+                              No matches for current filters.
+                            </p>
+                            <button
+                              onClick={() =>
+                                setFilters({ cuisines: [], prices: [], neighborhoods: [] })
+                              }
+                              className="mt-2 text-xs font-bold text-orange-600 uppercase hover:underline"
+                            >
+                              Clear Filters
+                            </button>
+                          </div>
+                        )}
+                    </div>
+                  )}
+                </motion.div>
+              ))}
+            </AnimatePresence>
+
+            {isLoading && (
+              <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="mb-8">
+                <ChatMessage role="assistant" content={loadingStep} isLoading={true} />
+
+                <div className="space-y-6 pr-4 pl-14">
+                  <TasteProfileBadge loading={true} />
+
+                  <div className="space-y-4">
+                    <RecommendationCard loading={true} />
+                    <RecommendationCard loading={true} />
+                    <RecommendationCard loading={true} />
+                  </div>
                 </div>
-              )}
-            </motion.div>
-          ))}
-        </AnimatePresence>
-
-        {isLoading && (
-          <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="mb-8">
-            <ChatMessage role="assistant" content={loadingStep} isLoading={true} />
-
-            <div className="space-y-6 pr-4 pl-14">
-              <TasteProfileBadge loading={true} />
-
-              <div className="space-y-4">
-                <RecommendationCard loading={true} />
-                <RecommendationCard loading={true} />
-                <RecommendationCard loading={true} />
-              </div>
-            </div>
-          </motion.div>
+              </motion.div>
+            )}
+            <div ref={messagesEndRef} />
+          </>
         )}
-        <div ref={messagesEndRef} />
-      </>
-    )}
-  </div>
+      </div>
 
       {/* Input Area */}
       <div className="border-t border-stone-200 bg-white p-4">
@@ -660,9 +664,7 @@ export default function ChatInterface() {
                     {fb}
                     <button
                       type="button"
-                      onClick={() =>
-                        setQueuedFeedback((prev) => prev.filter((_, i) => i !== idx))
-                      }
+                      onClick={() => setQueuedFeedback((prev) => prev.filter((_, i) => i !== idx))}
                       className="hover:text-stone-900"
                     >
                       <X className="h-2 w-2" />
@@ -679,66 +681,66 @@ export default function ChatInterface() {
                 ref={fileInputRef}
                 onChange={handleImageSelect}
               />
-            <button
-              type="button"
-              onClick={toggleListening}
-              className={`relative rounded-xl p-3 transition-colors ${
-                isListening
-                  ? 'animate-pulse bg-red-50 text-red-500'
-                  : 'text-stone-400 hover:text-orange-500'
-              }`}
-              title={isListening ? 'Stop listening' : 'Start voice to text'}
-              aria-label={isListening ? 'Stop listening' : 'Start voice to text'}
-            >
-              {isListening ? <MicOff className="h-5 w-5" /> : <Mic className="h-5 w-5" />}
-              {isListening && (
-                <span className="absolute top-2 right-2 h-2 w-2 animate-ping rounded-full bg-red-500" />
-              )}
-            </button>
-            <button
-              type="button"
-              onClick={detectLocation}
-              disabled={isLocating}
-              className={`rounded-xl p-3 transition-colors ${
-                isLocating
-                  ? 'animate-pulse text-orange-500'
-                  : 'text-stone-400 hover:text-orange-500'
-              }`}
-              title="Detect current neighborhood"
-              aria-label="Detect current neighborhood"
-            >
-              <MapPin className="h-5 w-5" />
-            </button>
-            <button
-              type="button"
-              onClick={() => fileInputRef.current?.click()}
-              className="rounded-xl p-3 text-stone-400 transition-colors hover:text-orange-500"
-              title="Upload image"
-              aria-label="Upload image"
-            >
-              <ImageIcon className="h-5 w-5" />
-            </button>
-            <textarea
-              ref={textareaRef}
-              value={input}
-              onChange={(e) => {
-                setInput(e.target.value);
-                // Auto-resize
-                e.target.style.height = 'auto';
-                e.target.style.height = `${e.target.scrollHeight}px`;
-              }}
-              onKeyDown={(e) => {
-                if (e.key === 'Enter' && !e.shiftKey) {
-                  e.preventDefault();
-                  submitMessage();
-                }
-              }}
-              placeholder="I'm looking for a cozy Italian spot for a date night..."
-              className="max-h-32 min-h-[44px] flex-1 resize-none border-none bg-transparent px-2 py-3 text-stone-800 placeholder-stone-400 outline-none focus:ring-0"
-              rows={1}
-            />
+              <button
+                type="button"
+                onClick={toggleListening}
+                className={`relative rounded-xl p-3 transition-colors ${
+                  isListening
+                    ? 'animate-pulse bg-red-50 text-red-500'
+                    : 'text-stone-400 hover:text-orange-500'
+                }`}
+                title={isListening ? 'Stop listening' : 'Start voice to text'}
+                aria-label={isListening ? 'Stop listening' : 'Start voice to text'}
+              >
+                {isListening ? <MicOff className="h-5 w-5" /> : <Mic className="h-5 w-5" />}
+                {isListening && (
+                  <span className="absolute top-2 right-2 h-2 w-2 animate-ping rounded-full bg-red-500" />
+                )}
+              </button>
+              <button
+                type="button"
+                onClick={detectLocation}
+                disabled={isLocating}
+                className={`rounded-xl p-3 transition-colors ${
+                  isLocating
+                    ? 'animate-pulse text-orange-500'
+                    : 'text-stone-400 hover:text-orange-500'
+                }`}
+                title="Detect current neighborhood"
+                aria-label="Detect current neighborhood"
+              >
+                <MapPin className="h-5 w-5" />
+              </button>
+              <button
+                type="button"
+                onClick={() => fileInputRef.current?.click()}
+                className="rounded-xl p-3 text-stone-400 transition-colors hover:text-orange-500"
+                title="Upload image"
+                aria-label="Upload image"
+              >
+                <ImageIcon className="h-5 w-5" />
+              </button>
+              <textarea
+                ref={textareaRef}
+                value={input}
+                onChange={(e) => {
+                  setInput(e.target.value);
+                  // Auto-resize
+                  e.target.style.height = 'auto';
+                  e.target.style.height = `${e.target.scrollHeight}px`;
+                }}
+                onKeyDown={(e) => {
+                  if (e.key === 'Enter' && !e.shiftKey) {
+                    e.preventDefault();
+                    submitMessage();
+                  }
+                }}
+                placeholder="I'm looking for a cozy Italian spot for a date night..."
+                className="max-h-32 min-h-[44px] flex-1 resize-none border-none bg-transparent px-2 py-3 text-stone-800 placeholder-stone-400 outline-none focus:ring-0"
+                rows={1}
+              />
+            </div>
           </div>
-        </div>
           <button
             type="submit"
             disabled={(!input.trim() && !selectedImage) || isLoading}
