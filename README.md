@@ -1,99 +1,70 @@
 # DineAI 🍽️
 
-**DineAI** is an AI-powered restaurant recommendation chatbot that orchestrates multiple specialized agents to deliver personalized, real-time dining suggestions. By combining Retrieval-Augmented Generation (RAG) with Google Gemini embeddings, multimodal vision analysis, and live web search, DineAI builds dynamic user taste profiles that account for personal preferences, budgets, and dining styles—going beyond static filters or one-size-fits-all recommendations.
+**DineAI** is an AI-powered restaurant recommendation engine that orchestrates specialized agents to deliver real-time dining suggestions. It utilizes Retrieval-Augmented Generation (RAG), Gemini embeddings, and multimodal vision to build dynamic user profiles.
 
-The system leverages a custom **Express/Node.js** agent orchestrator with a modular **Agent Skills** architecture, an in-memory vector database for semantic retrieval, **Gemini Structured Outputs** for validation, and a **React/Tailwind** web interface for user interaction; resulting in a production-grade AI pipeline that is both extensible and explainable.
+## 🏗️ Architecture & Stack
+
+### Core Technology
+*   **Frontend**: React 19, Tailwind CSS 4, Vite 7.
+*   **Backend**: Node.js, Express (Custom Agent Orchestrator).
+*   **AI Models**: Google Gemini 3 Flash (Text/Vision), Gemini 3.1 Pro (Reasoning), Gemini Embedding 2.
+*   **Data**: In-memory Vector Database with Cosine Similarity.
+
+### Agent Pipeline
+1.  **Profile Builder**: Extracts preferences from text and food photos to update `UserTasteProfile`.
+2.  **RAG Recommender**: Executes semantic search and multi-factor re-ranking (Cuisine, Price, Ambiance).
+3.  **Trend Analyst**: Queries live web data for trending local openings via Google Search.
+4.  **Finalizer**: Synthesizes agent outputs into validated, structured recommendations.
+
+---
 
 ## 🚀 Key Features
 
-- **Health & Stability**: Optimized environment with resolved dependency conflicts and restored CI/CD health.
-- **Normalized Scoring Engine**: Precisely weighted multi-factor scoring (Cuisine, Price, Ambiance, Dietary) for more predictable recommendations.
-- **Personalized Onboarding**: An interactive tutorial that guides new users through DineAI's unique multi-agent features.
-- **Favorites Gallery**: Save restaurants you love and view your curated collection in a dedicated favorites tab.
-- **Chat History Persistence**: Conversations are saved to local storage, allowing you to pick up where you left off.
-- **Multi-Agent Orchestration**: A specialized pipeline of agents (Profile Builder, RAG Recommender, Trend Analyst, and Finalizer) working together.
-- **Adaptive Feedback Loop**: "Like" and "Dislike" system that refines your taste profile in real-time.
-- **Advanced Multi-Select Filtering**: Instantly refine recommendations by multiple cuisines, price tiers, and neighborhoods simultaneously via an intuitive dropdown interface.
-- **Geolocation Awareness**: One-click neighborhood detection for hyper-local NYC recommendations.
-- **Skeleton Loading & Perceived Performance**: Custom skeleton screens provide immediate visual feedback while agents process in the background.
-- **High Resilience Architecture**: Sophisticated retry logic with exponential backoff and localized error handling ensures high availability across the entire agent pipeline.
-- **Optimized Multi-Agent Synergy**: Intelligent context management ensures that Profile, Trend, and RAG agents share a unified, validated world-view for consistent recommendations.
-- **Dynamic Taste Profiles**: Automatically infers your preferences from chat history and uploaded food photos.
-- **Neighborhood-Aware Recommendations**: Specify your preferred areas (e.g., "West Village", "SoHo") to get hyper-local suggestions.
-- **Real-Time Trend Analysis**: Integrates live Google Search data to find trending cuisines, new openings, and viral dishes.
-- **Trend Synergy Explanations**: Deeply analyzes and explains exactly why a current trend matches your unique taste profile.
-- **Voice-to-Text Integration**: Hands-free interaction with the chat interface using built-in speech recognition.
-- **Semantic Search (RAG)**: Uses Gemini embeddings and a vector database for high-precision restaurant retrieval.
-- **Explainable AI**: Every recommendation comes with a personalized rationale explaining exactly why it fits your taste.
+*   **Multimodal Inputs**: Infers tastes from chat history and uploaded food photography.
+*   **Explainable AI**: Provides a rationale for every suggestion based on the user profile.
+*   **Real-time Search**: Integrates live Google Search to identify viral dishes and new openings.
+*   **Contextual Filtering**: Supports geolocation, multi-select cuisine tiers, and neighborhood-specific searches.
+*   **Robust UX**: Skeleton screens for perceived performance and local storage for chat persistence.
+*   **Resilient Pipeline**: Exponential backoff retry logic and centralized `AppError` handling.
 
-## 🛠️ Technology Stack
-
-| Category       | Technology                   | Version / Notes                     |
-| -------------- | ---------------------------- | ----------------------------------- |
-| Frontend       | React 19 + Tailwind CSS 4    | Vite 7 build system, Lucide Icons   |
-| Backend        | Node.js + Express            | Custom Agent Orchestrator           |
-| AI/LLM         | Google Gemini API            | `@google/genai` SDK                 |
-| Models         | `gemini-3-flash-preview`     | Text & Vision analysis              |
-| Reasoning      | `gemini-3.1-pro-preview`     | Complex agent reasoning             |
-| Embeddings     | `gemini-embedding-2-preview` | Used for semantic search            |
-| Vector DB      | Custom In-Memory DB          | Local semantic storage              |
-| Web Search     | Gemini Google Search Tool    | Real-time trend retrieval           |
-| Error Handling | Custom AppError System       | Centralized, user-friendly feedback |
-
-## 🏗️ System Architecture
-
-DineAI comprises four coordinated layers that can operate sequentially or in parallel:
-
-| Layer               | Component                   | Technology                                      |
-| ------------------- | --------------------------- | ----------------------------------------------- |
-| Data Ingestion      | Restaurant knowledge base   | Local in-memory Vector DB (`vectorDb.ts`)       |
-| Agent Orchestration | Multi-agent coordination    | Express.js custom orchestrator                  |
-| Agent Capabilities  | Modular Agent Skills        | Composable TypeScript functions (`/src/skills`) |
-| Retrieval           | Semantic similarity search  | Gemini Embeddings + Cosine Similarity           |
-| Trend Analysis      | Real-time web search        | Gemini Google Search Tool                       |
-| Vision Analysis     | Dining photo interpretation | Gemini Multimodal (`analyzeFoodPhoto` skill)    |
-| Output Validation   | Structured agent responses  | Gemini `responseSchema`                         |
-| User Interface      | Conversational chatbot      | React + Tailwind CSS                            |
-
-### Agent Design
-
-1. **Profile Builder Agent**: Analyzes messages and photos to create a `UserTasteProfile`.
-2. **RAG Recommender Agent**: Performs semantic search and rule-based re-ranking to find candidate restaurants.
-3. **Food Trend Analyst Agent**: Searches the web for local food trends and classifies their relevance to your profile.
-4. **Recommendation Finalizer Agent**: Synthesizes all data into a friendly, ranked list of recommendations.
+---
 
 ## 🚦 Getting Started
 
 ### Prerequisites
-
-- Node.js (v18+)
-- A Google Gemini API Key
+*   Node.js (v18+)
+*   Google Gemini API Key
 
 ### Installation
+1.  **Clone & Install**:
+    ```bash
+    git clone https://github.com/user/dineai.git
+    cd dineai
+    npm install
+    ```
+2.  **Environment Setup**:
+    Create a `.env` file:
+    ```env
+    GEMINI_API_KEY=your_api_key_here
+    ```
+3.  **Run**:
+    ```bash
+    npm run dev
+    ```
 
-1. Clone the repository.
-2. Install dependencies:
-   ```bash
-   npm install
-   ```
-3. Set up your environment variables in a `.env` file:
-   ```env
-   GEMINI_API_KEY=your_api_key_here
-   ```
-4. Start the development server:
-   ```bash
-   npm run dev
-   ```
+---
 
-## 📊 Success Metrics
+## 📊 Performance Targets
 
-| Metric                   | Target             |
-| ------------------------ | ------------------ |
-| Retrieval Precision@5    | ≥ 70%              |
-| Recommendation Relevance | ≥ 4.0 / 5.0        |
-| End-to-end Latency       | < 15 seconds (P95) |
-| Agent Output Validity    | 100%               |
+| Metric | Target |
+| :--- | :--- |
+| **Retrieval Precision@5** | ≥ 70% |
+| **Recommendation Relevance** | ≥ 4.0 / 5.0 |
+| **End-to-end Latency** | < 15s (P95) |
+| **Output Validity** | 100% (Schema enforced) |
+
+---
 
 ## 📄 License
-
 MIT
+```
