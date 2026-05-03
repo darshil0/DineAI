@@ -1,7 +1,7 @@
 # DineAI 🍽️
 
 **DineAI** is an AI-powered restaurant recommendation chatbot that orchestrates multiple specialized agents to deliver personalized, real-time dining suggestions. By combining Retrieval-Augmented Generation (RAG) with Google Gemini embeddings, multimodal vision analysis, and live web search, DineAI builds dynamic user taste profiles that account for personal preferences, budgets, and dining styles—going beyond static filters or one-size-fits-all recommendations.
- 
+
 The system leverages a custom **Express/Node.js** agent orchestrator with a modular **Agent Skills** architecture, an in-memory vector database for semantic retrieval, **Gemini Structured Outputs** for validation, and a **React/Tailwind** web interface for user interaction; resulting in a production-grade AI pipeline that is both extensible and explainable.
 
 ## 🚀 Key Features
@@ -30,7 +30,7 @@ The system leverages a custom **Express/Node.js** agent orchestrator with a modu
 
 | Category       | Technology                   | Version / Notes                     |
 | -------------- | ---------------------------- | ----------------------------------- |
-| Frontend       | React + Tailwind CSS         | Vite build system, Lucide Icons     |
+| Frontend       | React 19 + Tailwind CSS 4    | Vite 7 build system, Lucide Icons   |
 | Backend        | Node.js + Express            | Custom Agent Orchestrator           |
 | AI/LLM         | Google Gemini API            | `@google/genai` SDK                 |
 | Models         | `gemini-3-flash-preview`     | Text & Vision analysis              |
