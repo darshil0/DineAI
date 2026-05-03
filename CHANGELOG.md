@@ -2,61 +2,6 @@
 
 All notable changes to this project will be documented in this file.
 
-## [2.3.0] - 2026-05-03
-
-### Fixed — Critical Bugs
-
-- **Profile Serialization Bug (all agents)**: Replaced native template literal interpolation of state objects with explicit `JSON.stringify(profile, null, 2)` calls in `ProfileBuilder`, `TrendAnalyst`, `RAGRecommender`, and `Finalizer` prompts. This prevents the `[object Object]` string from corrupting LLM context and degrading model output quality.
-- **Missing `withRetry` Coverage**: Applied `withRetry` wrappers to all previously unguarded Gemini API calls and skill executions across the full agent pipeline:
-  - `generateEmbedding` in `ingestRestaurants.ts`
-  - `analyzeFoodPhoto` in `profileBuilder.ts`
-  - `extractCuisines` (via skill registry in profile building flow)
-  - `extractTrendsFromSearchResults` in `trendAnalyst.ts`
-  - `classifyTrendRelevanceToProfile` in `trendAnalyst.ts`
-  - All `scoreRestaurant` calls in `ragRecommender.ts`
-  - Google Search grounding call in `trendAnalyst.ts`
-  - Finalizer `generateContent` call in `finalizer.ts`
-- **Cold-Start Ingestion Guard**: `ingestRestaurants` now calls `vectorDb.loadFromIndex()` first and only runs the full embedding pipeline when `vectorDb.isEmpty` is `true`. Prevents redundant API calls on every server restart.
-- **`instanceof` Prototype Chain**: Fixed `Object.setPrototypeOf(this, new.target.prototype)` in all custom error classes (`AppError`, `AgentServiceError`, `SkillError`, `ValidationError`) to ensure correct `instanceof` checks across transpilation boundaries.
-- **History Sanitisation**: `chat.ts` API now enforces both a 10-exchange depth limit (`truncateHistory`) and an assistant-role content verification filter, guarding against context poisoning via spoofed history injection.
-- **Multer File Size Limit**: Added explicit 5 MB `fileSize` limit to the multer upload configuration in `chat.ts`, consistent with the documented constraint in CHANGELOG v1.5.0.
-- **Skill Registry Guard**: `getSkill` now throws a descriptive error message including the missing skill name and a bootstrap reminder, preventing silent `undefined` returns.
-
-### Added
-
-- **`src/types.ts`**: Centralised shared domain types (`UserTasteProfile`, `Restaurant`, `FinalRecommendation`, `FoodTrend`, `ChatMessage`) to eliminate type duplication and drift across services.
-- **`src/lib/gemini.ts`**: `getGeminiClient()` singleton factory and `MODELS` constants — centralises API key handling and model string management across all agents and skills.
-- **`src/lib/errors.ts`**: Full custom error hierarchy (`AppError`, `AgentServiceError`, `SkillError`, `ValidationError`) with `handleApiError` utility for consistent API error responses.
-- **`src/lib/cache.ts`**: SQLite-backed embeddings cache (`getCachedEmbedding` / `setCachedEmbedding`) wired into `generateEmbeddingSkill` to prevent redundant API calls.
-- **`src/lib/utils.ts`**: `withRetry` (recursive exponential backoff, max 3 retries, targeting 429 errors) and `truncateHistory` (configurable exchange-depth window) utilities.
-- **`src/lib/vectorDb.ts`**: In-memory vector DB with cosine similarity, `upsert`, `search`, `loadFromIndex`, `saveToIndex`, and `isEmpty` — restored persistence lifecycle integrated with graceful shutdown in `server.ts`.
-- **`src/skills/`**: Full modular skill suite — `generateEmbedding`, `extractCuisines`, `analyzeFoodPhoto`, `scoreRestaurant`, `extractTrendsFromSearchResults`, `classifyTrendRelevanceToProfile` — all implementing the `AgentSkill<TInput, TOutput>` interface.
-- **`src/skills/registry.ts`**: `registerSkill` and `getSkill` with type-safe generics.
-- **`src/skills/bootstrap.ts`**: `bootstrapSkills()` centralises all skill registrations for clean server startup ordering.
-- **`src/services/`**: All four agent services fully implemented — `profileBuilder.ts`, `ragRecommender.ts`, `trendAnalyst.ts`, `finalizer.ts`.
-- **`src/scripts/ingestRestaurants.ts`**: Batch ingestion (chunks of 5) with embeddings cache integration, `withRetry` on every embed call, and cold-start guard.
-- **`src/scripts/verifySystem.ts`**: `npm run verify` smoke-tests env, skill bootstrap, and a live embedding round-trip.
-- **`src/data/restaurants.ts`**: 12-entry restaurant knowledge base with full `Restaurant` interface fields (`address`, `phone`, `hours`, `tags`, `rating`).
-- **`src/api/chat.ts`**: Express router with Zod schema validation (`ChatRequestSchema`, `ChatMessageSchema`), history sanitisation, per-agent telemetry logging, and `handleApiError` for structured error responses.
-- **Per-Agent Telemetry**: Server-side `Date.now()` latency logging for each stage of the pipeline (ProfileBuilder, RAGRecommender, TrendAnalyst, Finalizer, total).
-- **Structured Output Schema**: `FinalRecommendationsSchema` added to `finalizer.ts` for Gemini `responseSchema`-enforced structured output validation.
-
-### Changed
-
-- **`scoreRestaurant` — Numeric Price Matching**: Replaced string-based price comparison with numeric proximity scoring. `diff = |restaurant.price_level - targetLevel|`; each level of difference deducts 10 pts from a 30-pt budget, enabling partial matches and graduated penalties (no longer binary hit/miss).
-- **`ProfileBuilder` Negative Constraint Prompt**: Clarified system instruction — explicit rule that disliked or avoided items must populate `disliked_cuisines` / `avoid_patterns` only, never `preferred_cuisines`. Fixes Issue #15.
-- **RAG Pipeline**: `ragRecommend` now runs semantic search (top 10), applies `scoreRestaurant` re-ranking, then passes candidates through an LLM filter for subtle dietary/avoidance violations before returning the final top 5.
-- **Parallel Agent Execution**: RAG Recommender and Trend Analyst now run concurrently via `Promise.all` in `chat.ts`, reducing total pipeline latency.
-- **`ingestRestaurants` Batch Size**: Confirmed at 5 items per batch with `Promise.all` within each batch for controlled API throughput.
-
-### Tests
-
-- **`src/lib/__tests__/utils.test.ts`**: 6 unit tests for `withRetry` (success, 429 retry, non-429 no-retry, retry exhaustion) and `truncateHistory` (below limit, above limit).
-- **`src/lib/__tests__/vectorDb.test.ts`**: 5 unit tests verifying exact match (score=1.0), 45° cosine (score≈0.7071), orthogonal vectors (score≈0), topK sort order, and `isEmpty` guard.
-- **`src/skills/__tests__/scoreRestaurant.test.ts`**: 5 unit tests covering perfect match (score=90), partial price mismatch (numeric diff penalty), disliked cuisine penalty, avoid-pattern tag penalty, and score clamping to [0, 100].
-
----
-
 ## [2.2.0] - 2026-05-01
 
 ### Added
