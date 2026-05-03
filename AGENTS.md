@@ -21,6 +21,7 @@ To handle transient `429 Too Many Requests` errors from the Gemini API, **all mo
 - **Configuration**: Uses exponential backoff (starting at 1s) with a maximum of 3 retries.
 
 ### 2. Prompt Serialization
+
 When passing state objects (like the `UserTasteProfile`) into LLM prompts, **always explicitly stringify the objects** (e.g., `JSON.stringify(profile)`). Native template literal interpolation may result in `[object Object]` strings, which can degrade model performance.
 
 ### 2. Embeddings Cache
@@ -65,12 +66,14 @@ The `ChatInterface` implements a client-side filtering layer for the latest assi
 ### 5. Onboarding & Education
 
 The `OnboardingTutorial` component is triggered on first visit:
+
 - **Persistence**: Completion is tracked in `localStorage` under `dineai_onboarding_completed`.
 - **Interaction**: Uses `motion/react` for smooth step transitions and dismissible behavior.
 
 ### 6. Favorites Management
 
 Users can bookmark recommendations for later:
+
 - **Persistence**: Favorited restaurants are stored in `localStorage` under `dineai_favorites`.
 - **UI**: A global toggle in the header switches between the live chat and the favorites gallery.
 
@@ -93,18 +96,21 @@ npx tsx src/skills/__tests__/scoreRestaurant.test.ts
 ## 🛡️ Security & Constraints
 
 ### 1. Architectural Decisions
+
 - **Runtime (`tsx`)**: The application uses `tsx` in production to support the fast-iteration lifecycle of AI Studio. While functional, standalone high-scale deployments should migrate to `tsc` (pre-compiled `dist/`) for optimized performance.
 - **Persistence**:
-    - `embeddings_cache.db`: A persistent SQLite cache for vector embeddings. This is **tracked** as it contains pre-computed infrastructure data.
-    - `vector_index.json`: A runtime persistence file for the in-memory vector index. This is **ignored** via `.gitignore` as it is a derived artifact populated at runtime or during ingestion.
+  - `embeddings_cache.db`: A persistent SQLite cache for vector embeddings. This is **tracked** as it contains pre-computed infrastructure data.
+  - `vector_index.json`: A runtime persistence file for the in-memory vector index. This is **ignored** via `.gitignore` as it is a derived artifact populated at runtime or during ingestion.
 
 ### 2. Security Invariants
+
 - **Key Isolation**: All API keys (Gemini, etc.) are restricted to `server.ts`. No keys are ever exposed to the client-side bundle.
 - **Payload Validation**: The `Chat` API uses `zod` for rigorous schema enforcement of incoming user messages and conversation history.
-- **Context Poisoning Mitigation**: 
-    - Conversation history is strictly truncated to the **last 10 exchanges** before processing.
-    - Assistant roles are enforced via validation to prevent users from injecting spoofed LLM responses into the history buffer.
+- **Context Poisoning Mitigation**:
+  - Conversation history is strictly truncated to the **last 10 exchanges** before processing.
+  - Assistant roles are enforced via validation to prevent users from injecting spoofed LLM responses into the history buffer.
 - **CORS & Headers**: The server implements strict CSRF-avoidance patterns by restricting origins and enforcing JSON content types.
 
 ### 3. Known Limitations
+
 - **Cold-Start Ingestion**: On the first run without a `vector_index.json`, the server performs a one-time ingestion of restaurant data. This is guarded by a the `embeddings_cache.db` to ensure zero-cost API calls during this phase.

@@ -79,8 +79,12 @@ router.post('/', upload.single('image'), async (req, res) => {
     console.log(`[Telemetry] ProfileBuilder lat=${profileDuration}ms`);
 
     // 3 & 4. Run RAG Recommender and Trend Analyst in parallel
-    const locationMatch = sanitizedMessage.match(/\[Near my current location: ([\d.-]+), ([\d.-]+)\]/);
-    const trendLocation = locationMatch ? `Area near ${locationMatch[1]}, ${locationMatch[2]}` : 'New York City';
+    const locationMatch = sanitizedMessage.match(
+      /\[Near my current location: ([\d.-]+), ([\d.-]+)\]/,
+    );
+    const trendLocation = locationMatch
+      ? `Area near ${locationMatch[1]}, ${locationMatch[2]}`
+      : 'New York City';
 
     const startParallel = Date.now();
     const [candidateList, trendReportText] = await Promise.all([

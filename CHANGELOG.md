@@ -2,15 +2,33 @@
 
 All notable changes to this project will be documented in this file.
 
+## [Unreleased]
+
+### Fixed
+
+- **Dependency Conflict**: Downgraded `vite` to `^7.3.2` to resolve peer dependency conflicts with `@tailwindcss/vite`.
+- **Scoring Logic**: Normalized restaurant match weights in `scoreRestaurant.ts` (Cuisine: 0.4, Price: 0.3, Ambiance: 0.2, Dietary: 0.1) for better consistency and predictability. Removed unused neighborhood weight.
+- **Environment**: Restored working `npm run lint` and `npm test` environments.
+
+### Changed
+
+- **Formatting**: Applied project-wide formatting using Prettier and Tailwind CSS plugin.
+
+### Removed
+
+- **Unused Files**: Deleted `metadata.json` as it was not referenced in the codebase.
+
 ## [2.2.0] - 2026-05-01
 
 ### Added
+
 - **Interactive Onboarding Tutorial**: A multi-step guide explaining the "Multi-Agent" orchestrator, Taste Profiles, and Trend Analysis.
 - **Favorites Management**: Users can now "Heart" restaurants to save them to a persistent favorites list.
 - **Conversation Persistence**: Chat history is now automatically saved and restored from `localStorage`.
 - **Per-Agent Telemetry**: Added server-side latency logging for each stage of the agent pipeline.
 
 ### Fixed
+
 - **Critical Hoisting Bug**: Fixed `setInitialMessage` being undefined on mount in `ChatInterface.tsx` by converting it to a `useCallback` and hoisting its definition.
 - **Profile Serialization Bug**: Fixed `[object Object]` interpolation in `ProfileBuilder` prompt by correctly typing and stringifying the `currentProfile` object.
 - **Missing Retry Logic**: Comprehensive application of `withRetry` wrappers to all critical skill calls including `generateEmbedding`, `extractCuisines`, `analyzeFoodPhoto`, `extractTrendsFromSearchResults`, and `classifyTrendRelevanceToProfile`.
@@ -19,6 +37,7 @@ All notable changes to this project will be documented in this file.
 - **Cold-Start Optimization**: Restricted `ingestRestaurants` to run only if the vector index is empty or corrupted.
 
 ### Changed
+
 - **Persistence Strategy**: Vector index now serializes to `vector_index.json` on graceful shutdown and loads on startup.
 - **History Sanitization**: Enforced a 10-exchange depth limit and assistant-role verification before processing.
 - **Code Cleanup**: Removed multiple unused imports and variables across the codebase (`ChatInterface.tsx`, `profileBuilder.ts`, `finalizer.ts`, `ragRecommender.ts`, etc.).
@@ -26,6 +45,7 @@ All notable changes to this project will be documented in this file.
 ## [2.1.0] - 2026-05-01
 
 ### Added
+
 - **Advanced Multi-Select Filtering**: Refined recommendation interaction with a new dropdown-based filtering system.
 - **Custom FilterControls Component**: Dedicated UI for managing multiple intersecting facets (Cuisines, Prices, Neighborhoods).
 - **Persistent Selection Logic**: Filter bar now supports multiple concurrent selections with instant UI feedback.
@@ -33,9 +53,11 @@ All notable changes to this project will be documented in this file.
 ## [2.0.0] - 2026-05-01
 
 ### Added
+
 - **Code Prettification**: integrated Prettier with Tailwind CSS plugin for consistent codebase styling.
 
 ### Changed
+
 - **Dependency Refresh**: Updated core libraries including React 19, Vite 6, and Gemini SDK to their latest stable versions.
 - **Global Formatting**: Applied uniform formatting rules across all source files and markdown documentation.
 

@@ -15,7 +15,7 @@ export async function buildProfile(
 ): Promise<UserTasteProfile> {
   const ai = getGeminiClient();
   console.log('Running Profile Builder Agent...');
-  
+
   // 1. Run Skills in parallel to gather insights
   const extractCuisines = getSkill<ExtractCuisinesInput, ExtractCuisinesOutput>('extractCuisines');
   const analyzeFoodPhoto = getSkill<AnalyzeFoodPhotoInput, AnalyzeFoodPhotoOutput>(
