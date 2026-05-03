@@ -1,8 +1,8 @@
 # DineAI 🍽️
 
-**DineAI** is an AI-powered restaurant recommendation chatbot that orchestrates multiple specialized agents to deliver personalized, real-time dining suggestions. By combining Retrieval-Augmented Generation (RAG) with Google Gemini embeddings, multimodal vision analysis, and live web search, DineAI builds dynamic user taste profiles that account for personal preferences, budgets, and dining styles.
+**DineAI** is an AI-powered restaurant recommendation chatbot that orchestrates multiple specialized agents to deliver personalized, real-time dining suggestions. By combining Retrieval-Augmented Generation (RAG) with Google Gemini embeddings, multimodal vision analysis, and live web search, DineAI builds dynamic user taste profiles that account for personal preferences, budgets, and dining styles—going beyond static filters or one-size-fits-all recommendations.
 
-The system leverages a custom **Express/Node.js** agent orchestrator with a modular **Agent Skills** architecture, an in-memory vector database for semantic retrieval, **Gemini Structured Outputs** for validation, and a **React/Tailwind** web interface for user interaction.
+The system leverages a custom **Express/Node.js** agent orchestrator with a modular **Agent Skills** architecture, an in-memory vector database for semantic retrieval, **Gemini Structured Outputs** for validation, and a **React/Tailwind** web interface for user interaction; resulting in a production-grade AI pipeline that is both extensible and explainable.
 
 ## 🚀 Key Features
 
@@ -14,30 +14,53 @@ The system leverages a custom **Express/Node.js** agent orchestrator with a modu
 - **Multi-Agent Orchestration**: A specialized pipeline of agents (Profile Builder, RAG Recommender, Trend Analyst, and Finalizer) working together.
 - **Adaptive Feedback Loop**: "Like" and "Dislike" system that refines your taste profile in real-time.
 - **Advanced Multi-Select Filtering**: Instantly refine recommendations by multiple cuisines, price tiers, and neighborhoods simultaneously via an intuitive dropdown interface.
-- **Semantic Search (RAG)**: Uses Gemini embeddings and a vector database for high-precision restaurant retrieval.
+- **Geolocation Awareness**: One-click neighborhood detection for hyper-local NYC recommendations.
+- **Skeleton Loading & Perceived Performance**: Custom skeleton screens provide immediate visual feedback while agents process in the background.
+- **High Resilience Architecture**: Sophisticated retry logic with exponential backoff and localized error handling ensures high availability across the entire agent pipeline.
+- **Optimized Multi-Agent Synergy**: Intelligent context management ensures that Profile, Trend, and RAG agents share a unified, validated world-view for consistent recommendations.
+- **Dynamic Taste Profiles**: Automatically infers your preferences from chat history and uploaded food photos.
+- **Neighborhood-Aware Recommendations**: Specify your preferred areas (e.g., "West Village", "SoHo") to get hyper-local suggestions.
 - **Real-Time Trend Analysis**: Integrates live Google Search data to find trending cuisines, new openings, and viral dishes.
+- **Trend Synergy Explanations**: Deeply analyzes and explains exactly why a current trend matches your unique taste profile.
 - **Voice-to-Text Integration**: Hands-free interaction with the chat interface using built-in speech recognition.
+- **Semantic Search (RAG)**: Uses Gemini embeddings and a vector database for high-precision restaurant retrieval.
+- **Explainable AI**: Every recommendation comes with a personalized rationale explaining exactly why it fits your taste.
 
 ## 🛠️ Technology Stack
 
-| Category   | Technology               | Version / Notes                     |
-| ---------- | ------------------------ | ----------------------------------- |
-| Frontend   | React 19 + Tailwind 4    | Vite 7 build system, Lucide Icons   |
-| Backend    | Node.js + Express        | Custom Agent Orchestrator           |
-| AI/LLM     | Google Gemini API        | `@google/genai` SDK                 |
-| Models     | `gemini-3-flash-preview` | Text & Vision analysis              |
-| Reasoning  | `gemini-3.1-pro-preview` | Complex agent reasoning             |
-| Embeddings | `gemini-embedding-2-preview` | Used for semantic search            |
-| Vector DB  | Custom In-Memory DB      | Local semantic storage              |
+| Category       | Technology                   | Version / Notes                     |
+| -------------- | ---------------------------- | ----------------------------------- |
+| Frontend       | React 19 + Tailwind CSS 4    | Vite 7 build system, Lucide Icons   |
+| Backend        | Node.js + Express            | Custom Agent Orchestrator           |
+| AI/LLM         | Google Gemini API            | `@google/genai` SDK                 |
+| Models         | `gemini-3-flash-preview`     | Text & Vision analysis              |
+| Reasoning      | `gemini-3.1-pro-preview`     | Complex agent reasoning             |
+| Embeddings     | `gemini-embedding-2-preview` | Used for semantic search            |
+| Vector DB      | Custom In-Memory DB          | Local semantic storage              |
+| Web Search     | Gemini Google Search Tool    | Real-time trend retrieval           |
+| Error Handling | Custom AppError System       | Centralized, user-friendly feedback |
 
 ## 🏗️ System Architecture
 
 DineAI comprises four coordinated layers that can operate sequentially or in parallel:
 
-1.  **Profile Builder Agent**: Analyzes messages and photos to create a `UserTasteProfile`.
-2.  **RAG Recommender Agent**: Performs semantic search and rule-based re-ranking to find candidate restaurants.
-3.  **Food Trend Analyst Agent**: Searches the web for local food trends and classifies their relevance to your profile.
-4.  **Recommendation Finalizer Agent**: Synthesizes all data into a friendly, ranked list of recommendations.
+| Layer               | Component                   | Technology                                      |
+| ------------------- | --------------------------- | ----------------------------------------------- |
+| Data Ingestion      | Restaurant knowledge base   | Local in-memory Vector DB (`vectorDb.ts`)       |
+| Agent Orchestration | Multi-agent coordination    | Express.js custom orchestrator                  |
+| Agent Capabilities  | Modular Agent Skills        | Composable TypeScript functions (`/src/skills`) |
+| Retrieval           | Semantic similarity search  | Gemini Embeddings + Cosine Similarity           |
+| Trend Analysis      | Real-time web search        | Gemini Google Search Tool                       |
+| Vision Analysis     | Dining photo interpretation | Gemini Multimodal (`analyzeFoodPhoto` skill)    |
+| Output Validation   | Structured agent responses  | Gemini `responseSchema`                         |
+| User Interface      | Conversational chatbot      | React + Tailwind CSS                            |
+
+### Agent Design
+
+1. **Profile Builder Agent**: Analyzes messages and photos to create a `UserTasteProfile`.
+2. **RAG Recommender Agent**: Performs semantic search and rule-based re-ranking to find candidate restaurants.
+3. **Food Trend Analyst Agent**: Searches the web for local food trends and classifies their relevance to your profile.
+4. **Recommendation Finalizer Agent**: Synthesizes all data into a friendly, ranked list of recommendations.
 
 ## 🚦 Getting Started
 
@@ -61,6 +84,15 @@ DineAI comprises four coordinated layers that can operate sequentially or in par
    ```bash
    npm run dev
    ```
+
+## 📊 Success Metrics
+
+| Metric                   | Target             |
+| ------------------------ | ------------------ |
+| Retrieval Precision@5    | ≥ 70%              |
+| Recommendation Relevance | ≥ 4.0 / 5.0        |
+| End-to-end Latency       | < 15 seconds (P95) |
+| Agent Output Validity    | 100%               |
 
 ## 📄 License
 
