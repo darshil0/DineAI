@@ -2,7 +2,7 @@ import { getGeminiClient } from '../lib/geminiClient.js';
 import { AgentSkill } from './types.js';
 import { Type } from '@google/genai';
 import { UserTasteProfile } from '../schemas/userTasteProfile.js';
-import { cleanJson } from '../lib/utils.js';
+import { cleanJson, withRetry } from '../lib/utils.js';
 
 interface ClassifyTrendInput {
   profile: UserTasteProfile;
@@ -29,9 +29,10 @@ export const classifyTrendRelevanceToProfileSkill: AgentSkill<ClassifyTrendInput
     run: async (input: ClassifyTrendInput) => {
       const ai = getGeminiClient();
 
-      const response = await ai.models.generateContent({
-        model: 'gemini-3-flash-preview',
-        contents: `Compare the user's taste profile with these food trends.
+      const response = await withRetry(() =>
+        ai.models.generateContent({
+          model: 'gemini-3-flash-preview',
+          contents: `Compare the user's taste profile with these food trends.
       
       User Taste Profile:
       ${JSON.stringify(input.profile, null, 2)}
@@ -60,7 +61,8 @@ export const classifyTrendRelevanceToProfileSkill: AgentSkill<ClassifyTrendInput
             ],
           },
         },
-      });
+      }),
+    );
 
       try {
         return JSON.parse(cleanJson(response.text || '{}'));

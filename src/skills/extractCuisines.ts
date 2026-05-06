@@ -1,6 +1,6 @@
 import { AgentSkill } from './types.js';
 import { getGeminiClient } from '../lib/geminiClient.js';
-import { cleanJson } from '../lib/utils.js';
+import { cleanJson, withRetry } from '../lib/utils.js';
 import { Type } from '@google/genai';
 
 export interface ExtractCuisinesInput {
@@ -22,24 +22,26 @@ Return a JSON array of cuisine names only (strings), no explanation.
 User text:
 ${text}`;
 
-    const result = await ai.models.generateContent({
-      model: 'gemini-3-flash-preview',
-      contents: prompt,
-      config: {
-        responseMimeType: 'application/json',
-        responseSchema: {
-          type: Type.OBJECT,
-          properties: {
-            cuisines: {
-              type: Type.ARRAY,
-              items: { type: Type.STRING },
-              description: 'List of cuisines explicitly mentioned or strongly implied.',
+    const result = await withRetry(() =>
+      ai.models.generateContent({
+        model: 'gemini-3-flash-preview',
+        contents: prompt,
+        config: {
+          responseMimeType: 'application/json',
+          responseSchema: {
+            type: Type.OBJECT,
+            properties: {
+              cuisines: {
+                type: Type.ARRAY,
+                items: { type: Type.STRING },
+                description: 'List of cuisines explicitly mentioned or strongly implied.',
+              },
             },
+            required: ['cuisines'],
           },
-          required: ['cuisines'],
         },
-      },
-    });
+      }),
+    );
 
     const data = JSON.parse(cleanJson(result.text || '{"cuisines":[]}'));
     return { cuisines: data.cuisines || [] };
