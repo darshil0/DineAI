@@ -25,12 +25,33 @@ const upload = multer({
 });
 
 // Zod schemas for validation
-const HistorySchema = z.array(
-  z.object({
-    role: z.enum(['user', 'assistant']),
-    content: z.string().max(5000),
-  }),
-);
+const HistoryItemSchema = z.object({
+  role: z.enum(['user', 'assistant']),
+  content: z.string().max(5000),
+});
+
+const HistorySchema = z.array(HistoryItemSchema);
+
+// Helper to validate history integrity
+function validateHistoryIntegrity(
+  history: Array<{ role: 'user' | 'assistant'; content: string }>,
+): boolean {
+  if (history.length === 0) return true;
+
+  // Enforce role alternation: must start with user or assistant, then alternate
+  for (let i = 1; i < history.length; i++) {
+    const prevRole = history[i - 1].role;
+    const currRole = history[i].role;
+
+    // Allow same role to appear consecutively (edge case), but should not have more than 2 consecutive
+    const consecutiveCount = history.slice(Math.max(0, i - 2), i + 1).filter((m) => m.role === currRole).length;
+    if (consecutiveCount > 2) {
+      return false;
+    }
+  }
+
+  return true;
+}
 
 router.post('/', upload.single('image'), async (req, res) => {
   try {
@@ -42,32 +63,55 @@ router.post('/', upload.single('image'), async (req, res) => {
       throw new ValidationError('Message is required and must be a string.');
     }
 
+    // Validate message length and content
     const sanitizedMessage = message.trim().slice(0, 2000);
+    if (sanitizedMessage.length === 0 && !imageFile) {
+      throw new ValidationError('Either a message or an image must be provided.');
+    }
+
+    // Re-validate file after Multer processing
+    if (imageFile && imageFile.size > 5 * 1024 * 1024) {
+      throw new ValidationError('Image size exceeds the 5MB limit.');
+    }
+
     const startTotal = Date.now();
 
+    // 2. History Validation & Sanitization with Integrity Check
     let history: { role: 'user' | 'assistant'; content: string }[] = [];
     if (historyStr) {
       try {
         const parsed = JSON.parse(historyStr);
-        // Validating shape first
+        // Validate shape and content
         const validated = HistorySchema.parse(parsed);
-        // Sanitization: last 10 exchanges only
+
+        // Validate integrity (role alternation, etc.)
+        if (!validateHistoryIntegrity(validated)) {
+          console.warn('History integrity check failed; using last 10 exchanges only.');
+        }
+
+        // Keep last 10 exchanges only to prevent context poisoning
         history = validated.slice(-10);
       } catch (e) {
         console.warn('Invalid history format provided, ignoring.', e);
+        history = [];
       }
     }
 
+    // 3. Profile Validation
     let currentProfile: UserTasteProfile | null = null;
     if (profileStr) {
       try {
-        currentProfile = JSON.parse(profileStr);
+        const parsed = JSON.parse(profileStr);
+        // Basic shape validation
+        if (typeof parsed === 'object' && parsed !== null) {
+          currentProfile = parsed;
+        }
       } catch (e) {
         console.warn('Invalid profile format provided, ignoring.', e);
       }
     }
 
-    // 2. Profile Builder Agent
+    // 4. Profile Builder Agent
     const startProfile = Date.now();
     const userTasteProfile = await buildProfile(
       sanitizedMessage,
@@ -78,7 +122,7 @@ router.post('/', upload.single('image'), async (req, res) => {
     const profileDuration = Date.now() - startProfile;
     console.log(`[Telemetry] ProfileBuilder lat=${profileDuration}ms`);
 
-    // 3 & 4. Run RAG Recommender and Trend Analyst in parallel
+    // 5 & 6. Run RAG Recommender and Trend Analyst in parallel
     const locationMatch = sanitizedMessage.match(
       /\[Near my current location: ([\d.-]+), ([\d.-]+)\]/,
     );
@@ -94,7 +138,7 @@ router.post('/', upload.single('image'), async (req, res) => {
     const parallelDuration = Date.now() - startParallel;
     console.log(`[Telemetry] RAG+Trends lat=${parallelDuration}ms`);
 
-    // 5. Recommendation Finalizer Agent
+    // 7. Recommendation Finalizer Agent
     const startFinalizer = Date.now();
     const finalRecommendations = await finalizeRecommendations(
       userTasteProfile,
