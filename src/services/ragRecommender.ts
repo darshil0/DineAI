@@ -35,13 +35,13 @@ export async function recommendCandidates(profile: UserTasteProfile): Promise<Re
         Neighborhoods: ${profile.neighborhoods?.join(', ') || 'Any'}
       `.trim();
 
-      const { embedding } = await withRetry(() => generateEmbedding.run({ text: queryText })).catch(
-        (e) => {
-          throw new SkillError('generateEmbedding', e);
-        },
-      );
-      const results = await vectorDb.query(embedding, 20); // Get top 20 to re-rank
+      const { embedding } = await withRetry(() =>
+        generateEmbedding.run({ text: queryText }),
+      ).catch((e) => {
+        throw new SkillError('generateEmbedding', e);
+      });
 
+      const results = await vectorDb.query(embedding, 20); // Get top 20 to re-rank
       const filteredResults = results.filter((r) => r.score >= 0.1);
 
       const scored = await Promise.all(
@@ -72,9 +72,10 @@ export async function recommendCandidates(profile: UserTasteProfile): Promise<Re
     console.warn('Vector DB search failed, falling back to static filtering...', error);
   }
 
-  // 2. Fallback to static JSON filtering via LLM
+  // 2. Fallback to static JSON filtering via LLM with proper retry wrapping
   console.log('Using fallback LLM filtering...');
   const ai = getGeminiClient();
+
   try {
     const ragResponse = await withRetry(() =>
       ai.models.generateContent({
@@ -88,8 +89,9 @@ export async function recommendCandidates(profile: UserTasteProfile): Promise<Re
     );
 
     const candidateList = JSON.parse(cleanJson(ragResponse.text || '[]'));
-    console.log(`Found ${candidateList.length} candidates via fallback.`);
-    return candidateList;
+    const validatedCandidates = Array.isArray(candidateList) ? candidateList : [];
+    console.log(`Found ${validatedCandidates.length} candidates via fallback.`);
+    return validatedCandidates;
   } catch (error: any) {
     throw new AgentServiceError('RAG Recommender', error);
   }
