@@ -35,7 +35,9 @@ export async function finalizeRecommendations(
     );
 
     const finalData = JSON.parse(finalizerResponse.text || '{"recommendations":[]}');
-    const finalRecommendations = finalData.recommendations || [];
+    const finalRecommendations = Array.isArray(finalData.recommendations)
+      ? finalData.recommendations
+      : [];
     console.log(`Generated ${finalRecommendations.length} final recommendations.`);
     return finalRecommendations;
   } catch (error: unknown) {
