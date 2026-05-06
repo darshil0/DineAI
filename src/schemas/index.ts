@@ -1,2 +1,2 @@
-export * from './userTasteProfile.js';
-export * from './recommendation.js';
+export { UserTasteProfile, UserTasteProfileSchema } from './userTasteProfile.js';
+export { Recommendation, FinalRecommendationsSchema } from './recommendation.js';

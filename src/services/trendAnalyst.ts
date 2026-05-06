@@ -25,7 +25,15 @@ export async function analyzeTrends(
         model: 'gemini-3.1-pro-preview',
         contents: buildTrendPrompt(cuisinesStr),
         config: {
-          tools: [{ googleSearch: {} }],
+          tools: [
+            {
+              googleSearchRetrieval: {
+                dynamicRetrievalConfig: {
+                  mode: 'MODE_DYNAMIC',
+                },
+              },
+            },
+          ],
           systemInstruction: TREND_ANALYST_SYSTEM,
         },
       }),

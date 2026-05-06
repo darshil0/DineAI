@@ -55,11 +55,11 @@ export async function buildProfile(
   let enrichedMessage = message;
 
   if (cuisinesOutput && cuisinesOutput.cuisines.length > 0) {
-    enrichedMessage += `\n\n[Skill Insight: User explicitly mentioned these cuisines: ${cuisinesOutput.cuisines.join(', ')}]`;
+    enrichedMessage += `\n\n[Skill Insight: User explicitly mentioned these cuisines: ${JSON.stringify(cuisinesOutput.cuisines)}]`;
   }
 
   if (photoOutput) {
-    enrichedMessage += `\n\n[Skill Insight: User uploaded a photo of ${photoOutput.description}. Inferred cuisines: ${photoOutput.cuisines.join(', ')}. Inferred ambiance: ${photoOutput.ambiance.join(', ')}]`;
+    enrichedMessage += `\n\n[Skill Insight: User uploaded a photo. Analysis: ${JSON.stringify(photoOutput)}]`;
   }
 
   const profileParts: any[] = [

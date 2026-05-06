@@ -38,16 +38,17 @@ function validateHistoryIntegrity(
 ): boolean {
   if (history.length === 0) return true;
 
-  // Enforce role alternation: must start with user or assistant, then alternate
+  // Enforce strict role alternation
   for (let i = 1; i < history.length; i++) {
-    const prevRole = history[i - 1].role;
-    const currRole = history[i].role;
-
-    // Allow same role to appear consecutively (edge case), but should not have more than 2 consecutive
-    const consecutiveCount = history.slice(Math.max(0, i - 2), i + 1).filter((m) => m.role === currRole).length;
-    if (consecutiveCount > 2) {
+    if (history[i].role === history[i - 1].role) {
       return false;
     }
+  }
+
+  // Ensure history doesn't end with 'user' to prevent consecutive user messages
+  // when the current message is appended in the AI's view.
+  if (history[history.length - 1].role === 'user') {
+    return false;
   }
 
   return true;
