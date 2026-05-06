@@ -1,5 +1,14 @@
 # Changelog
 
+## [2.3.1] - 2026-05-06
+### Changed
+- **Codebase Cleanup**: Removed redundant and unused root-level files (`metadata.json`, `ChatInterface.tsx`, `trendAnalyst.ts`, `classifyTrendRelevanceToProfile.ts`) to improve project structure and resolve TypeScript resolution conflicts.
+- **UI Logic**: Centralized message submission in `src/components/ChatInterface.tsx` within a `submitMessage` handler to ensure consistent behavior across keyboard and button interactions.
+- **Heuristic Scoring**: Formalized match weight distribution in `src/skills/scoreRestaurant.ts` (Cuisine: 0.4, Price: 0.3, Ambiance: 0.2, Dietary: 0.1) for more predictable recommendation ranking.
+
+### Added
+- **System Verification**: Introduced `src/scripts/verifySystem.ts` for automated end-to-end validation of agent skills and recommendation pipelines.
+
 ## [2.3.0] - 2026-05-06
 ### Fixed - Critical Stability & Reliability
 
