@@ -1,3 +1,4 @@
+import { DynamicRetrievalConfigMode } from '@google/genai';
 import { getGeminiClient } from '../lib/geminiClient.js';
 import { UserTasteProfile } from '../schemas/index.js';
 import { TREND_ANALYST_SYSTEM, buildTrendPrompt } from '../prompts/index.js';
@@ -14,9 +15,10 @@ export async function analyzeTrends(
 
   try {
     // Proper null coalescing: handle empty arrays and undefined
-    const cuisines = Array.isArray(profile.cuisines) && profile.cuisines.length > 0
-      ? profile.cuisines
-      : ['various cuisines'];
+    const cuisines =
+      Array.isArray(profile.cuisines) && profile.cuisines.length > 0
+        ? profile.cuisines
+        : ['various cuisines'];
     const cuisinesStr = cuisines.join(', ');
 
     // 1. Get raw search results using Google Search with proper retry wrapping
@@ -29,7 +31,7 @@ export async function analyzeTrends(
             {
               googleSearchRetrieval: {
                 dynamicRetrievalConfig: {
-                  mode: 'MODE_DYNAMIC',
+                  mode: DynamicRetrievalConfigMode.MODE_DYNAMIC,
                 },
               },
             },

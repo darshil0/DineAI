@@ -38,12 +38,14 @@ export async function ingestRestaurants() {
     `.trim();
 
     try {
-      const { embedding } = await withRetry(
-        () => generateEmbedding.run({ text: textToEmbed }),
-        5,
-        200,
-      );
-      await vectorDb.upsert(restaurant.id, embedding, restaurant);
+      const { embedding } = await withRetry(() => generateEmbedding.run({ text: textToEmbed }));
+      await vectorDb.upsert([
+        {
+          id: restaurant.id,
+          embedding,
+          metadata: restaurant,
+        },
+      ]);
     } catch (error) {
       console.error(`Failed to ingest ${restaurant.name}:`, error);
       // Continue with others
