@@ -1,82 +1,98 @@
-import { restaurants } from '../data/restaurants.js';
-import { generateEmbeddingSkill } from '../skills/generateEmbedding.js';
-import { vectorDb, VectorRecord } from '../lib/vectorDb.js';
-import { embeddingCache } from '../lib/cache.js';
+import express from 'express';
+import { createServer as createViteServer } from 'vite';
+import dotenv from 'dotenv';
+import path from 'path';
+import cors from 'cors';
+import chatRouter from './src/api/chat.js';
+import { bootstrapSkills } from './src/skills/bootstrap.js';
+import { ingestRestaurants } from './src/scripts/ingestRestaurants.js';
+import { vectorDb } from './src/lib/vectorDb.js';
 
-// Helper to chunk an array
-function chunk<T>(array: T[], size: number): T[][] {
-  const chunks: T[][] = [];
-  for (let i = 0; i < array.length; i += size) {
-    chunks.push(array.slice(i, i + size));
+dotenv.config();
+
+async function startServer() {
+  const app = express();
+  const PORT = 3000;
+  let isShuttingDown = false;
+
+  // Initialize Agent Skills
+  bootstrapSkills();
+
+  // Ingest restaurants into Vector DB
+  try {
+    await ingestRestaurants();
+  } catch (error) {
+    console.error('Failed to ingest restaurants, continuing with empty Vector DB:', error);
   }
-  return chunks;
-}
 
-export async function ingestRestaurants() {
-  console.log('Starting restaurant ingestion into Vector DB...');
+  // Graceful shutdown with timeout guard
+  const shutdown = async () => {
+    if (isShuttingDown) return;
+    isShuttingDown = true;
 
-  const existingCount = await vectorDb.count();
-  if (existingCount > 0) {
-    console.log(`Vector DB already has ${existingCount} records. Skipping ingestion.`);
-    return;
-  }
+    console.log('Shutting down gracefully...');
+    const shutdownTimeout = setTimeout(() => {
+      console.error('Shutdown timeout exceeded, forcing exit');
+      process.exit(1);
+    }, 5000); // 5 second timeout
 
-  const chunks = chunk(restaurants, 5); // Process in batches of 5
-  let processedCount = 0;
-
-  for (const batch of chunks) {
-    const batchResults = await Promise.all(
-      batch.map(async (r) => {
-        const restaurantId = r.id || r.name.toLowerCase().replace(/\s+/g, '-');
-
-        // Try to get from cache first
-        let embedding = embeddingCache.get(restaurantId);
-
-        if (!embedding) {
-          const textToEmbed = `
-          Name: ${r.name}
-          Cuisine: ${r.cuisine}
-          Price Tier: ${r.price_tier}
-          Neighborhood: ${r.neighborhood}
-          Tags: ${r.tags.join(', ')}
-          Description: ${r.description}
-          ${r.address ? `Address: ${r.address}` : ''}
-          ${r.phone ? `Phone: ${r.phone}` : ''}
-          ${r.hours ? `Hours: ${r.hours}` : ''}
-        `.trim();
-
-          try {
-            const result = await generateEmbeddingSkill.run({ text: textToEmbed });
-            embedding = result.embedding;
-            // Store in cache
-            embeddingCache.set(restaurantId, embedding);
-            console.log(`Generated and Cached: ${r.name}`);
-          } catch (e) {
-            console.error(`Failed to embed ${r.name}:`, e);
-            return null;
-          }
-        } else {
-          console.log(`Loaded from Cache: ${r.name}`);
-        }
-
-        if (embedding) {
-          return {
-            id: restaurantId,
-            embedding,
-            metadata: r,
-          };
-        }
-        return null;
-      }),
-    );
-
-    const validRecords = batchResults.filter((r): r is VectorRecord => r !== null);
-    if (validRecords.length > 0) {
-      await vectorDb.upsert(validRecords);
-      processedCount += validRecords.length;
+    try {
+      // Properly await the save operation
+      vectorDb.saveToIndex();
+      console.log('Vector index saved successfully');
+      clearTimeout(shutdownTimeout);
+      process.exit(0);
+    } catch (error) {
+      console.error('Error during shutdown:', error);
+      clearTimeout(shutdownTimeout);
+      process.exit(1);
     }
-    console.log(`Batch processed (${processedCount}/${restaurants.length})...`);
+  };
+
+  process.on('SIGINT', shutdown);
+  process.on('SIGTERM', shutdown);
+
+  app.use(cors());
+  app.use(express.json());
+
+  // API routes
+  app.get('/api/health', (req, res) => {
+    res.json({ status: 'ok', timestamp: new Date().toISOString() });
+  });
+
+  app.use('/api/chat', chatRouter);
+
+  // Error handling middleware
+  app.use((err: any, req: express.Request, res: express.Response, next: express.NextFunction) => {
+    console.error('Express error:', err);
+    res.status(err.status || 500).json({
+      error: err.message || 'Internal Server Error',
+      userMessage: 'An unexpected error occurred. Please try again.',
+    });
+  });
+
+  // Vite middleware for development
+  if (process.env.NODE_ENV !== 'production') {
+    const vite = await createViteServer({
+      server: { middlewareMode: true },
+      appType: 'spa',
+    });
+    app.use(vite.middlewares);
+  } else {
+    const distPath = path.join(process.cwd(), 'dist');
+    app.use(express.static(distPath));
+    app.get('*', (req, res) => {
+      res.sendFile(path.join(distPath, 'index.html'));
+    });
   }
 
-  console.log(`Ingestion complete. Total records in Vector DB: ${await vectorDb.count()}`);
+  app.listen(PORT, '0.0.0.0', () => {
+    console.log(`Server running on http://localhost:${PORT}`);
+    console.log(`Environment: ${process.env.NODE_ENV || 'development'}`);
+  });
 }
+
+startServer().catch((error) => {
+  console.error('Failed to start server:', error);
+  process.exit(1);
+});
