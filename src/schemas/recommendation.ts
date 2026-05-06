@@ -1,4 +1,4 @@
-import { Type } from '@google/genai';
+import { Type as SchemaType } from '@google/genai';
 
 export interface Recommendation {
   rank: number;
@@ -16,41 +16,44 @@ export interface Recommendation {
 }
 
 export const FinalRecommendationsSchema = {
-  type: Type.OBJECT,
+  type: SchemaType.OBJECT,
   properties: {
     recommendations: {
-      type: Type.ARRAY,
+      type: SchemaType.ARRAY,
       items: {
-        type: Type.OBJECT,
+        type: SchemaType.OBJECT,
         properties: {
-          rank: { type: Type.INTEGER, description: 'Rank of the recommendation (1 is best)' },
-          name: { type: Type.STRING, description: 'Name of the restaurant' },
+          rank: {
+            type: SchemaType.INTEGER,
+            description: 'Rank of the recommendation (1 is best)',
+          },
+          name: { type: SchemaType.STRING, description: 'Name of the restaurant' },
           rationale: {
-            type: Type.STRING,
+            type: SchemaType.STRING,
             description:
               'Detailed explanation of why this restaurant is recommended based on taste profile and current request.',
           },
           match_score: {
-            type: Type.NUMBER,
+            type: SchemaType.NUMBER,
             description:
               "A score from 0.0 to 1.0 indicating how well it matches the user's profile",
           },
           trend_relevance: {
-            type: Type.STRING,
+            type: SchemaType.STRING,
             description:
               "Description of the specific trend associated with this restaurant (e.g. 'Viral dish: Spicy Vodka Rigatoni')",
           },
           trend_connection: {
-            type: Type.STRING,
+            type: SchemaType.STRING,
             description:
               "A detailed explanation of why this identified trend specifically relates to the user's tastes and dining habits.",
           },
-          address: { type: Type.STRING, description: 'Physical address of the restaurant' },
-          phone: { type: Type.STRING, description: 'Contact phone number' },
-          hours: { type: Type.STRING, description: 'Operating hours' },
-          cuisine: { type: Type.STRING, description: 'Primary cuisine type' },
-          price_level: { type: Type.STRING, description: 'Price level ($, $$, $$$, $$$$)' },
-          neighborhood: { type: Type.STRING, description: 'Neighborhood location' },
+          address: { type: SchemaType.STRING, description: 'Physical address of the restaurant' },
+          phone: { type: SchemaType.STRING, description: 'Contact phone number' },
+          hours: { type: SchemaType.STRING, description: 'Operating hours' },
+          cuisine: { type: SchemaType.STRING, description: 'Primary cuisine type' },
+          price_level: { type: SchemaType.STRING, description: 'Price level ($, $$, $$$, $$$$)' },
+          neighborhood: { type: SchemaType.STRING, description: 'Neighborhood location' },
         },
         required: [
           'rank',
