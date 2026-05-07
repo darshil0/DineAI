@@ -14,7 +14,7 @@ The system leverages a custom **Express/Node.js** agent orchestrator with a modu
 - **Advanced Multi-Select Filtering**: Instantly refine recommendations by multiple cuisines, price tiers, and neighborhoods simultaneously via an intuitive dropdown interface.
 - **Geolocation Awareness**: One-click neighborhood detection for hyper-local NYC recommendations.
 - **Skeleton Loading & Perceived Performance**: Custom skeleton screens provide immediate visual feedback while agents process in the background.
-- **High Resilience Architecture**: Sophisticated retry logic with exponential backoff and localized error handling ensures high availability across the entire agent pipeline.
+- **High Resilience Architecture**: Sophisticated `withRetry` wrappers (exponential backoff) on all model calls and skill executions, plus `SkillError` propagation for structured, user-friendly error surfacing across the entire agent pipeline.
 - **Optimized Multi-Agent Synergy**: Intelligent context management ensures that Profile, Trend, and RAG agents share a unified, validated world-view for consistent recommendations.
 - **Dynamic Taste Profiles**: Automatically infers your preferences from chat history and uploaded food photos.
 - **Neighborhood-Aware Recommendations**: Specify your preferred areas (e.g., "West Village", "SoHo") to get hyper-local suggestions.
@@ -31,8 +31,8 @@ The system leverages a custom **Express/Node.js** agent orchestrator with a modu
 | Frontend       | React + Tailwind CSS         | Vite build system, Lucide Icons     |
 | Backend        | Node.js + Express            | Custom Agent Orchestrator           |
 | AI/LLM         | Google Gemini API            | `@google/genai` SDK                 |
-| Models         | `gemini-3-flash-preview`     | Text & Vision analysis              |
-| Reasoning      | `gemini-3.1-pro-preview`     | Complex agent reasoning             |
+| Models         | `gemini-2.0-flash`           | Text & Vision analysis              |
+| Reasoning      | `gemini-2.5-pro-preview-05-06` | Complex agent reasoning           |
 | Embeddings     | `gemini-embedding-2-preview` | Used for semantic search            |
 | Vector DB      | Custom In-Memory DB          | Local semantic storage              |
 | Web Search     | Gemini Google Search Tool    | Real-time trend retrieval           |

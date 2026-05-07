@@ -1,6 +1,7 @@
 import { AgentSkill } from './types.js';
 import { getGeminiClient } from '../lib/geminiClient.js';
 import { withRetry } from '../lib/utils.js';
+import { SkillError } from '../lib/errors.js';
 
 export interface GenerateEmbeddingInput {
   text: string;
@@ -25,7 +26,7 @@ export const generateEmbeddingSkill: AgentSkill<GenerateEmbeddingInput, Generate
       response.embeddings.length === 0 ||
       !response.embeddings[0].values
     ) {
-      throw new Error('Failed to generate embedding');
+      throw new SkillError('generateEmbedding', new Error('Empty embedding received from API'));
     }
 
     return { embedding: response.embeddings[0].values };

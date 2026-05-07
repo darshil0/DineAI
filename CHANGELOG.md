@@ -2,6 +2,16 @@
 
 All notable changes to this project will be documented in this file.
 
+## [2.2.2] - 2026-05-07
+
+### Fixed
+
+- **Inconsistent Error Type in `generateEmbedding` Skill** (`generateEmbedding.ts`): When the API returned an empty embedding, the skill threw a plain `Error` rather than a `SkillError`, bypassing the structured error-handling chain and producing a non-user-friendly message. Restored the `SkillError('generateEmbedding', ...)` throw with a descriptive message (`'Empty embedding received from API'`) so failures surface correctly to callers and the API layer.
+
+### Changed
+
+- **README**: Updated technology stack table to reflect correct live model IDs (`gemini-2.0-flash`, `gemini-2.5-pro-preview-05-06`) and clarified the High Resilience Architecture feature to mention `withRetry` and `SkillError` propagation explicitly.
+
 ## [2.2.1] - 2026-05-07
 
 ### Fixed
