@@ -2,6 +2,14 @@
 
 **DineAI** is an AI-powered restaurant recommendation engine that orchestrates specialized agents to deliver real-time dining suggestions. It utilizes Retrieval-Augmented Generation (RAG), Gemini embeddings, and multimodal vision to build dynamic user profiles.
 
+**Business Logic**: Build me DineAI, an AI restaurant recommendation app where someone can chat naturally about what they’re craving and get smart dining suggestions nearby.
+
+The app should learn a user’s taste from their messages and from uploaded food photos, then recommend restaurants with clear explanations like why it picked each place, what cuisine or vibe matches, and whether it fits price, neighborhood, or dietary preferences. It should support location based searches, multiple cuisine choices, neighborhood filtering, and use live search when needed to find trending spots, viral dishes, or new openings.
+
+Make the experience feel polished, with a clean React interface, chat history saved locally, photo upload, loading skeletons while recommendations are being generated, and useful error handling if the AI or search fails. Use a Node and Express backend with Gemini for text, vision, reasoning, and embeddings, plus a simple vector search approach for matching preferences to restaurants.
+
+Please wire it up so I can run it with npm install, add my Gemini API key, and start it with npm run dev.
+
 ## 🏗️ Architecture & Stack
 
 ### Core Technology
@@ -75,7 +83,3 @@
 ## 📄 License
 
 MIT
-
-```
-
-```
