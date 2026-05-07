@@ -1,83 +1,81 @@
-# Design Document: Culinary Trend Agent
+# DineAI: Architecture & Design Philosophy
 
-This document outlines the design philosophy, architectural components, and technical decisions behind the Culinary Trend Agent.
+DineAI is a production-grade AI application built on the principle of **Modular Agent Orchestration**. This document details the system design, data flow, and architectural decisions that ensure scalability and explainability.
 
-## 🏛️ Architecture Overview
+## 🏛️ System Architecture
 
-The system is built as a **Sequential Agent Pipeline**, allowing for specialized processing at each stage of the user interaction.
+DineAI follows a sequential multi-agent pipeline where specialized agents process information through a unified state.
 
 ```mermaid
 graph TD
-    A[User Message/Image] --> B[Profile Builder]
-    B --> C{Parallel Agents}
-    C --> D[RAG Recommender]
-    C --> E[Trend Analyst]
-    D --> F[Finalizer]
-    E --> F
-    F --> G[Final Recommendations]
+    User([User Request]) --> PB[Profile Builder Agent]
+    Image[Food Photo] -.-> PB
+    PB --> RR[RAG Recommender Agent]
+    RR --> TA[Trend Analyst Agent]
+    TA --> FA[Finalizer Agent]
+    FA --> Output[Ranked Recommendations]
+    
+    subgraph "Agent Skills Layer"
+    PB --- SK1[Extract Cuisines]
+    PB --- SK2[Vision Analysis]
+    RR --- SK3[Embeddings]
+    RR --- SK4[Heuristic Scoring]
+    TA --- SK5[Search Analysis]
+    end
 ```
 
+## 🤖 Core Agent Definitions
+
 ### 1. Profile Builder Agent
-- **Responsibility**: distill the "User Taste Profile".
-- **Inputs**: Chat history, current message, and optional image.
-- **Mechanism**: Use Gemini Vision for image analysis and text extraction. It classifies favorite cuisines, price sensitivities, and dietary restrictions.
+- **Responsibility**: Constructs the `UserTasteProfile` by merging conversation history and image-based signals.
+- **Differentiator**: It distinguishes between "long-term preferences" and "immediate cravings" to ensure context-aware results.
 
-### 2. RAG Recommender (Retrieval Augmented Generation)
-- **Responsibility**: Fetch hard-data candidates.
-- **Mechanism**: Performs vector search against a local restaurant database.
-- **Scoring**: Uses a combination of cosine similarity (vector score) and a weighted business heuristic. The top 20 candidates are re-ranked based on profile alignment (Price match, Cuisine match, Neighborhood proximity).
-- **Weighting**:
-    - **Cuisine**: 40% (Primary relevance)
-    - **Price**: 30% (Budget adherence)
-    - **Ambiance**: 20% (Vibe compatibility)
-    - **Dietary**: 10% (Critical safety/preference)
+### 2. RAG Recommender Agent
+- **Responsibility**: Retrieves candidate restaurants using semantic similarity and deterministic heuristics.
+- **Constraint Handling**: It strictly enforces dietary restrictions and neighborhood preferences before passing candidates to the finalizer.
 
-### 3. Trend Analyst Agent
-- **Responsibility**: Inject real-time context.
-- **Mechanism**: Uses Google Search grounding to identify current culinary trends in the user's specific neighborhoods or cuisines.
+### 3. Food Trend Analyst Agent
+- **Responsibility**: Grounding the recommendations in real-world reality via Google Search.
+- **Synergy**: It identifies viral dishes or new openings that overlap with the user's inferred tastes.
 
-### 4. Finalizer Agent
-- **Responsibility**: Synthesis and Presentation.
-- **Mechanism**: Orchestrates the outputs of the previous agents into a cohesive, friendly, and ranked set of recommendations with detailed "Why it matches" logic.
+### 4. Recommendation Finalizer Agent
+- **Responsibility**: Narrative synthesis and final ranking.
+- **Output**: Generates the "Narrative Rationale" that connects all previous agent findings into a human-friendly suggestion.
 
-## 🛠️ Technical Stack
+---
 
-- **Frontend**: React 19, Vite 6, Tailwind CSS.
-- **Animations**: `motion/react` (v12) for smooth transitions and skeleton shimmering.
-- **Backend**: Node.js (Express) with `tsx` runtime.
-- **AI Engine**: Google Gemini API via `@google/genai`.
-- **Database (Vector)**: Custom in-memory vector DB with persistence to `vector_index.json`.
-- **Cache**: SQLite-powered `embeddings_cache.db` to minimize API latency and costs.
-- **Security**: Strict Origin CORS (Localhost) + JSON Content-Type Enforcement.
+## 🎨 Design Philosophy: "Premium Culinary Gold"
 
-## 🛡️ Design Principles
+The UI design is optimized for high-end user engagement, moving away from utility-first interfaces toward an "AI Concierge" experience.
 
-### Resilience & Reliability
-- **Exponential Backoff**: Implementation of `withRetry` on all model calls to handle rate limits (429s).
-- **Graceful Degradation**: If the Trend Analyst fails, the system falls back to pure RAG recommendations without breaking the UI.
-- **Deterministic Prompts**: Using rigid Zod schemas and explicit JSON stringification to ensure the LLM receives clean, unambiguous data structures.
+### Visual Identity
+- **Color Palette**: Deep Charcoal (`#121212`) provides a luxury backdrop, accented by "Culinary Gold" (`#d4af37`).
+- **Glassmorphism**: Components use high-refraction blurs (`backdrop-blur-3xl`) to signify a sophisticated, modern AI engine.
+- **Typography**: Dual-typeface system using Serif for elegance and Sans-Serif for clarity.
 
-### UX & Interaction Design
-- **Perceived vs. Actual Performance**: Use of skeleton screens to keep the user engaged during the 2-5 second multi-agent loop.
-- **Contextual Feedback**: Users can "Like/Dislike" specific recommendations, which directly influences the `UserTasteProfile` in the next turn.
-- **Neighborhood-Aware**: Explicit detection and prioritization of NYC neighborhoods to ground recommendations in reality.
+### User Experience (UX)
+- **Immediate Feedback**: Shimmer skeletons prevent perceived latency during the multi-second agent pipeline.
+- **Dual-Rationale**: Every card displays both a **Heuristic Match** (logic-based) and a **Narrative Connection** (story-based).
 
-### 4. Design Aesthetics: "Premium Culinary Gold"
+---
 
-The application uses a high-end visual system designed to feel like a private concierge:
-- **Palette**: Deep Charcoal (`#121212`), Culinary Gold (`#d4af37`), and Soft Cream (`#fdfcf0`).
-- **Glassmorphism**: Headers, footers, and assistant bubbles use `backdrop-blur-3xl` and semi-transparent borders to create depth.
-- **Typography**: Playfair Display (Serif) for headings to convey elegance; Inter (Sans) for high body text legibility.
-- **Micro-Animations**: Shimmer skeletons for loading states and scale-hover effects on recommendation cards.
+## 💾 Data Strategy & Vector DB
 
-### 5. Rationale Architecture
+### Semantic Retrieval
+DineAI uses a custom, in-memory **LocalVectorDB** for sub-millisecond similarity search.
+- **Embeddings**: Pre-computed using `gemini-embedding-2-preview`.
+- **Persistence**: Index is saved to `vector_index.json` at runtime, while a SQLite-based `embeddings_cache.db` prevents redundant API usage during ingestion.
 
-The system uses a "Dual-Rationale" approach to maximize transparency:
-1. **Heuristic Rationale (`whyMatch`)**: Generated by the `scoreRestaurant` skill based on hard constraints (cuisine, price, location). This is preserved through the re-ranking phase.
-2. **Generative Rationale (`rationale`)**: Synthesized by the Finalizer Agent to provide a friendly, narrative explanation that connects trends and profile nuances.
+### State Management
+The "Truth" for each user is the `UserTasteProfile`. This state is:
+- **Evolving**: Refined after every message.
+- **Feedback-Driven**: Explicitly updated when users "Like" or "Dislike" a restaurant.
 
-## 💾 Data Strategy
+---
 
-- **Static Ingestion**: The restaurant database is ingested on the first run. Embeddings are cached indefinitely to prevent redundant computation.
-- **Volatile Index**: The vector index is rebuilt from the cache on startup to ensure high-speed proximity searches.
-- **Sanitized History**: Only the last 10 exchanges are sent to the agents to prevent prompt injection and context window pollution.
+## 🛡️ Security & Privacy Standards
+
+1. **Origin Isolation**: Strict CORS policies ensure the API is only accessible from the authorized frontend.
+2. **Key Protection**: All AI execution happens server-side. No client-side exposure of API keys.
+3. **Payload Sanitization**: Multi-layer Zod validation prevents malformed data or prompt injection attempts from entering the agent pipeline.
+4. **Data Minimization**: Conversation history is truncated to the last 10 exchanges, reducing PII exposure and managing context window costs.
