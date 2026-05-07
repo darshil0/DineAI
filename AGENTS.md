@@ -19,8 +19,16 @@ To handle transient `429 Too Many Requests` errors from the Gemini API, **all mo
 
 - **Standard Pattern**: `await withRetry(() => ai.models.generateContent({ ... }))` or `await withRetry(() => mySkill.run({ ... }))`
 - **Configuration**: Uses exponential backoff (starting at 1s) with a maximum of 3 retries.
+- **Internal Skill Protection**: All model calls *within* skills must also be wrapped in `withRetry` to ensure individual capability resilience.
 
-### 2. Prompt Serialization
+### 2. Model Selection Strategy
+
+To balance speed and reasoning depth, the application uses a dual-model approach:
+
+- **Performance Model (`gemini-2.0-flash`)**: Used for high-throughput, latency-sensitive tasks such as text extraction, image analysis (Vision), and intermediate classification.
+- **Reasoning Model (`gemini-2.5-pro-preview-05-06`)**: Reserved for high-complexity tasks like final recommendation synthesis, trend-relevance reasoning, and Google Search grounding.
+
+### 3. Prompt Serialization
 When passing state objects (like the `UserTasteProfile`) into LLM prompts, **always explicitly stringify the objects** (e.g., `JSON.stringify(profile)`). Native template literal interpolation may result in `[object Object]` strings, which can degrade model performance.
 
 ### 2. Embeddings Cache
@@ -108,3 +116,17 @@ npx tsx src/skills/__tests__/scoreRestaurant.test.ts
 
 ### 3. Known Limitations
 - **Cold-Start Ingestion**: On the first run without a `vector_index.json`, the server performs a one-time ingestion of restaurant data. This is guarded by a the `embeddings_cache.db` to ensure zero-cost API calls during this phase.
+
+## 🛠️ Development Standards
+
+### 1. TypeScript Configuration
+To ensure proper resolution of ESM modules with `.js` extensions (required by the `tsx` and Vite build systems), the following `tsconfig.json` settings are mandatory:
+- `moduleResolution: "bundler"`
+- `module: "ESNext"`
+
+### 2. Telemetry & Performance Tracking
+Every agent request must log its total execution time to the console. This telemetry is used to identify bottlenecks in the sequential pipeline and monitor API latency. 
+- Ref: `src/api/chat.ts` (Latency logging block)
+
+### 3. Dependency Management
+- **Type Safety**: Always install `@types/` for external libraries (e.g., `@types/better-sqlite3`, `@types/express`) to maintain strict type checking even when `skipLibCheck` is enabled.

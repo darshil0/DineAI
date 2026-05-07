@@ -2,7 +2,19 @@
 
 All notable changes to this project will be documented in this file.
 
+## [2.2.3] - 2026-05-07
+
+### Changed
+
+- **Comprehensive Documentation Hardening** (`AGENTS.md`, `SKILLS.md`, `DESIGN.md`): Synchronized all architecture and design documents with the current production baseline.
+    - Updated tech stack versions (React 19, Vite 8, Motion 12).
+    - Documented Model Selection Strategy (Dual-model Flash/Pro approach).
+    - Codified internal skill resilience rules and structured error propagation.
+    - Detailed the restaurant scoring heuristic weights and vector similarity integration.
+    - Added security invariants and TypeScript development standards.
+
 ## [2.2.2] - 2026-05-07
+
 
 ### Fixed
 

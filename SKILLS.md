@@ -34,14 +34,19 @@ const skill = getSkill('mySkill');
 const result = await withRetry(() => skill.run(input));
 ```
 
-### 2. Error Handling
-Skills should catch internal errors and throw descriptive `SkillError` instances. The calling agent will handle these errors to provide graceful degradation.
+### 2. Internal Skill Resilience
+In addition to the caller-side retry, **all internal `generateContent` and `embedContent` calls within a skill's `run` method must be wrapped in `withRetry`**. This ensures that even if a skill is used in a context without a wrapper, it remains robust against transient API failures.
+
+### 3. Error Handling & Structured Output
+Skills must:
+- Use `SkillError` for all known failure modes.
+- Implement strict JSON output validation via `Type` schemas and `cleanJson` utility to ensure the returned data matches the expected interface.
 
 ## Core Skills
 
-1. **analyzeFoodPhoto**: Uses Gemini Vision to infer cuisines and ambiance from an image.
-2. **extractCuisines**: Extracts structured cuisine names from user text.
-3. **generateEmbedding**: Generates vector embeddings for restaurants or search queries.
-4. **scoreRestaurant**: Computes a personalized match score between a user profile and a restaurant.
-5. **extractTrendsFromSearchResults**: Parses raw search data into structured food trends.
-6. **classifyTrendRelevanceToProfile**: Determines which trends align with a specific user taste profile.
+1. **analyzeFoodPhoto**: Uses Gemini Vision (`gemini-2.0-flash`) to infer cuisines and ambiance from an image.
+2. **extractCuisines**: Extracts structured cuisine names from user text using strict JSON schemas.
+3. **generateEmbedding**: Generates vector embeddings using `gemini-embedding-2-preview`. Crucial for semantic search accuracy.
+4. **scoreRestaurant**: A business-logic skill that computes a personalized match score (0.0 to 1.0) using weighted heuristics (Cuisine: 0.4, Price: 0.3, Ambiance: 0.2, Dietary: 0.1) combined with vector similarity.
+5. **extractTrendsFromSearchResults**: Parses raw Google Search snippets into structured trending cuisines, openings, and viral dishes.
+6. **classifyTrendRelevanceToProfile**: Compares a `UserTasteProfile` against trends to determine relevance scores and rationale.

@@ -25,7 +25,12 @@ graph TD
 ### 2. RAG Recommender (Retrieval Augmented Generation)
 - **Responsibility**: Fetch hard-data candidates.
 - **Mechanism**: Performs vector search against a local restaurant database.
-- **Scoring**: Uses a combination of cosine similarity (vector score) and LLM-based "Match Score" to re-rank the top 20 candidates.
+- **Scoring**: Uses a combination of cosine similarity (vector score) and a weighted business heuristic. The top 20 candidates are re-ranked based on profile alignment (Price match, Cuisine match, Neighborhood proximity).
+- **Weighting**:
+    - **Cuisine**: 40% (Primary relevance)
+    - **Price**: 30% (Budget adherence)
+    - **Ambiance**: 20% (Vibe compatibility)
+    - **Dietary**: 10% (Critical safety/preference)
 
 ### 3. Trend Analyst Agent
 - **Responsibility**: Inject real-time context.
@@ -37,12 +42,13 @@ graph TD
 
 ## 🛠️ Technical Stack
 
-- **Frontend**: React 18, Vite, Tailwind CSS.
-- **Animations**: `motion/react` for smooth transitions and skeleton shimmering.
+- **Frontend**: React 19, Vite 8, Tailwind CSS.
+- **Animations**: `motion/react` (v12) for smooth transitions and skeleton shimmering.
 - **Backend**: Node.js (Express) with `tsx` runtime.
 - **AI Engine**: Google Gemini API via `@google/genai`.
 - **Database (Vector)**: Custom in-memory vector DB with persistence to `vector_index.json`.
 - **Cache**: SQLite-powered `embeddings_cache.db` to minimize API latency and costs.
+- **Security**: Strict Origin CORS (Localhost) + JSON Content-Type Enforcement.
 
 ## 🛡️ Design Principles
 
