@@ -2,6 +2,16 @@
 
 All notable changes to this project will be documented in this file.
 
+## [2.2.8] - 2026-05-07
+
+### Added
+- **Enhanced Data Persistence**: Integrated `saveToIndex()` into the `ingestRestaurants` script to ensure that embedded restaurant data is persisted to disk immediately after ingestion.
+
+### Changed
+- **Model Alignment**: Upgraded the `classifyTrendRelevanceToProfile` skill to use the Reasoning Tier model (`gemini-2.5-pro-preview-05-06`) as per the architectural specification.
+- **Deduplication Strategy**: Updated restaurant ingestion to use a `name-neighborhood` keying strategy for deduplication, ensuring more robust record management.
+- **Documentation Synchronization**: Updated `SKILLS.md` to perfectly align with the actual implementation's field names (camelCase) and schema definitions.
+
 ## [2.2.7] - 2026-05-07
 
 ### Added
