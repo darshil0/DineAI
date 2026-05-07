@@ -76,7 +76,7 @@ interface AgentSkill<I, O> {
 | :--- | :--- |
 | **Model** | `gemini-2.0-flash` |
 | **Input** | `{ results: any[] (Raw search results) }` |
-| **Output** | `{ cuisines: string[], new_openings: string[], viral_dishes: string[] }` |
+| **Output** | `{ trendingCuisines: string[], newOpenings: string[], viralDishes: string[], summary: string }` |
 | **File** | `src/skills/extractTrendsFromSearchResults.ts` |
 
 ---
@@ -87,8 +87,8 @@ interface AgentSkill<I, O> {
 | Specification | Value |
 | :--- | :--- |
 | **Model** | `gemini-2.5-pro-preview-05-06` |
-| **Input** | `{ profile: UserTasteProfile, trend: string }` |
-| **Output** | `{ relevance_score: number, connection_rationale: string }` |
+| **Input** | `{ profile: UserTasteProfile, trends: { trendingCuisines: string[], newOpenings: string[], viralDishes: string[] } }` |
+| **Output** | `{ relevantCuisines: string[], relevantOpenings: string[], relevantDishes: string[], overallRelevanceScore: number, rationale: string }` |
 | **File** | `src/skills/classifyTrendRelevanceToProfile.ts` |
 
 ---

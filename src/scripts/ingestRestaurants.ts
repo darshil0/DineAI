@@ -28,7 +28,7 @@ export async function ingestRestaurants() {
   for (const batch of chunks) {
     const batchResults = await Promise.all(
       batch.map(async (r) => {
-        const restaurantId = r.id || r.name.toLowerCase().replace(/\s+/g, '-');
+        const restaurantId = `${r.name}-${r.neighborhood}`.toLowerCase().replace(/\s+/g, '-');
 
         // Try to get from cache first
         let embedding = embeddingCache.get(restaurantId);
@@ -80,4 +80,5 @@ export async function ingestRestaurants() {
   }
 
   console.log(`Ingestion complete. Total records in Vector DB: ${await vectorDb.count()}`);
+  vectorDb.saveToIndex();
 }

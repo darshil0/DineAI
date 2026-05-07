@@ -31,7 +31,7 @@ export const classifyTrendRelevanceToProfileSkill: AgentSkill<ClassifyTrendInput
       const ai = getGeminiClient();
 
       const response = await withRetry(() => ai.models.generateContent({
-        model: 'gemini-2.0-flash',
+        model: 'gemini-2.5-pro-preview-05-06',
         contents: `Compare the user's taste profile with these food trends.
       
       User Taste Profile:
