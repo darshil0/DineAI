@@ -92,6 +92,12 @@ DineAI comprises four coordinated layers that can operate sequentially or in par
 | End-to-end Latency       | < 15 seconds (P95) |
 | Agent Output Validity    | 100%               |
 
+## 🛡️ Security & Integrity
+
+- **Restricted CORS**: The server implements a strict origin allowlist, permitting only `localhost` traffic and blocking all other cross-origin requests by default.
+- **Payload Validation**: All incoming chat messages and history are validated against a strict `Zod` schema to prevent prompt injection and context window pollution.
+- **Telemetric Monitoring**: Every agent stage (Profile, RAG, Trends, Finalizer) logs its execution latency to the server console for performance auditing.
+
 ## 📄 License
 
 MIT

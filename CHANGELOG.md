@@ -2,7 +2,17 @@
 
 All notable changes to this project will be documented in this file.
 
+## [2.2.4] - 2026-05-07
+
+### Fixed
+
+- **Restaurant Duplication on Startup** (`VectorDb.ts`, `server.ts`): Converted `VectorDb.add` into an upsert operation and added an `isEmpty()` check in `server.ts` to prevent the ingestion script from duplicating restaurant records in the vector index upon every server restart.
+- **Brittle JSON Parsing in Agents** (`finalizer.ts`, `trendAnalyst.ts`): Added robust try/catch blocks and `cleanJson` sanitization to recommendation finalization and trend extraction. This prevents the entire pipeline from crashing if an LLM response contains minor markdown formatting artifacts.
+- **Inconsistent Skill Error Surfacing** (`extractCuisines.ts`, `analyzeFoodPhoto.ts`, `extractTrendsFromSearchResults.ts`, `classifyTrendRelevanceToProfile.ts`): Standardized all agent skills to throw `SkillError` with descriptive context during parsing failures, enabling the multi-agent orchestrator to provide more specific error messages to the user.
+- **Vite Version Hallucination** (`README.md`, `DESIGN.md`): Corrected documentation references from "Vite 8" to the actual "Vite 6" used in the project's dependency manifest.
+
 ## [2.2.3] - 2026-05-07
+
 
 ### Changed
 
