@@ -17,8 +17,10 @@ async function startServer() {
   // Initialize Agent Skills
   bootstrapSkills();
 
-  // Ingest restaurants into Vector DB
-  await ingestRestaurants();
+  // Perform initial ingestion if index is empty
+  if (vectorDb.isEmpty()) {
+    await ingestRestaurants();
+  }
 
   // Graceful shutdown
   const shutdown = () => {

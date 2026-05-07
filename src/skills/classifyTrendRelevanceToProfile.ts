@@ -3,6 +3,7 @@ import { AgentSkill } from './types.js';
 import { Type } from '@google/genai';
 import { UserTasteProfile } from '../schemas/userTasteProfile.js';
 import { cleanJson, withRetry } from '../lib/utils.js';
+import { SkillError } from '../lib/errors.js';
 
 interface ClassifyTrendInput {
   profile: UserTasteProfile;
@@ -65,14 +66,7 @@ export const classifyTrendRelevanceToProfileSkill: AgentSkill<ClassifyTrendInput
       try {
         return JSON.parse(cleanJson(response.text || '{}'));
       } catch (e) {
-        console.error('Failed to parse trend relevance response:', e);
-        return {
-          relevantCuisines: [],
-          relevantOpenings: [],
-          relevantDishes: [],
-          overallRelevanceScore: 0,
-          rationale: 'Could not analyze trend relevance at this time.',
-        };
+        throw new SkillError('classifyTrendRelevanceToProfile', e);
       }
     },
   };

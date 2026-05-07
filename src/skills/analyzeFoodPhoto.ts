@@ -2,6 +2,7 @@ import { AgentSkill } from './types.js';
 import { getGeminiClient } from '../lib/geminiClient.js';
 import { cleanJson, withRetry } from '../lib/utils.js';
 import { Type } from '@google/genai';
+import { SkillError } from '../lib/errors.js';
 
 export interface AnalyzeFoodPhotoInput {
   mimeType: string;
@@ -49,9 +50,13 @@ Extract the most likely cuisines it represents, the ambiance or vibe it suggests
       },
     }));
 
-    const output = JSON.parse(
-      cleanJson(result.text || '{"cuisines":[],"ambiance":[],"description":""}'),
-    );
-    return output;
+    try {
+      const output = JSON.parse(
+        cleanJson(result.text || '{"cuisines":[],"ambiance":[],"description":""}'),
+      );
+      return output;
+    } catch (e) {
+      throw new SkillError('analyzeFoodPhoto', e);
+    }
   },
 };

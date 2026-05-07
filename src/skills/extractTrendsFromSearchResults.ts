@@ -2,6 +2,7 @@ import { getGeminiClient } from '../lib/geminiClient.js';
 import { AgentSkill } from './types.js';
 import { Type } from '@google/genai';
 import { cleanJson, withRetry } from '../lib/utils.js';
+import { SkillError } from '../lib/errors.js';
 
 interface ExtractTrendsInput {
   searchResults: string;
@@ -52,13 +53,7 @@ export const extractTrendsFromSearchResultsSkill: AgentSkill<ExtractTrendsInput,
     try {
       return JSON.parse(cleanJson(response.text || '{}'));
     } catch (e) {
-      console.error('Failed to parse trends from search results:', e);
-      return {
-        trendingCuisines: [],
-        newOpenings: [],
-        viralDishes: [],
-        summary: 'Could not extract trends from search results.',
-      };
+      throw new SkillError('extractTrendsFromSearchResults', e);
     }
   },
 };

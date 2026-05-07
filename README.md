@@ -28,7 +28,7 @@ The system leverages a custom **Express/Node.js** agent orchestrator with a modu
 
 | Category       | Technology                   | Version / Notes                     |
 | -------------- | ---------------------------- | ----------------------------------- |
-| Frontend       | React + Tailwind CSS         | Vite build system, Lucide Icons     |
+| Frontend       | React 19 + Tailwind CSS      | Vite 6 build system, Lucide Icons   |
 | Backend        | Node.js + Express            | Custom Agent Orchestrator           |
 | AI/LLM         | Google Gemini API            | `@google/genai` SDK                 |
 | Models         | `gemini-2.0-flash`           | Text & Vision analysis              |

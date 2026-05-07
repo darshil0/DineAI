@@ -3,7 +3,7 @@ import { UserTasteProfile } from '../schemas/index.js';
 import { TREND_ANALYST_SYSTEM, buildTrendPrompt } from '../prompts/index.js';
 import { getSkill } from '../skills/registry.js';
 import { AgentServiceError, SkillError } from '../lib/errors.js';
-import { withRetry } from '../lib/utils.js';
+import { withRetry, cleanJson } from '../lib/utils.js';
 
 export async function analyzeTrends(
   profile: UserTasteProfile,

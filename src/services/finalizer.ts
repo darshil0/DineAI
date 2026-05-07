@@ -3,7 +3,7 @@ import { UserTasteProfile, Recommendation, FinalRecommendationsSchema } from '..
 import { Restaurant } from '../data/restaurants.js';
 import { FINALIZER_SYSTEM, buildFinalizerPrompt } from '../prompts/index.js';
 import { AgentServiceError } from '../lib/errors.js';
-import { withRetry } from '../lib/utils.js';
+import { withRetry, cleanJson } from '../lib/utils.js';
 
 export async function finalizeRecommendations(
   profile: UserTasteProfile,
@@ -36,7 +36,7 @@ export async function finalizeRecommendations(
 
     let finalRecommendations: Recommendation[] = [];
     try {
-      const finalData = JSON.parse(finalizerResponse.text || '{"recommendations":[]}');
+      const finalData = JSON.parse(cleanJson(finalizerResponse.text || '{"recommendations":[]}'));
       finalRecommendations = finalData.recommendations || [];
     } catch (parseError) {
       console.error('Failed to parse Finalizer response as JSON:', parseError);

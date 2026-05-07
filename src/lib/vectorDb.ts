@@ -23,6 +23,23 @@ class LocalVectorDB {
     return vec.map((val) => val / norm);
   }
 
+  async add(record: VectorRecord) {
+    const normalizedRecord = {
+      ...record,
+      embedding: this.normalize(record.embedding),
+    };
+    const existingIndex = this.records.findIndex((r) => r.id === record.id);
+    if (existingIndex !== -1) {
+      this.records[existingIndex] = normalizedRecord;
+    } else {
+      this.records.push(normalizedRecord);
+    }
+  }
+
+  isEmpty(): boolean {
+    return this.records.length === 0;
+  }
+
   async upsert(records: VectorRecord[]) {
     for (const record of records) {
       const normalizedRecord = {

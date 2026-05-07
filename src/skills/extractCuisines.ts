@@ -1,8 +1,8 @@
 import { AgentSkill } from './types.js';
 import { getGeminiClient } from '../lib/geminiClient.js';
-import { getGeminiClient } from '../lib/geminiClient.js';
 import { cleanJson, withRetry } from '../lib/utils.js';
 import { Type } from '@google/genai';
+import { SkillError } from '../lib/errors.js';
 
 export interface ExtractCuisinesInput {
   text: string;
@@ -42,7 +42,11 @@ ${text}`;
       },
     }));
 
-    const data = JSON.parse(cleanJson(result.text || '{"cuisines":[]}'));
-    return { cuisines: data.cuisines || [] };
+    try {
+      const data = JSON.parse(cleanJson(result.text || '{"cuisines":[]}'));
+      return { cuisines: data.cuisines || [] };
+    } catch (e) {
+      throw new SkillError('extractCuisines', e);
+    }
   },
 };

@@ -42,7 +42,7 @@ graph TD
 
 ## 🛠️ Technical Stack
 
-- **Frontend**: React 19, Vite 8, Tailwind CSS.
+- **Frontend**: React 19, Vite 6, Tailwind CSS.
 - **Animations**: `motion/react` (v12) for smooth transitions and skeleton shimmering.
 - **Backend**: Node.js (Express) with `tsx` runtime.
 - **AI Engine**: Google Gemini API via `@google/genai`.
