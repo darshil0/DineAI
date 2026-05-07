@@ -30,7 +30,16 @@ async function startServer() {
   process.on('SIGINT', shutdown);
   process.on('SIGTERM', shutdown);
 
-  app.use(cors());
+  app.use(
+    cors({
+      origin: (origin, callback) => {
+        // Allow requests with no origin (server-to-server, curl) and localhost
+        const allowed = !origin || /^https?:\/\/localhost(:\d+)?$/.test(origin);
+        callback(allowed ? null : new Error('CORS: origin not allowed'), allowed);
+      },
+      methods: ['GET', 'POST'],
+    }),
+  );
   app.use(express.json());
 
   // API routes

@@ -80,7 +80,7 @@ export async function recommendCandidates(profile: UserTasteProfile): Promise<Re
   try {
     const ragResponse = await withRetry(() =>
       ai.models.generateContent({
-        model: 'gemini-3.1-pro-preview',
+        model: 'gemini-2.5-pro-preview-05-06',
         contents: buildRagPrompt(JSON.stringify(profile), JSON.stringify(restaurants)),
         config: {
           responseMimeType: 'application/json',

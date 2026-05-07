@@ -18,7 +18,7 @@ export async function finalizeRecommendations(
   try {
     const finalizerResponse = await withRetry(() =>
       ai.models.generateContent({
-        model: 'gemini-3.1-pro-preview',
+        model: 'gemini-2.5-pro-preview-05-06',
         contents: buildFinalizerPrompt(
           JSON.stringify(profile),
           message,

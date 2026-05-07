@@ -74,7 +74,7 @@ export async function buildProfile(
   try {
     const profileResponse = await withRetry(() =>
       ai.models.generateContent({
-        model: 'gemini-3-flash-preview',
+        model: 'gemini-2.0-flash',
         contents: { parts: profileParts },
         config: {
           responseMimeType: 'application/json',

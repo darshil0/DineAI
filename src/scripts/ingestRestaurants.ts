@@ -2,6 +2,7 @@ import { restaurants } from '../data/restaurants.js';
 import { generateEmbeddingSkill } from '../skills/generateEmbedding.js';
 import { vectorDb, VectorRecord } from '../lib/vectorDb.js';
 import { embeddingCache } from '../lib/cache.js';
+import { withRetry } from '../lib/utils.js';
 
 // Helper to chunk an array
 function chunk<T>(array: T[], size: number): T[][] {
@@ -46,7 +47,7 @@ export async function ingestRestaurants() {
         `.trim();
 
           try {
-            const result = await generateEmbeddingSkill.run({ text: textToEmbed });
+            const result = await withRetry(() => generateEmbeddingSkill.run({ text: textToEmbed }));
             embedding = result.embedding;
             // Store in cache
             embeddingCache.set(restaurantId, embedding);

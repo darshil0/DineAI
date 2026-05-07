@@ -1,7 +1,7 @@
 import { getGeminiClient } from '../lib/geminiClient.js';
 import { AgentSkill } from './types.js';
 import { Type } from '@google/genai';
-import { cleanJson } from '../lib/utils.js';
+import { cleanJson, withRetry } from '../lib/utils.js';
 
 interface ExtractTrendsInput {
   searchResults: string;
@@ -22,8 +22,8 @@ export const extractTrendsFromSearchResultsSkill: AgentSkill<ExtractTrendsInput,
   run: async (input: ExtractTrendsInput) => {
     const ai = getGeminiClient();
 
-    const response = await ai.models.generateContent({
-      model: 'gemini-3-flash-preview',
+    const response = await withRetry(() => ai.models.generateContent({
+      model: 'gemini-2.0-flash',
       contents: `Analyze these search results for food trends in ${input.city}.
       
       Search Results:
@@ -47,7 +47,7 @@ export const extractTrendsFromSearchResultsSkill: AgentSkill<ExtractTrendsInput,
           required: ['trendingCuisines', 'newOpenings', 'viralDishes', 'summary'],
         },
       },
-    });
+    }));
 
     try {
       return JSON.parse(cleanJson(response.text || '{}'));

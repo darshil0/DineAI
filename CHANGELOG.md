@@ -2,6 +2,16 @@
 
 All notable changes to this project will be documented in this file.
 
+## [2.2.1] - 2026-05-07
+
+### Fixed
+
+- **Invalid Model Names** (`profileBuilder.ts`, `ragRecommender.ts`, `trendAnalyst.ts`, `finalizer.ts`, `extractCuisines.ts`, `analyzeFoodPhoto.ts`, `extractTrendsFromSearchResults.ts`, `classifyTrendRelevanceToProfile.ts`): Replaced all references to non-existent model identifiers `gemini-3-flash-preview` and `gemini-3.1-pro-preview` with the correct, live model IDs `gemini-2.0-flash` and `gemini-2.5-pro-preview-05-06` respectively. These bad identifiers would have caused every API call to fail at runtime with a model-not-found error.
+- **Missing `withRetry` in Ingestion Script and Agent Skills** (`ingestRestaurants.ts`, `extractCuisines.ts`, `analyzeFoodPhoto.ts`, `generateEmbedding.ts`, `extractTrendsFromSearchResults.ts`, `classifyTrendRelevanceToProfile.ts`): Model calls were invoked directly without `withRetry`, violating the AGENTS.md resilience contract. Wrapped all internal `generateContent` and `embedContent` calls in `withRetry` to ensure application-wide resistance to transient `429` failures.
+- **Missing `@types/better-sqlite3` Dev Dependency** (`package.json`): The `better-sqlite3` package was used in `cache.ts` but its TypeScript type definitions were absent from `devDependencies`, causing `tsc --noEmit` (`npm run lint`) to fail. Added `@types/better-sqlite3@^7.6.13`.
+- **Incorrect `moduleResolution`** (`tsconfig.json`): `"moduleResolution": "node"` is incompatible with the project's ESM module system and the `.js`-extension import style used by `tsx` and Vite. Changed to `"moduleResolution": "bundler"`, which correctly resolves `.ts` source files referenced via `.js` extensions.
+- **Permissive CORS Configuration** (`server.ts`): `app.use(cors())` allowed requests from any origin, violating the AGENTS.md security invariant requiring strict origin restriction. Replaced with an origin allowlist that permits only `localhost` origins and restricts methods to `GET` and `POST`.
+
 ## [2.2.0] - 2026-05-01
 
 ### Added
