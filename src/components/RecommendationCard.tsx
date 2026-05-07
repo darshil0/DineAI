@@ -11,6 +11,7 @@ import {
   Navigation,
 } from 'lucide-react';
 import { Recommendation } from '../schemas/index.js';
+import { cn } from '../lib/utils.js';
 
 interface RecommendationCardProps {
   recommendation?: Recommendation;
@@ -31,26 +32,18 @@ export const RecommendationCard: React.FC<RecommendationCardProps> = ({
 
   if (loading) {
     return (
-      <div className="mb-4 animate-pulse rounded-xl border border-stone-200 bg-white p-5 shadow-sm">
+      <div className="mb-4 animate-pulse glass-card p-5">
         <div className="mb-3 flex items-start justify-between">
           <div className="flex items-center gap-3">
-            <div className="h-8 w-8 rounded-full bg-stone-200" />
-            <div className="h-6 w-32 rounded bg-stone-200" />
+            <div className="h-8 w-8 rounded-full bg-white/5" />
+            <div className="h-6 w-32 rounded bg-white/5" />
           </div>
-          <div className="h-6 w-20 rounded-full bg-stone-100" />
+          <div className="h-6 w-20 rounded-full bg-white/10" />
         </div>
-
         <div className="mb-4 space-y-2">
-          <div className="h-4 w-full rounded bg-stone-100" />
-          <div className="h-4 w-5/6 rounded bg-stone-100" />
+          <div className="h-4 w-full rounded bg-white/5" />
+          <div className="h-4 w-5/6 rounded bg-white/5" />
         </div>
-
-        <div className="mb-4 space-y-2">
-          <div className="h-3 w-48 rounded bg-stone-50" />
-          <div className="h-3 w-32 rounded bg-stone-50" />
-        </div>
-
-        <div className="h-12 w-full rounded-lg border border-amber-100/50 bg-amber-50/50" />
       </div>
     );
   }
@@ -70,6 +63,7 @@ export const RecommendationCard: React.FC<RecommendationCardProps> = ({
     cuisine,
     price_level,
     neighborhood,
+    whyMatch,
   } = recommendation;
   const matchPercentage = Math.round(match_score * 100);
 
@@ -88,143 +82,138 @@ export const RecommendationCard: React.FC<RecommendationCardProps> = ({
   const googleMapsUrl = `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(`${name} ${address || ''}`)}`;
 
   return (
-    <div className="group relative mb-4 overflow-hidden rounded-xl border border-stone-200 bg-white p-5 shadow-sm transition-all hover:shadow-md">
-      {feedback === 'liked' && (
-        <div className="absolute top-0 right-0 rounded-bl-lg bg-emerald-50 p-1 text-emerald-600">
-          <Star className="h-4 w-4 fill-current" />
-        </div>
-      )}
+    <div className="group relative mb-6 overflow-hidden glass-card p-6 transition-all hover:bg-white/[0.07] hover:scale-[1.01] hover:shadow-2xl">
+      {/* Top Banner for Rank */}
+      <div className="absolute top-0 left-0 h-1 w-full bg-gradient-to-r from-transparent via-[var(--color-brand-primary)] to-transparent opacity-30" />
 
-      <div className="mb-3 flex items-start justify-between">
-        <div className="flex items-center gap-3">
-          <div className="flex h-8 w-8 items-center justify-center rounded-full bg-stone-900 text-sm font-bold text-white">
-            #{rank}
+      <div className="mb-4 flex items-start justify-between">
+        <div className="flex items-center gap-4">
+          <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-[var(--color-brand-primary)]/10 border border-[var(--color-brand-primary)]/30 text-base font-black text-[var(--color-brand-primary)] shadow-inner">
+            {rank}
           </div>
           <div>
-            <h3 className="text-lg leading-tight font-semibold text-stone-900">{name}</h3>
+            <h3 className="text-xl font-bold tracking-tight text-[var(--color-text-main)] group-hover:text-[var(--color-brand-primary)] transition-colors">
+              {name}
+            </h3>
             <div className="mt-1 flex items-center gap-2">
-              {cuisine && (
-                <span className="text-[10px] font-bold tracking-wider text-stone-400 uppercase">
-                  {cuisine}
-                </span>
-              )}
-              {neighborhood && (
-                <>
-                  <span className="text-stone-300">|</span>
-                  <span className="text-[10px] font-bold tracking-wider text-stone-400 uppercase italic">
-                    {neighborhood}
-                  </span>
-                </>
-              )}
+              <span className="text-[10px] font-bold tracking-[0.2em] text-[var(--color-text-muted)] uppercase">
+                {cuisine}
+              </span>
+              <span className="h-1 w-1 rounded-full bg-white/20" />
+              <span className="text-[10px] font-bold tracking-[0.2em] text-[var(--color-text-muted)] uppercase">
+                {neighborhood}
+              </span>
             </div>
           </div>
         </div>
-        <div className="flex flex-col items-end gap-2">
-          <div className="flex items-center gap-1 rounded-full bg-emerald-100 px-2.5 py-1 text-xs font-semibold text-emerald-800">
-            <Star className="h-3 w-3" />
-            {matchPercentage}% Match
+
+        <div className="flex flex-col items-end gap-1.5">
+          <div className="flex items-center gap-1.5 rounded-full bg-[var(--color-brand-primary)] px-3 py-1 text-[11px] font-black text-black shadow-lg">
+            <Star className="h-3 w-3 fill-current" />
+            {matchPercentage}%
           </div>
-          {price_level && (
-            <span className="text-xs font-bold tracking-widest text-emerald-600">
-              {price_level}
-            </span>
-          )}
+          <span className="text-xs font-black tracking-widest text-[var(--color-brand-primary)]/60">
+            {price_level}
+          </span>
         </div>
       </div>
 
-      <p className="mb-4 text-sm leading-relaxed text-stone-600">{rationale}</p>
+      {/* Why it matches (Heuristic Rationale) */}
+      {(whyMatch || rationale) && (
+        <div className="mb-4 rounded-xl bg-white/5 border border-white/10 p-3">
+           <p className="text-xs italic leading-relaxed text-[var(--color-text-main)]/90">
+             <span className="text-[9px] font-bold tracking-widest uppercase not-italic text-[var(--color-brand-primary)] mr-2">Why it matches:</span>
+             {whyMatch || rationale}
+           </p>
+        </div>
+      )}
 
-      <div className="mb-4 grid grid-cols-1 gap-4 sm:grid-cols-2">
-        <div className="space-y-2">
+      {/* Trend Insights */}
+      {trend_relevance && trend_relevance !== 'None' && (
+        <div className="mb-5 flex items-start gap-3 rounded-xl bg-[var(--color-brand-primary)]/5 border border-[var(--color-brand-primary)]/10 p-4">
+          <TrendingUp className="mt-0.5 h-4 w-4 shrink-0 text-[var(--color-brand-primary)]" />
+          <div>
+            <p className="text-xs font-bold text-[var(--color-brand-primary)] uppercase tracking-widest mb-1">Culinary Trend</p>
+            <p className="text-xs leading-relaxed text-[var(--color-text-main)]/80 italic">
+              {trend_relevance}
+            </p>
+            {trend_connection && (
+              <p className="mt-2 border-t border-white/5 pt-2 text-[11px] leading-relaxed text-[var(--color-text-muted)]">
+                {trend_connection}
+              </p>
+            )}
+          </div>
+        </div>
+      )}
+
+      {/* Footer Info & Actions */}
+      <div className="flex flex-wrap items-center justify-between gap-4 border-t border-white/5 pt-4">
+        <div className="space-y-1.5">
           {address && (
-            <div className="flex items-center gap-2 text-xs text-stone-500">
-              <MapPin className="h-3.5 w-3.5 text-stone-400" />
-              <span className="truncate">{address}</span>
-            </div>
-          )}
-          {phone && (
-            <div className="flex items-center gap-2 text-xs text-stone-500">
-              <Phone className="h-3.5 w-3.5 text-stone-400" />
-              <span>{phone}</span>
+            <div className="flex items-center gap-2 text-[11px] text-[var(--color-text-muted)]">
+              <MapPin className="h-3 w-3 text-[var(--color-brand-primary)]/50" />
+              <span className="truncate max-w-[180px]">{address}</span>
             </div>
           )}
           {hours && (
-            <div className="flex items-center gap-2 text-xs text-stone-500">
-              <Clock className="h-3.5 w-3.5 text-stone-400" />
+            <div className="flex items-center gap-2 text-[11px] text-[var(--color-text-muted)]">
+              <Clock className="h-3 w-3 text-[var(--color-brand-primary)]/50" />
               <span>{hours}</span>
             </div>
           )}
         </div>
 
-        <div className="flex items-center justify-end gap-2">
-          <button
-            onClick={handleLike}
-            disabled={!!feedback}
-            className={`rounded-lg border p-2 transition-all ${
-              feedback === 'liked'
-                ? 'border-emerald-200 bg-emerald-50 text-emerald-600'
-                : 'border-stone-200 text-stone-400 hover:border-emerald-200 hover:text-emerald-600'
-            }`}
-            title="Like this recommendation"
-          >
-            <ThumbsUp className={`h-4 w-4 ${feedback === 'liked' ? 'fill-current' : ''}`} />
-          </button>
-          <button
-            onClick={handleDislike}
-            disabled={!!feedback}
-            className={`rounded-lg border p-2 transition-all ${
-              feedback === 'disliked'
-                ? 'border-red-200 bg-red-50 text-red-600'
-                : 'border-stone-200 text-stone-400 hover:border-red-200 hover:text-red-600'
-            }`}
-            title="Dislike this recommendation"
-          >
-            <ThumbsDown className={`h-4 w-4 ${feedback === 'disliked' ? 'fill-current' : ''}`} />
-          </button>
+        <div className="flex items-center gap-2">
+          <div className="mr-2 flex items-center gap-1 border-r border-white/10 pr-2">
+            <button
+              onClick={handleLike}
+              disabled={!!feedback}
+              className={cn(
+                'rounded-lg p-2 transition-all',
+                feedback === 'liked'
+                  ? 'bg-emerald-500/20 text-emerald-400'
+                  : 'text-white/20 hover:text-emerald-400 hover:bg-emerald-500/10'
+              )}
+            >
+              <ThumbsUp className={cn('h-4 w-4', feedback === 'liked' && 'fill-current')} />
+            </button>
+            <button
+              onClick={handleDislike}
+              disabled={!!feedback}
+              className={cn(
+                'rounded-lg p-2 transition-all',
+                feedback === 'disliked'
+                  ? 'bg-rose-500/20 text-rose-400'
+                  : 'text-white/20 hover:text-rose-400 hover:bg-rose-500/10'
+              )}
+            >
+              <ThumbsDown className={cn('h-4 w-4', feedback === 'disliked' && 'fill-current')} />
+            </button>
+          </div>
+
           <button
             onClick={() => recommendation && onToggleFavorite?.(recommendation)}
-            className={`rounded-lg border p-2 transition-all ${
+            className={cn(
+              'rounded-lg p-2 transition-all',
               isFavorite
-                ? 'border-red-200 bg-red-50 text-red-500 shadow-sm'
-                : 'border-stone-200 text-stone-400 hover:border-red-100 hover:text-red-400'
-            }`}
-            title={isFavorite ? 'Remove from favorites' : 'Add to favorites'}
-            aria-label={isFavorite ? 'Remove from favorites' : 'Add to favorites'}
+                ? 'bg-rose-500/20 text-rose-500'
+                : 'text-white/20 hover:text-rose-500 hover:bg-rose-500/10'
+            )}
           >
-            <Heart className={`h-4 w-4 ${isFavorite ? 'fill-current' : ''}`} />
+            <Heart className={cn('h-4 w-4', isFavorite && 'fill-current')} />
           </button>
+
           <a
             href={googleMapsUrl}
             target="_blank"
             rel="noopener noreferrer"
-            className="flex items-center gap-1.5 rounded-lg bg-stone-900 px-3 py-2 text-xs font-medium text-white shadow-sm transition-colors hover:bg-stone-800"
+            className="flex items-center gap-2 rounded-xl bg-white/10 px-4 py-2 text-[11px] font-bold text-white transition-all hover:bg-white/20"
           >
             <Navigation className="h-3.5 w-3.5" />
-            Go
+            Navigate
           </a>
         </div>
       </div>
-
-      {trend_relevance &&
-        trend_relevance.trim() !== '' &&
-        trend_relevance.toLowerCase() !== 'none' && (
-          <div className="space-y-2 rounded-lg border border-amber-100 bg-amber-50 p-3">
-            <div className="flex items-start gap-2">
-              <TrendingUp className="mt-0.5 h-4 w-4 shrink-0 text-amber-600" />
-              <p className="text-xs leading-relaxed text-amber-800 italic">
-                <span className="text-[10px] font-semibold tracking-wide uppercase not-italic">
-                  Trend:
-                </span>{' '}
-                {trend_relevance}
-              </p>
-            </div>
-            {trend_connection && (
-              <p className="border-t border-amber-200/50 pt-2 pl-6 text-xs leading-relaxed text-amber-900/80">
-                {trend_connection}
-              </p>
-            )}
-          </div>
-        )}
     </div>
   );
 };

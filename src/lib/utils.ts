@@ -52,3 +52,7 @@ export async function withRetry<T>(
     throw error;
   }
 }
+
+export function cn(...inputs: any[]) {
+  return inputs.filter(Boolean).join(' ');
+}

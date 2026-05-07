@@ -10,6 +10,7 @@ interface ScoreInput {
 
 interface ScoreOutput {
   matchScore: number; // 0.0–1.0
+  rationale: string;
 }
 
 export const scoreRestaurantSkill: AgentSkill<ScoreInput, ScoreOutput> = {
@@ -17,11 +18,13 @@ export const scoreRestaurantSkill: AgentSkill<ScoreInput, ScoreOutput> = {
   description: 'Computes an overall match score between a user taste profile and a restaurant.',
   async run({ profile, restaurant, similarity }) {
     let score = 0;
+    const reasons: string[] = [];
     const hasSimilarity = typeof similarity === 'number';
 
     // 1. Base on vector similarity if provided
     if (hasSimilarity) {
       score += (similarity as number) * 0.5;
+      if (similarity! > 0.7) reasons.push('Strong semantic match to your preferences');
     }
 
     // 2. Cuisine match (Weight: 0.3 with sim, 0.4 without)
@@ -30,6 +33,7 @@ export const scoreRestaurantSkill: AgentSkill<ScoreInput, ScoreOutput> = {
       const lowerCuisines = profile.cuisines.map((c) => c.toLowerCase());
       if (lowerCuisines.includes(restaurant.cuisine.toLowerCase())) {
         score += cuisineWeight;
+        reasons.push(`Matches your craving for ${restaurant.cuisine}`);
       }
     }
 
@@ -43,11 +47,14 @@ export const scoreRestaurantSkill: AgentSkill<ScoreInput, ScoreOutput> = {
       if (userPrice > 0 && restaurantPrice > 0) {
         const diff = Math.abs(userPrice - restaurantPrice);
         if (diff === 0) {
-          score += priceWeight; // Exact match
+          score += priceWeight;
+          reasons.push('Fits your preferred price point perfectly');
         } else if (diff === 1) {
-          score += priceWeight / 2; // Close match (one tier away)
+          score += priceWeight / 2;
+          reasons.push('Slightly outside your usual price range but close');
         } else if (diff >= 3) {
-          score -= 0.2; // Significant mismatch
+          score -= 0.2;
+          reasons.push('Significantly different from your budget');
         }
       }
     }
@@ -55,9 +62,10 @@ export const scoreRestaurantSkill: AgentSkill<ScoreInput, ScoreOutput> = {
     // 4. Ambiance overlap
     if (profile.ambiance?.length && restaurant.tags?.length) {
       const lowerTags = restaurant.tags.map((t) => t.toLowerCase());
-      const hasAmbianceMatch = profile.ambiance.some((a) => lowerTags.includes(a.toLowerCase()));
-      if (hasAmbianceMatch) {
+      const matchedAmbiance = profile.ambiance.filter((a) => lowerTags.includes(a.toLowerCase()));
+      if (matchedAmbiance.length > 0) {
         score += 0.2;
+        reasons.push(`Fits your ${matchedAmbiance[0].toLowerCase()} vibe`);
       }
     }
 
@@ -66,6 +74,7 @@ export const scoreRestaurantSkill: AgentSkill<ScoreInput, ScoreOutput> = {
       const lowerNeighborhoods = profile.neighborhoods.map((n) => n.toLowerCase());
       if (lowerNeighborhoods.includes(restaurant.neighborhood.toLowerCase())) {
         score += 0.2;
+        reasons.push(`Conveniently located in ${restaurant.neighborhood}`);
       }
     }
 
@@ -79,10 +88,12 @@ export const scoreRestaurantSkill: AgentSkill<ScoreInput, ScoreOutput> = {
       const dietaryNote = profile.dietary_notes.toLowerCase();
       if (lowerTags.some((tag) => tag.includes(dietaryNote) || dietaryNote.includes(tag))) {
         score += 0.1;
+        reasons.push(`Accommodates your ${dietaryNote} needs`);
       }
     }
 
     const matchScore = Math.max(0, Math.min(1, score));
-    return { matchScore };
+    const rationale = reasons.length > 0 ? reasons.join('. ') + '.' : 'A general match for your profile.';
+    return { matchScore, rationale };
   },
 };

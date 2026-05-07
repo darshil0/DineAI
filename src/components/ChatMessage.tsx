@@ -2,6 +2,7 @@ import React from 'react';
 import ReactMarkdown from 'react-markdown';
 import remarkGfm from 'remark-gfm';
 import { User, Bot } from 'lucide-react';
+import { cn } from '../lib/utils.js';
 
 interface ChatMessageProps {
   role: 'user' | 'assistant';
@@ -15,17 +16,16 @@ export const ChatMessage: React.FC<ChatMessageProps> = ({ role, content, isLoadi
   return (
     <div className={`mb-6 flex gap-4 ${isUser ? 'justify-end' : 'justify-start'}`}>
       {!isUser && (
-        <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-indigo-100">
-          <Bot className="h-6 w-6 text-indigo-600" />
+        <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-[var(--color-brand-primary)]/20 border border-[var(--color-brand-primary)]/30">
+          <Bot className="h-6 w-6 text-[var(--color-brand-primary)]" />
         </div>
       )}
 
       <div
-        className={`max-w-[80%] rounded-2xl px-5 py-3.5 ${
-          isUser
-            ? 'rounded-br-none bg-stone-900 text-white'
-            : 'rounded-bl-none border border-stone-200 bg-white text-stone-800 shadow-sm'
-        }`}
+        className={cn(
+          'max-w-[80%]',
+          isUser ? 'bubble-user' : 'bubble-assistant'
+        )}
       >
         {isLoading ? (
           <div className="flex items-center gap-2 text-stone-500">
@@ -48,8 +48,8 @@ export const ChatMessage: React.FC<ChatMessageProps> = ({ role, content, isLoadi
       </div>
 
       {isUser && (
-        <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-stone-200">
-          <User className="h-6 w-6 text-stone-600" />
+        <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-stone-800 border border-stone-700">
+          <User className="h-6 w-6 text-stone-400" />
         </div>
       )}
     </div>

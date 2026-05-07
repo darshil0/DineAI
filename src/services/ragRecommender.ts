@@ -19,7 +19,7 @@ export async function recommendCandidates(profile: UserTasteProfile): Promise<Re
     );
     const scoreRestaurant = getSkill<
       { profile: UserTasteProfile; restaurant: Restaurant; similarity?: number },
-      { matchScore: number }
+      { matchScore: number; rationale: string }
     >('scoreRestaurant');
 
     if (generateEmbedding && scoreRestaurant && (await vectorDb.count()) > 0) {
@@ -49,7 +49,7 @@ export async function recommendCandidates(profile: UserTasteProfile): Promise<Re
       const scored = await Promise.all(
         filteredResults.map(async (r) => {
           const restaurant = r.metadata as Restaurant;
-          const { matchScore } = await withRetry(() =>
+          const { matchScore, rationale } = await withRetry(() =>
             scoreRestaurant.run({
               profile,
               restaurant,
@@ -58,7 +58,7 @@ export async function recommendCandidates(profile: UserTasteProfile): Promise<Re
           ).catch((e) => {
             throw new SkillError('scoreRestaurant', e);
           });
-          return { ...restaurant, match_score: matchScore, embedding_score: r.score };
+          return { ...restaurant, match_score: matchScore, whyMatch: rationale, embedding_score: r.score };
         }),
       );
 

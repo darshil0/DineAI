@@ -13,6 +13,7 @@ export interface Recommendation {
   cuisine?: string;
   price_level?: string;
   neighborhood?: string;
+  whyMatch?: string;
 }
 
 export const FinalRecommendationsSchema = {
@@ -51,6 +52,7 @@ export const FinalRecommendationsSchema = {
           cuisine: { type: Type.STRING, description: 'Primary cuisine type' },
           price_level: { type: Type.STRING, description: 'Price level ($, $$, $$$, $$$$)' },
           neighborhood: { type: Type.STRING, description: 'Neighborhood location' },
+          whyMatch: { type: Type.STRING, description: 'Underlying heuristic match rationale' },
         },
         required: [
           'rank',

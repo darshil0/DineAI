@@ -86,7 +86,7 @@ export async function buildProfile(
 
     let userTasteProfile: UserTasteProfile = {};
     try {
-      userTasteProfile = JSON.parse(profileResponse.text || '{}');
+      userTasteProfile = JSON.parse(cleanJson(profileResponse.text || '{}'));
     } catch (parseError) {
       console.error('Failed to parse ProfileBuilder response as JSON:', parseError);
     }

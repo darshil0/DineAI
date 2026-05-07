@@ -18,6 +18,7 @@ import { TasteProfileBadge } from './TasteProfileBadge.js';
 import { FilterControls } from './FilterControls.js';
 import { OnboardingTutorial } from './OnboardingTutorial.js';
 import { Recommendation, UserTasteProfile } from '../schemas/index.js';
+import { cn } from '../lib/utils.js';
 
 interface Message {
   id: string;
@@ -92,26 +93,23 @@ export default function ChatInterface() {
   const recognitionRef = useRef<SpeechRecognition | null>(null);
   const loadingTimeoutsRef = useRef<NodeJS.Timeout[]>([]);
   
-  // Define setInitialMessage before the useEffect that calls it
   const setInitialMessage = useCallback(() => {
     setMessages([
       {
         id: '1',
         role: 'assistant',
         content:
-          "Hi! I'm DineAI, your personal restaurant recommendation agent. Tell me what you're craving, your budget, or upload a photo of a dish you love, and I'll find the perfect spot for you in NYC!",
+          "Welcome to DineAI. I'm your private culinary concierge. Tell me your cravings, set a budget, or upload a photo of a dish that inspires you. I'll curate the perfect NYC dining experience just for you.",
       },
     ]);
   }, []);
 
-  // Check onboarding status
   useEffect(() => {
     const completed = localStorage.getItem(ONBOARDING_STORAGE_KEY);
     if (!completed) {
       setShowOnboarding(true);
     }
     
-    // Load favorites
     const savedFavorites = localStorage.getItem(FAVORITES_STORAGE_KEY);
     if (savedFavorites) {
       try {
@@ -141,14 +139,12 @@ export default function ChatInterface() {
     setShowOnboarding(false);
   };
 
-  // Focus management
   useEffect(() => {
     if (!isLoading) {
       textareaRef.current?.focus();
     }
   }, [isLoading]);
 
-  // Clean up timeouts on unmount or error
   useEffect(() => {
     return () => {
       loadingTimeoutsRef.current.forEach(clearTimeout);
@@ -156,7 +152,6 @@ export default function ChatInterface() {
     };
   }, []);
 
-  // Initialize Speech Recognition
   useEffect(() => {
     const SpeechRecognition =
       (window as any).SpeechRecognition || (window as any).webkitSpeechRecognition;
@@ -216,7 +211,6 @@ export default function ChatInterface() {
       async (position) => {
         const { latitude, longitude } = position.coords;
         try {
-          // Provide coordinates to message for LLM context
           setInput((prev) => {
             const locStr = `[Near my current location: ${latitude.toFixed(4)}, ${longitude.toFixed(4)}]`;
             return prev.includes('[Near my current location') ? prev : `${prev} ${locStr}`.trim();
@@ -239,10 +233,8 @@ export default function ChatInterface() {
       type === 'like' ? `(Feedback: I loved ${name})` : `(Feedback: I wasn't a fan of ${name})`;
 
     setQueuedFeedback((prev) => [...prev, feedbackText]);
-    console.log(`Feedback queued for ${name}: ${type}`);
   };
 
-  // Load history on mount
   useEffect(() => {
     const saved = localStorage.getItem(STORAGE_KEY);
     if (saved) {
@@ -257,10 +249,8 @@ export default function ChatInterface() {
     }
   }, [setInitialMessage]);
 
-  // Save history on change (with limit)
   useEffect(() => {
     if (messages.length > 0) {
-      // Keep last 30 messages to avoid localStorage bloat
       const historyToSave = messages.slice(-30);
       localStorage.setItem(STORAGE_KEY, JSON.stringify(historyToSave));
     }
@@ -289,7 +279,6 @@ export default function ChatInterface() {
   const handleImageSelect = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (file) {
-      // Limit image size to 5MB
       if (file.size > 5 * 1024 * 1024) {
         alert('Image size must be less than 5MB');
         if (fileInputRef.current) {
@@ -320,7 +309,6 @@ export default function ChatInterface() {
 
     if (!fullMessage && !selectedImage) return;
 
-    // Ensure there is some text context if sending an image, or prompt builder might struggle
     const finalContent =
       !fullMessage && selectedImage ? 'Identify these dishes and find similar restaurants' : fullMessage;
 
@@ -360,7 +348,6 @@ export default function ChatInterface() {
         formData.append('image', currentImage);
       }
 
-      // Simulate step updates for better UX
       loadingTimeoutsRef.current.push(
         setTimeout(() => setLoadingStep('Retrieving candidate restaurants...'), 2000),
       );
@@ -386,7 +373,7 @@ export default function ChatInterface() {
       const assistantMessage: Message = {
         id: (Date.now() + 1).toString(),
         role: 'assistant',
-        content: 'Here are my top recommendations based on your taste profile and current trends:',
+        content: 'I have curated these selections based on your evolving taste profile and real-time culinary trends in the city:',
         recommendations: data.recommendations,
         profile: data.profile,
         trends: data.trends,
@@ -400,7 +387,7 @@ export default function ChatInterface() {
         {
           id: (Date.now() + 1).toString(),
           role: 'assistant',
-          content: `Sorry, I encountered an error: ${error.message}`,
+          content: `⚠️ **Service Interruption:** ${error.message || 'Something went wrong while processing your request.'}`,
         },
       ]);
     } finally {
@@ -417,74 +404,74 @@ export default function ChatInterface() {
   };
 
   return (
-    <div className="mx-auto flex h-screen max-w-4xl flex-col overflow-hidden bg-stone-50 shadow-2xl">
+    <div className="mx-auto flex h-screen max-w-4xl flex-col overflow-hidden bg-[var(--color-bg-deep)] shadow-[0_0_100px_-20px_rgba(0,0,0,0.5)]">
       {showOnboarding && <OnboardingTutorial onComplete={handleOnboardingComplete} />}
+      
       {/* Header */}
-      <header className="z-10 flex items-center justify-between border-b border-stone-200 bg-white px-6 py-4">
-        <div className="flex items-center gap-3">
-          <div className="rounded-xl bg-orange-100 p-2">
-            <ChefHat className="h-6 w-6 text-orange-600" />
+      <header className="z-10 flex items-center justify-between border-b border-white/5 bg-black/40 backdrop-blur-2xl px-6 py-5">
+        <div className="flex items-center gap-4">
+          <div className="rounded-2xl bg-gradient-to-br from-[var(--color-brand-primary)] to-[var(--color-brand-secondary)] p-2.5 shadow-lg shadow-[var(--color-brand-primary)]/20">
+            <ChefHat className="h-6 w-6 text-black" />
           </div>
           <div>
-            <h1 className="text-xl font-bold text-stone-900">DineAI</h1>
-            <p className="text-sm text-stone-500">Multi-Agent Restaurant Recommender</p>
+            <h1 className="text-2xl font-bold text-[var(--color-text-main)] font-serif tracking-tight">DineAI</h1>
+            <p className="text-[10px] font-bold tracking-[0.2em] text-[var(--color-text-muted)] uppercase">Concierge Service</p>
           </div>
         </div>
-        <div className="flex items-center gap-2">
+        <div className="flex items-center gap-3">
           <button
             onClick={() => setShowFavorites(!showFavorites)}
-            className={`flex items-center gap-2 rounded-lg px-3 py-2 text-sm font-medium transition-all ${
+            className={cn(
+              'flex items-center gap-2 rounded-xl px-4 py-2.5 text-xs font-bold tracking-widest uppercase transition-all',
               showFavorites
-                ? 'bg-red-50 text-red-600'
-                : 'text-stone-500 hover:bg-stone-50 hover:text-stone-900'
-            }`}
-            title={showFavorites ? 'Back to Chat' : 'View Favorites'}
+                ? 'bg-rose-500/10 text-rose-500 border border-rose-500/20'
+                : 'text-[var(--color-text-muted)] hover:bg-white/5 hover:text-white'
+            )}
           >
-            <Heart className={`h-4 w-4 ${showFavorites ? 'fill-current' : ''}`} />
+            <Heart className={cn('h-4 w-4', showFavorites && 'fill-current')} />
             <span className="hidden sm:inline">
-              {showFavorites ? 'Chat' : `Favorites (${favorites.length})`}
+              {showFavorites ? 'Back' : `Saved (${favorites.length})`}
             </span>
           </button>
           <button
             onClick={clearHistory}
-            className="rounded-lg p-2 text-stone-400 transition-all hover:bg-red-50 hover:text-red-500"
+            className="rounded-xl p-2.5 text-[var(--color-text-muted)] transition-all hover:bg-rose-500/10 hover:text-rose-500"
             title="Clear History"
-            aria-label="Clear conversation history"
           >
             <Trash2 className="h-5 w-5" />
           </button>
         </div>
       </header>
 
-      {/* Chat Area / Favorites Area */}
-      <div className="flex-1 overflow-y-auto p-6">
+      {/* Main Content Area */}
+      <div className="flex-1 overflow-y-auto p-6 space-y-10 custom-scrollbar">
         {showFavorites ? (
           <motion.div
             initial={{ opacity: 0, x: 20 }}
             animate={{ opacity: 1, x: 0 }}
             className="h-full"
           >
-            <div className="mb-6 flex items-center justify-between">
-              <h2 className="text-lg font-bold text-stone-900">Your Favorites</h2>
-              <p className="text-sm text-stone-500">{favorites.length} restaurants saved</p>
+            <div className="mb-8 flex items-center justify-between">
+              <h2 className="text-2xl font-bold text-[var(--color-text-main)] font-serif">Your Culinary Collection</h2>
+              <p className="text-xs font-bold tracking-widest text-[var(--color-text-muted)] uppercase">{favorites.length} Saved</p>
             </div>
 
             {favorites.length === 0 ? (
-              <div className="flex h-64 flex-col items-center justify-center rounded-3xl border-2 border-dashed border-stone-200 bg-stone-50 p-8 text-center">
-                <Heart className="mb-4 h-12 w-12 text-stone-200" />
-                <h3 className="text-lg font-semibold text-stone-900">No favorites yet</h3>
-                <p className="mt-2 max-w-xs text-stone-500">
-                  Save restaurants you love by clicking the heart icon on any recommendation.
+              <div className="flex h-80 flex-col items-center justify-center rounded-[2.5rem] border border-dashed border-white/10 bg-white/[0.02] p-12 text-center">
+                <Heart className="mb-6 h-16 w-16 text-white/5" />
+                <h3 className="text-xl font-bold text-[var(--color-text-main)] font-serif">Empty Collection</h3>
+                <p className="mt-3 max-w-xs text-sm text-[var(--color-text-muted)] leading-relaxed">
+                  Bookmark the restaurants you love to build your personalized NYC dining map.
                 </p>
                 <button
                   onClick={() => setShowFavorites(false)}
-                  className="mt-6 font-bold text-orange-600 uppercase hover:underline"
+                  className="mt-8 text-[11px] font-black text-[var(--color-brand-primary)] uppercase tracking-[0.2em] hover:brightness-125"
                 >
-                  Start Exploring
+                  Start Discovery
                 </button>
               </div>
             ) : (
-              <div className="grid grid-cols-1 gap-4 lg:grid-cols-2">
+              <div className="grid grid-cols-1 gap-6 lg:grid-cols-2">
                 {favorites.map((rec) => (
                   <RecommendationCard
                     key={`fav-${rec.name}`}
@@ -497,149 +484,135 @@ export default function ChatInterface() {
             )}
           </motion.div>
         ) : (
-          <>
+          <div className="max-w-3xl mx-auto w-full">
             <AnimatePresence initial={false}>
-          {messages.map((msg) => (
-            <motion.div
-              key={msg.id}
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              className="mb-6"
-            >
-              {msg.role === 'user' && msg.image && (
-                <div className="mb-2 flex justify-end">
-                  <img
-                    src={msg.image}
-                    alt="Uploaded food"
-                    className="max-w-xs rounded-2xl border border-stone-200 object-cover shadow-sm"
-                  />
-                </div>
-              )}
-
-              <ChatMessage role={msg.role} content={msg.content} />
-
-              {msg.role === 'assistant' && msg.profile && (
+              {messages.map((msg) => (
                 <motion.div
-                  initial={{ opacity: 0, scale: 0.95 }}
-                  animate={{ opacity: 1, scale: 1 }}
-                  transition={{ delay: 0.2 }}
-                  className="pr-4 pl-14"
+                  key={msg.id}
+                  initial={{ opacity: 0, y: 20 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  className="mb-10"
                 >
-                  <TasteProfileBadge profile={msg.profile} />
-                </motion.div>
-              )}
-
-              {msg.role === 'assistant' && msg.recommendations && (
-                <div className="space-y-4 pr-4 pl-14">
-                  {/* Advanced Multi-select filters */}
-                  {msg.id === messages[messages.length - 1]?.id && (
-                    <FilterControls
-                      recommendations={msg.recommendations}
-                      filters={filters}
-                      onFilterChange={setFilters}
-                    />
+                  {msg.role === 'user' && msg.image && (
+                    <div className="mb-4 flex justify-end">
+                      <img
+                        src={msg.image}
+                        alt="Culinary inspiration"
+                        className="max-w-xs rounded-2xl border border-white/10 object-cover shadow-2xl"
+                      />
+                    </div>
                   )}
 
-                  {msg.recommendations
-                    .filter((r) => {
-                      const matchCuisine =
-                        filters.cuisines.length === 0 ||
-                        (r.cuisine && filters.cuisines.includes(r.cuisine));
-                      const matchPrice =
-                        filters.prices.length === 0 ||
-                        (r.price_level && filters.prices.includes(r.price_level));
-                      const matchNeighborhood =
-                        filters.neighborhoods.length === 0 ||
-                        (r.neighborhood && filters.neighborhoods.includes(r.neighborhood));
-                      return matchCuisine && matchPrice && matchNeighborhood;
-                    })
-                    .map((rec) => (
-                      <motion.div
-                        key={`${msg.id}-${rec.name}`}
-                        initial={{ opacity: 0, y: 10 }}
-                        animate={{ opacity: 1, y: 0 }}
-                        transition={{ delay: 0.3 }}
-                      >
-                        <RecommendationCard
-                          recommendation={rec}
-                          isFavorite={favorites.some((f) => f.name === rec.name)}
-                          onFeedback={handleRecommendationFeedback}
-                          onToggleFavorite={handleToggleFavorite}
+                  <ChatMessage role={msg.role} content={msg.content} />
+
+                  {msg.role === 'assistant' && msg.profile && (
+                    <motion.div
+                      initial={{ opacity: 0, scale: 0.98 }}
+                      animate={{ opacity: 1, scale: 1 }}
+                      transition={{ delay: 0.2 }}
+                      className="mt-6 mb-8"
+                    >
+                      <TasteProfileBadge profile={msg.profile} />
+                    </motion.div>
+                  )}
+
+                  {msg.role === 'assistant' && msg.recommendations && (
+                    <div className="space-y-6 mt-8">
+                      {msg.id === messages[messages.length - 1]?.id && (
+                        <FilterControls
+                          recommendations={msg.recommendations}
+                          filters={filters}
+                          onFilterChange={setFilters}
                         />
-                      </motion.div>
-                    ))}
+                      )}
 
-                  {msg.recommendations &&
-                    msg.recommendations.length > 0 &&
-                    msg.recommendations.filter((r) => {
-                      const matchCuisine =
-                        filters.cuisines.length === 0 ||
-                        (r.cuisine && filters.cuisines.includes(r.cuisine));
-                      const matchPrice =
-                        filters.prices.length === 0 ||
-                        (r.price_level && filters.prices.includes(r.price_level));
-                      const matchNeighborhood =
-                        filters.neighborhoods.length === 0 ||
-                        (r.neighborhood && filters.neighborhoods.includes(r.neighborhood));
-                      return matchCuisine && matchPrice && matchNeighborhood;
-                    }).length === 0 && (
-                      <div className="rounded-2xl border border-dashed border-stone-300 bg-stone-100 p-8 text-center">
-                        <Filter className="mx-auto mb-2 h-8 w-8 text-stone-300" />
-                        <p className="text-sm text-stone-500">No matches for current filters.</p>
-                        <button
-                          onClick={() =>
-                            setFilters({ cuisines: [], prices: [], neighborhoods: [] })
-                          }
-                          className="mt-2 text-xs font-bold text-orange-600 uppercase hover:underline"
-                        >
-                          Clear Filters
-                        </button>
-                      </div>
-                    )}
+                      {msg.recommendations
+                        .filter((r) => {
+                          const matchCuisine =
+                            filters.cuisines.length === 0 ||
+                            (r.cuisine && filters.cuisines.includes(r.cuisine));
+                          const matchPrice =
+                            filters.prices.length === 0 ||
+                            (r.price_level && filters.prices.includes(r.price_level));
+                          const matchNeighborhood =
+                            filters.neighborhoods.length === 0 ||
+                            (r.neighborhood && filters.neighborhoods.includes(r.neighborhood));
+                          return matchCuisine && matchPrice && matchNeighborhood;
+                        })
+                        .map((rec) => (
+                          <motion.div
+                            key={`${msg.id}-${rec.name}`}
+                            initial={{ opacity: 0, y: 10 }}
+                            animate={{ opacity: 1, y: 0 }}
+                            transition={{ delay: 0.3 }}
+                          >
+                            <RecommendationCard
+                              recommendation={rec}
+                              isFavorite={favorites.some((f) => f.name === rec.name)}
+                              onFeedback={handleRecommendationFeedback}
+                              onToggleFavorite={handleToggleFavorite}
+                            />
+                          </motion.div>
+                        ))}
+
+                      {msg.recommendations.filter((r) => {
+                        const matchCuisine = filters.cuisines.length === 0 || (r.cuisine && filters.cuisines.includes(r.cuisine));
+                        const matchPrice = filters.prices.length === 0 || (r.price_level && filters.prices.includes(r.price_level));
+                        const matchNeighborhood = filters.neighborhoods.length === 0 || (r.neighborhood && filters.neighborhoods.includes(r.neighborhood));
+                        return matchCuisine && matchPrice && matchNeighborhood;
+                      }).length === 0 && (
+                        <div className="rounded-[2rem] border border-dashed border-white/10 bg-white/[0.02] p-10 text-center">
+                          <Filter className="mx-auto mb-4 h-10 w-10 text-white/5" />
+                          <p className="text-sm text-[var(--color-text-muted)]">No selections match your current refinement.</p>
+                          <button
+                            onClick={() => setFilters({ cuisines: [], prices: [], neighborhoods: [] })}
+                            className="mt-4 text-[10px] font-black text-[var(--color-brand-primary)] uppercase tracking-widest hover:underline"
+                          >
+                            Reset Refinements
+                          </button>
+                        </div>
+                      )}
+                    </div>
+                  )}
+                </motion.div>
+              ))}
+            </AnimatePresence>
+
+            {isLoading && (
+              <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="mb-12">
+                <ChatMessage role="assistant" content={loadingStep} isLoading={true} />
+                <div className="space-y-8 mt-6">
+                  <TasteProfileBadge loading={true} />
+                  <div className="space-y-6">
+                    <RecommendationCard loading={true} />
+                    <RecommendationCard loading={true} />
+                  </div>
                 </div>
-              )}
-            </motion.div>
-          ))}
-        </AnimatePresence>
-
-        {isLoading && (
-          <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="mb-8">
-            <ChatMessage role="assistant" content={loadingStep} isLoading={true} />
-
-            <div className="space-y-6 pr-4 pl-14">
-              <TasteProfileBadge loading={true} />
-
-              <div className="space-y-4">
-                <RecommendationCard loading={true} />
-                <RecommendationCard loading={true} />
-                <RecommendationCard loading={true} />
-              </div>
-            </div>
-          </motion.div>
+              </motion.div>
+            )}
+            <div ref={messagesEndRef} />
+          </div>
         )}
-        <div ref={messagesEndRef} />
-      </>
-    )}
-  </div>
+      </div>
 
       {/* Input Area */}
-      <div className="border-t border-stone-200 bg-white p-4">
+      <div className="border-t border-white/5 bg-black/60 backdrop-blur-3xl p-6 shadow-[0_-20px_50px_-10px_rgba(0,0,0,0.5)]">
         <AnimatePresence>
           {imagePreview && (
             <motion.div
               initial={{ opacity: 0, y: 10, height: 0 }}
               animate={{ opacity: 1, y: 0, height: 'auto' }}
               exit={{ opacity: 0, y: 10, height: 0 }}
-              className="relative mb-3 inline-block"
+              className="relative mb-5 inline-block group"
             >
               <img
                 src={imagePreview}
-                alt="Preview"
-                className="h-20 rounded-lg border border-stone-200 object-cover shadow-sm"
+                alt="Inspiration preview"
+                className="h-24 rounded-2xl border border-white/10 object-cover shadow-2xl"
               />
               <button
                 onClick={removeImage}
-                className="absolute -top-2 -right-2 rounded-full bg-stone-800 p-1 text-white shadow-sm transition-colors hover:bg-stone-700"
+                className="absolute -top-2 -right-2 rounded-full bg-black border border-white/20 p-1.5 text-white shadow-xl transition-all hover:scale-110"
                 aria-label="Remove image"
               >
                 <X className="h-3 w-3" />
@@ -648,24 +621,22 @@ export default function ChatInterface() {
           )}
         </AnimatePresence>
 
-        <form onSubmit={handleSubmit} className="flex items-end gap-2">
-          <div className="flex flex-1 flex-col rounded-2xl border border-stone-200 bg-stone-100 p-1 transition-all focus-within:border-orange-500 focus-within:ring-1 focus-within:ring-orange-500">
+        <form onSubmit={handleSubmit} className="flex items-end gap-3 max-w-3xl mx-auto">
+          <div className="flex flex-1 flex-col rounded-[2rem] border border-white/10 bg-white/5 p-2 transition-all focus-within:border-[var(--color-brand-primary)]/50 focus-within:bg-white/[0.08] focus-within:shadow-[0_0_30px_-5px_rgba(212,175,55,0.1)]">
             {queuedFeedback.length > 0 && (
-              <div className="flex flex-wrap gap-1 px-2 pt-2 pb-1">
+              <div className="flex flex-wrap gap-1.5 px-3 pt-3 pb-2">
                 {queuedFeedback.map((fb, idx) => (
                   <span
                     key={idx}
-                    className="inline-flex items-center gap-1 rounded-md bg-stone-200 px-1.5 py-0.5 text-[10px] font-medium text-stone-600"
+                    className="inline-flex items-center gap-1.5 rounded-full bg-[var(--color-brand-primary)]/10 border border-[var(--color-brand-primary)]/20 px-2.5 py-1 text-[9px] font-bold text-[var(--color-brand-primary)] uppercase tracking-wider"
                   >
                     {fb}
                     <button
                       type="button"
-                      onClick={() =>
-                        setQueuedFeedback((prev) => prev.filter((_, i) => i !== idx))
-                      }
-                      className="hover:text-stone-900"
+                      onClick={() => setQueuedFeedback((prev) => prev.filter((_, i) => i !== idx))}
+                      className="hover:text-white"
                     >
-                      <X className="h-2 w-2" />
+                      <X className="h-2.5 w-2.5" />
                     </button>
                   </span>
                 ))}
@@ -682,39 +653,35 @@ export default function ChatInterface() {
             <button
               type="button"
               onClick={toggleListening}
-              className={`relative rounded-xl p-3 transition-colors ${
+              className={cn(
+                'relative rounded-2xl p-4 transition-all',
                 isListening
-                  ? 'animate-pulse bg-red-50 text-red-500'
-                  : 'text-stone-400 hover:text-orange-500'
-              }`}
-              title={isListening ? 'Stop listening' : 'Start voice to text'}
-              aria-label={isListening ? 'Stop listening' : 'Start voice to text'}
+                  ? 'bg-rose-500/20 text-rose-500 shadow-[0_0_20px_rgba(244,63,94,0.3)]'
+                  : 'text-white/20 hover:text-[var(--color-brand-primary)] hover:bg-white/5'
+              )}
             >
               {isListening ? <MicOff className="h-5 w-5" /> : <Mic className="h-5 w-5" />}
               {isListening && (
-                <span className="absolute top-2 right-2 h-2 w-2 animate-ping rounded-full bg-red-500" />
+                <span className="absolute top-3 right-3 h-2 w-2 animate-ping rounded-full bg-rose-500" />
               )}
             </button>
             <button
               type="button"
               onClick={detectLocation}
               disabled={isLocating}
-              className={`rounded-xl p-3 transition-colors ${
+              className={cn(
+                'rounded-2xl p-4 transition-all',
                 isLocating
-                  ? 'animate-pulse text-orange-500'
-                  : 'text-stone-400 hover:text-orange-500'
-              }`}
-              title="Detect current neighborhood"
-              aria-label="Detect current neighborhood"
+                  ? 'text-[var(--color-brand-primary)] animate-pulse'
+                  : 'text-white/20 hover:text-[var(--color-brand-primary)] hover:bg-white/5'
+              )}
             >
               <MapPin className="h-5 w-5" />
             </button>
             <button
               type="button"
               onClick={() => fileInputRef.current?.click()}
-              className="rounded-xl p-3 text-stone-400 transition-colors hover:text-orange-500"
-              title="Upload image"
-              aria-label="Upload image"
+              className="rounded-2xl p-4 text-white/20 transition-all hover:text-[var(--color-brand-primary)] hover:bg-white/5"
             >
               <ImageIcon className="h-5 w-5" />
             </button>
@@ -723,7 +690,6 @@ export default function ChatInterface() {
               value={input}
               onChange={(e) => {
                 setInput(e.target.value);
-                // Auto-resize
                 e.target.style.height = 'auto';
                 e.target.style.height = `${e.target.scrollHeight}px`;
               }}
@@ -733,8 +699,8 @@ export default function ChatInterface() {
                   submitMessage();
                 }
               }}
-              placeholder="I'm looking for a cozy Italian spot for a date night..."
-              className="max-h-32 min-h-[44px] flex-1 resize-none border-none bg-transparent px-2 py-3 text-stone-800 placeholder-stone-400 outline-none focus:ring-0"
+              placeholder="Tell me what you're craving..."
+              className="max-h-40 min-h-[56px] flex-1 resize-none border-none bg-transparent px-4 py-4 text-sm text-[var(--color-text-main)] placeholder-white/20 outline-none focus:ring-0 leading-relaxed"
               rows={1}
             />
           </div>
@@ -742,8 +708,7 @@ export default function ChatInterface() {
           <button
             type="submit"
             disabled={(!input.trim() && !selectedImage) || isLoading}
-            className="flex-shrink-0 rounded-2xl bg-orange-600 p-4 text-white shadow-sm transition-colors hover:bg-orange-700 disabled:cursor-not-allowed disabled:opacity-50"
-            aria-label="Send message"
+            className="flex-shrink-0 rounded-[2rem] bg-[var(--color-brand-primary)] p-5 text-black shadow-xl shadow-[var(--color-brand-primary)]/20 transition-all hover:brightness-110 active:scale-95 disabled:cursor-not-allowed disabled:opacity-30 disabled:grayscale"
           >
             <Send className="h-5 w-5" />
           </button>
