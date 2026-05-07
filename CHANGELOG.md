@@ -2,7 +2,21 @@
 
 All notable changes to this project will be documented in this file.
 
+## [2.2.5] - 2026-05-07
+
+### Added
+
+- **Premium 'Culinary Gold' Redesign**: Overhauled the entire visual identity with a high-end dark mode theme, glassmorphism containers, and sophisticated Serif typography (Playfair Display).
+- **Rationale Persistence (`whyMatch`)**: Enhanced the `scoreRestaurant` skill to generate a natural language rationale which is now preserved throughout the RAG re-ranking phase and displayed in the UI.
+
+### Fixed
+
+- **Missing `cn` Utility**: Implemented the missing `cn` class name merger in `utils.ts`, resolving runtime errors in the new UI components.
+- **Type-Checking Coverage**: Updated `tsconfig.json` to explicitly include all source files, ensuring 100% type safety across the `src` directory.
+- **Robustness Guards**: Added `cleanJson` sanitization to the Profile Builder parsing logic to handle malformed LLM outputs.
+
 ## [2.2.4] - 2026-05-07
+
 
 ### Fixed
 

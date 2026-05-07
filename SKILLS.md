@@ -47,6 +47,10 @@ Skills must:
 1. **analyzeFoodPhoto**: Uses Gemini Vision (`gemini-2.0-flash`) to infer cuisines and ambiance from an image.
 2. **extractCuisines**: Extracts structured cuisine names from user text using strict JSON schemas.
 3. **generateEmbedding**: Generates vector embeddings using `gemini-embedding-2-preview`. Crucial for semantic search accuracy.
-4. **scoreRestaurant**: A business-logic skill that computes a personalized match score (0.0 to 1.0) using weighted heuristics (Cuisine: 0.4, Price: 0.3, Ambiance: 0.2, Dietary: 0.1) combined with vector similarity.
+4. **scoreRestaurant**: 
+- **Purpose**: Computes a weighted match score (0.0-1.0) and generates a natural language rationale.
+- **Inputs**: `UserTasteProfile`, `Restaurant`, `similarity` (optional vector score).
+- **Outputs**: `matchScore` (number), `rationale` (string explaining the heuristic match).
+- **Heuristics**: Cuisine overlap, price tier proximity, neighborhood matches, and dietary tag intersections.
 5. **extractTrendsFromSearchResults**: Parses raw Google Search snippets into structured trending cuisines, openings, and viral dishes.
 6. **classifyTrendRelevanceToProfile**: Compares a `UserTasteProfile` against trends to determine relevance scores and rationale.
