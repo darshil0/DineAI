@@ -1,31 +1,14 @@
 # Agent Skills Architecture
 
-DineAI uses a modular **Agent Skills** architecture to compose agent capabilities. Each skill is a standalone, typed function that can be registered and retrieved via a central registry.
+DineAI employs a modular agent skills architecture to compose and manage specialized capabilities. Each skill is a standalone, type-safe function that operates independently and can be registered and retrieved through a central registry. This design pattern enables flexible agent composition while maintaining strict type safety and consistent error handling across the system.
 
-## Skill Interface
+## Skill Interface & Registry
 
-All skills must implement the `AgentSkill<TInput, TOutput>` interface:
+All skills must implement the `AgentSkill<TInput, TOutput>` interface, which defines a name, description, and an asynchronous run function. The skill registry provides two primary operations: `registerSkill(skill: AgentSkill)` registers a new skill during the bootstrap phase, and `getSkill<TInput, TOutput>(name: string)` retrieves a registered skill by name with full type safety. This registry pattern allows agents to dynamically discover and execute skills without tight coupling to specific implementations.
 
-```typescript
-export interface AgentSkill<TInput, TOutput> {
-  name: string;
-  description: string;
-  run: (input: TInput) => Promise<TOutput>;
-}
-```
+## Resilience & Error Handling
 
-## Skill Registry
-
-Skills are registered during the bootstrap phase and can be retrieved by name:
-
-- `registerSkill(skill: AgentSkill)`: Registers a new skill.
-- `getSkill<TInput, TOutput>(name: string)`: Retrieves a registered skill by name with type safety.
-
-## Best Practices
-
-### 1. Resilience with `withRetry`
-
-Due to potential transient errors (like `429 Too Many Requests`), **all interactions with the Gemini API (Embeddings, Vision, Search, and Chat) MUST be wrapped in the `withRetry` utility** to ensure robustness through exponential backoff.
+All interactions with the Gemini API—including embeddings generation, vision analysis, search queries, and chat completions—must be wrapped in the `withRetry` utility from `src/lib/utils.ts`. This utility implements exponential backoff logic beginning at one second and doubling with each attempt, up to a maximum of eight seconds, with a default of three retry attempts. This approach gracefully handles transient failures such as rate-limit errors (HTTP 429) that would otherwise cause the skill to fail immediately.
 
 ```typescript
 import { withRetry } from '../lib/utils.js';
@@ -35,15 +18,22 @@ const skill = getSkill('mySkill');
 const result = await withRetry(() => skill.run(input));
 ```
 
-### 2. Error Handling
+Skills should catch internal errors and throw descriptive `SkillError` instances defined in `src/lib/errors.ts`. The calling agent service will handle these errors to provide graceful degradation and informative logging. This error boundary pattern ensures that failures in individual skills do not cascade and compromise the entire recommendation pipeline.
 
-Skills should catch internal errors and throw descriptive `SkillError` instances. The calling agent will handle these errors to provide graceful degradation.
+## Core Skills Reference
 
-## Core Skills
+The DineAI system includes six core skills that power the recommendation pipeline:
 
-1. **analyzeFoodPhoto**: Uses Gemini Vision to infer cuisines and ambiance from an image.
-2. **extractCuisines**: Extracts structured cuisine names from user text.
-3. **generateEmbedding**: Generates vector embeddings for restaurants or search queries.
-4. **scoreRestaurant**: Computes a personalized match score between a user profile and a restaurant. It uses a normalized heuristic blend (Cuisine: 0.4, Price: 0.3, Ambiance: 0.2, Dietary: 0.1). If vector similarity is provided, it returns a 50/50 blend of similarity and heuristics.
-5. **extractTrendsFromSearchResults**: Parses raw search data into structured food trends.
-6. **classifyTrendRelevanceToProfile**: Determines which trends align with a specific user taste profile.
+**analyzeFoodPhoto** leverages Gemini Vision to infer cuisine preferences and ambiance cues from user-uploaded food images. The skill accepts an image buffer and returns structured cuisine and ambiance data that enriches the user taste profile.
+
+**extractCuisines** parses natural language input to identify and structure cuisine preferences. This skill accepts user messages and returns a list of cuisine names that can be integrated into the user profile.
+
+**generateEmbedding** produces vector embeddings for restaurants and search queries using the Gemini Embedding 2 model. These embeddings enable semantic similarity calculations that power the RAG recommender's retrieval phase.
+
+**scoreRestaurant** computes a personalized match score between a user taste profile and a candidate restaurant. The skill employs a normalized heuristic blend with fixed weights: Cuisine (0.4), Price (0.3), Ambiance (0.2), and Dietary (0.1). When vector similarity scores are available, the skill returns a 50/50 blend of the similarity score and the heuristic score to balance semantic relevance with profile alignment. This dual-scoring approach ensures recommendations reflect both semantic preference matches and structured profile alignment.
+
+**extractTrendsFromSearchResults** parses raw search results from Google Search into structured food trends. The skill accepts search response data and returns categorized trending cuisines, emerging restaurants, and viral dishes.
+
+**classifyTrendRelevanceToProfile** determines which identified trends align with a specific user taste profile. This skill accepts trend data and a user profile, returning a relevance score and rationale for each trend. This enables the Trend Analyst agent to surface only those trends that genuinely match user preferences rather than flooding recommendations with generic popular items.
+
+All skills follow consistent patterns for input validation, error handling, and output type safety. When extending the skill registry with new capabilities, maintain these patterns to ensure compatibility with the broader agent orchestration system and preserve the reliability guarantees that underpin the recommendation pipeline.
