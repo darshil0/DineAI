@@ -22,7 +22,8 @@ The system leverages a custom **Express/Node.js** agent orchestrator with a modu
 - **Trend Synergy Explanations**: Deeply analyzes and explains exactly why a current trend matches your unique taste profile.
 - **Voice-to-Text Integration**: Hands-free interaction with the chat interface using built-in speech recognition.
 - **Semantic Search (RAG)**: Uses Gemini embeddings and a vector database for high-precision restaurant retrieval.
-- **Explainable AI**: Every recommendation comes with a personalized rationale explaining exactly why it fits your taste.
+- **Explainable AI (Dual-Rationale)**: Every recommendation provides a narrative explanation PLUS a grounded heuristic rationale (`whyMatch`) based on hard constraints like cuisine and neighborhood.
+- **Premium 'Culinary Gold' Aesthetic**: A state-of-the-art visual identity featuring deep-truffle dark mode, gold accents, glassmorphism, and sophisticated Serif typography.
 
 ## 🛠️ Technology Stack
 
