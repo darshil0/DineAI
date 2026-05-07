@@ -4,17 +4,10 @@
 
 ### Changed
 
-- **Documentation Update**: Synchronized `AGENTS.md` and `SKILLS.md` with current development standards, including ESM compliance, multimodal API structure, and scoring heuristics.
-- **Type Safety**: Improved type re-exports in `src/schemas/index.ts` to satisfy `isolatedModules` constraints.
-- **Bug Fix**: Corrected `vectorDb.upsert` call signature in `src/scripts/ingestRestaurants.ts` and transitioned `trendAnalyst.ts` to use type-safe enums for Google Search grounding.
-
-## [2.3.1] - 2026-05-06
-
-### Changed
-
+- **Documentation & Type Safety**: Synchronized `AGENTS.md` and `SKILLS.md` with current development standards, including ESM compliance, multimodal API structure, and scoring heuristics. Improved type re-exports in `src/schemas/index.ts` to satisfy `isolatedModules` constraints.
 - **Codebase Cleanup**: Removed redundant and unused root-level files (`metadata.json`, `ChatInterface.tsx`, `trendAnalyst.ts`, `classifyTrendRelevanceToProfile.ts`) to improve project structure and resolve TypeScript resolution conflicts.
 - **UI Logic**: Centralized message submission in `src/components/ChatInterface.tsx` within a `submitMessage` handler to ensure consistent behavior across keyboard and button interactions.
-- **Heuristic Scoring**: Formalized match weight distribution in `src/skills/scoreRestaurant.ts` (Cuisine: 0.4, Price: 0.3, Ambiance: 0.2, Dietary: 0.1) for more predictable recommendation ranking.
+- **Bug Fix**: Corrected `vectorDb.upsert` call signature in `src/scripts/ingestRestaurants.ts` and transitioned `trendAnalyst.ts` to use type-safe enums for Google Search grounding.
 
 ### Added
 
@@ -72,6 +65,7 @@
 - Message sanitization now enforces non-empty requirement only when no image is provided, allowing image-only requests to proceed with a sensible default prompt.
 - History validation now enforces a maximum of 10 exchanges to prevent context poisoning and reduce token consumption.
 - Added validation for parsed JSON objects to ensure they are dictionaries before treating them as taste profiles.
+- Heuristic scoring formalized match weight distribution in `src/skills/scoreRestaurant.ts` (Cuisine: 0.4, Price: 0.3, Ambiance: 0.2, Dietary: 0.1) for more predictable recommendation ranking.
 
 ### Added - Observability
 
@@ -88,57 +82,38 @@
 - Confirmed Vector DB query and normalization produce consistent cosine similarity scores (see `src/lib/__tests__/vectorDb.test.ts`).
 - Validated `scoreRestaurant` heuristics enforce correct weight distribution (Cuisine: 0.4, Price: 0.3, Ambiance: 0.2, Dietary: 0.1) with penalty logic for mismatches (see `src/skills/__tests__/scoreRestaurant.test.ts`).
 
----
-
 ## [2.2.0] - 2026-05-01
 
 ### Added
 
 - **Onboarding**: Multi-step interactive tutorial for new users.
-- **Persistence**:
-  - Chat history saved to `localStorage`.
-  - Vector index serializes to `vector_index.json` on shutdown.
+- **Persistence**: Chat history saved to `localStorage` and vector index serializes to `vector_index.json` on shutdown.
 - **Favorites**: Ability to "Heart" restaurants for persistent storage.
 - **Telemetry**: Server-side latency logging for agent stages.
+- **Stability**: Added `withRetry` wrappers to all Gemini API calls (Embeddings, Vision, Search).
 
 ### Fixed
 
-- **Stability**:
-  - Added `withRetry` wrappers to all Gemini API calls (Embeddings, Vision, Search).
-  - Fixed memory leaks in `ChatInterface` by clearing dangling timeouts.
-  - Resolved `[object Object]` serialization bug in `ProfileBuilder`.
-- **Logic**:
-  - Fixed `setInitialMessage` hoisting issue via `useCallback`.
-  - Restricted `ingestRestaurants` to run only on empty or corrupt indices.
-
----
+- Fixed memory leaks in `ChatInterface` by clearing dangling timeouts and resolved `[object Object]` serialization bug in `ProfileBuilder`.
+- Fixed `setInitialMessage` hoisting issue via `useCallback` and restricted `ingestRestaurants` to run only on empty or corrupt indices.
 
 ## [2.1.0] - 2026-05-01
 
 ### Added
 
-- **Filter UI**: Advanced multi-select dropdown for Cuisines, Prices, and Neighborhoods.
-- **Selection Logic**: Filter bar supports concurrent facets with instant feedback.
-
----
+- **Filter UI**: Advanced multi-select dropdown for Cuisines, Prices, and Neighborhoods with concurrent facet support and instant feedback.
 
 ## [2.0.0] - 2026-05-01
 
 ### Changed
 
-- **Major Dependency Refresh**: Upgraded to **React 19**, **Vite 7**, and latest Gemini SDKs.
-- **Tooling**: Integrated Prettier with Tailwind CSS plugin for uniform styling.
-
----
+- **Major Dependency Refresh**: Upgraded to React 19, Vite 7, and latest Gemini SDKs with integrated Prettier and Tailwind CSS plugin for uniform styling.
 
 ## [1.9.0] - 2026-04-30
 
 ### Added
 
-- **Dynamic Context**: Recommendations now include explicit tags for cuisine, price, and neighborhood.
-- **Real-time Filtering**: Surface-only filter options relevant to the active recommendation set.
-
----
+- **Dynamic Context**: Recommendations now include explicit tags for cuisine, price, and neighborhood with surface-only filter options relevant to the active recommendation set.
 
 ## [1.8.0] - 2026-04-30
 
@@ -147,40 +122,25 @@
 - **Feedback Loop**: "Like/Dislike" buttons to refine taste profiles in real-time.
 - **Geolocation**: Browser-based neighborhood detection.
 - **Actionable Cards**: Deep links for Google Maps navigation.
-
-### Improved
-
 - **Schema**: Added `disliked_cuisines` and `avoid_patterns` to `UserTasteProfile`.
-
----
 
 ## [1.6.0] - 2026-04-30
 
 ### Added
 
-- **Performance**:
-  - Polished skeleton screens for `RecommendationCard` and `TasteProfileBadge`.
-  - SQLite-based cache (`embeddings_cache.db`) for restaurant embeddings.
-
----
+- **Performance**: Polished skeleton screens for `RecommendationCard` and `TasteProfileBadge` with SQLite-based cache (`embeddings_cache.db`) for restaurant embeddings.
 
 ## [1.4.0] - 2026-03-19
 
 ### Added
 
-- **Error Architecture**: Centralized error classes (`AppError`, `AgentServiceError`, `SkillError`).
-- **Resilience**: Recursive `withRetry` utility with exponential backoff for 429 errors.
-
----
+- **Error Architecture**: Centralized error classes (`AppError`, `AgentServiceError`, `SkillError`) with recursive `withRetry` utility for exponential backoff on 429 errors.
 
 ## [1.2.0] - 2026-03-19
 
 ### Added
 
-- **Neighborhood Awareness**: Added support for "West Village", "SoHo", etc.
-- **Trend Pipeline**: Refactored `Trend Analyst` into a multi-step extraction and classification pipeline.
-
----
+- **Neighborhood Awareness**: Added support for "West Village", "SoHo", and similar locations with refactored `Trend Analyst` into a multi-step extraction and classification pipeline.
 
 ## [1.0.0] - 2026-01-10
 
