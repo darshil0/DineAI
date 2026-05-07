@@ -25,7 +25,7 @@ Skills are registered during the bootstrap phase and can be retrieved by name:
 
 ### 1. Resilience with `withRetry`
 
-Due to potential transient errors (like `429 Too Many Requests`) when skills interact with the Gemini API, **all skill executions MUST be wrapped in the `withRetry` utility**.
+Due to potential transient errors (like `429 Too Many Requests`), **all interactions with the Gemini API (Embeddings, Vision, Search, and Chat) MUST be wrapped in the `withRetry` utility** to ensure robustness through exponential backoff.
 
 ```typescript
 import { withRetry } from '../lib/utils.js';
@@ -44,6 +44,6 @@ Skills should catch internal errors and throw descriptive `SkillError` instances
 1. **analyzeFoodPhoto**: Uses Gemini Vision to infer cuisines and ambiance from an image.
 2. **extractCuisines**: Extracts structured cuisine names from user text.
 3. **generateEmbedding**: Generates vector embeddings for restaurants or search queries.
-4. **scoreRestaurant**: Computes a personalized match score between a user profile and a restaurant.
+4. **scoreRestaurant**: Computes a personalized match score between a user profile and a restaurant. It uses a normalized heuristic blend (Cuisine: 0.4, Price: 0.3, Ambiance: 0.2, Dietary: 0.1). If vector similarity is provided, it returns a 50/50 blend of similarity and heuristics.
 5. **extractTrendsFromSearchResults**: Parses raw search data into structured food trends.
 6. **classifyTrendRelevanceToProfile**: Determines which trends align with a specific user taste profile.

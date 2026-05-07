@@ -35,21 +35,21 @@ export const extractTrendsFromSearchResultsSkill: AgentSkill<ExtractTrendsInput,
       2. New Openings: Notable restaurants that recently opened.
       3. Viral Dishes: Specific dishes people are talking about.
       4. A brief summary of the overall food scene.`,
-      config: {
-        responseMimeType: 'application/json',
-        responseSchema: {
-          type: Type.OBJECT,
-          properties: {
-            trendingCuisines: { type: Type.ARRAY, items: { type: Type.STRING } },
-            newOpenings: { type: Type.ARRAY, items: { type: Type.STRING } },
-            viralDishes: { type: Type.ARRAY, items: { type: Type.STRING } },
-            summary: { type: Type.STRING },
+        config: {
+          responseMimeType: 'application/json',
+          responseSchema: {
+            type: Type.OBJECT,
+            properties: {
+              trendingCuisines: { type: Type.ARRAY, items: { type: Type.STRING } },
+              newOpenings: { type: Type.ARRAY, items: { type: Type.STRING } },
+              viralDishes: { type: Type.ARRAY, items: { type: Type.STRING } },
+              summary: { type: Type.STRING },
+            },
+            required: ['trendingCuisines', 'newOpenings', 'viralDishes', 'summary'],
           },
-          required: ['trendingCuisines', 'newOpenings', 'viralDishes', 'summary'],
         },
-      },
-    }),
-  );
+      }),
+    );
 
     try {
       return JSON.parse(cleanJson(response.text || '{}'));
