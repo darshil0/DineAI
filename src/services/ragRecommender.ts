@@ -35,9 +35,13 @@ export async function recommendCandidates(profile: UserTasteProfile): Promise<Re
         Neighborhoods: ${profile.neighborhoods?.join(', ') || 'Any'}
       `.trim();
 
-      const { embedding } = await withRetry(() => generateEmbedding.run({ text: queryText })).catch((e) => {
-        throw new SkillError('generateEmbedding', e);
-      });
+      // NOTE: .catch() is placed OUTSIDE the withRetry callback so that transient 429/5xx errors
+      // are retried before being converted to a SkillError.
+      const { embedding } = await withRetry(() => generateEmbedding.run({ text: queryText })).catch(
+        (e) => {
+          throw new SkillError('generateEmbedding', e);
+        },
+      );
       const results = await vectorDb.query(embedding, 20); // Get top 20 to re-rank
 
       const filteredResults = results.filter((r) => r.score >= 0.1);
@@ -85,7 +89,15 @@ export async function recommendCandidates(profile: UserTasteProfile): Promise<Re
       }),
     );
 
-    const candidateList = JSON.parse(cleanJson(ragResponse.text || '[]'));
+    let candidateList: Restaurant[] = [];
+    try {
+      const parsed = JSON.parse(cleanJson(ragResponse.text || '[]'));
+      // Validate that the result is an array before using it
+      candidateList = Array.isArray(parsed) ? parsed : (parsed?.candidates ?? []);
+    } catch (parseError) {
+      console.error('Failed to parse RAG Recommender fallback response:', parseError);
+    }
+
     console.log(`Found ${candidateList.length} candidates via fallback.`);
     return candidateList;
   } catch (error: any) {
