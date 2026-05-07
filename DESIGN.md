@@ -1,0 +1,63 @@
+# Design Document: Culinary Trend Agent
+
+This document outlines the design philosophy, architectural components, and technical decisions behind the Culinary Trend Agent.
+
+## 🏛️ Architecture Overview
+
+The system is built as a **Sequential Agent Pipeline**, allowing for specialized processing at each stage of the user interaction.
+
+```mermaid
+graph TD
+    A[User Message/Image] --> B[Profile Builder]
+    B --> C{Parallel Agents}
+    C --> D[RAG Recommender]
+    C --> E[Trend Analyst]
+    D --> F[Finalizer]
+    E --> F
+    F --> G[Final Recommendations]
+```
+
+### 1. Profile Builder Agent
+- **Responsibility**: distill the "User Taste Profile".
+- **Inputs**: Chat history, current message, and optional image.
+- **Mechanism**: Use Gemini Vision for image analysis and text extraction. It classifies favorite cuisines, price sensitivities, and dietary restrictions.
+
+### 2. RAG Recommender (Retrieval Augmented Generation)
+- **Responsibility**: Fetch hard-data candidates.
+- **Mechanism**: Performs vector search against a local restaurant database.
+- **Scoring**: Uses a combination of cosine similarity (vector score) and LLM-based "Match Score" to re-rank the top 20 candidates.
+
+### 3. Trend Analyst Agent
+- **Responsibility**: Inject real-time context.
+- **Mechanism**: Uses Google Search grounding to identify current culinary trends in the user's specific neighborhoods or cuisines.
+
+### 4. Finalizer Agent
+- **Responsibility**: Synthesis and Presentation.
+- **Mechanism**: Orchestrates the outputs of the previous agents into a cohesive, friendly, and ranked set of recommendations with detailed "Why it matches" logic.
+
+## 🛠️ Technical Stack
+
+- **Frontend**: React 18, Vite, Tailwind CSS.
+- **Animations**: `motion/react` for smooth transitions and skeleton shimmering.
+- **Backend**: Node.js (Express) with `tsx` runtime.
+- **AI Engine**: Google Gemini API via `@google/genai`.
+- **Database (Vector)**: Custom in-memory vector DB with persistence to `vector_index.json`.
+- **Cache**: SQLite-powered `embeddings_cache.db` to minimize API latency and costs.
+
+## 🛡️ Design Principles
+
+### Resilience & Reliability
+- **Exponential Backoff**: Implementation of `withRetry` on all model calls to handle rate limits (429s).
+- **Graceful Degradation**: If the Trend Analyst fails, the system falls back to pure RAG recommendations without breaking the UI.
+- **Deterministic Prompts**: Using rigid Zod schemas and explicit JSON stringification to ensure the LLM receives clean, unambiguous data structures.
+
+### UX & Interaction Design
+- **Perceived vs. Actual Performance**: Use of skeleton screens to keep the user engaged during the 2-5 second multi-agent loop.
+- **Contextual Feedback**: Users can "Like/Dislike" specific recommendations, which directly influences the `UserTasteProfile` in the next turn.
+- **Neighborhood-Aware**: Explicit detection and prioritization of NYC neighborhoods to ground recommendations in reality.
+
+## 💾 Data Strategy
+
+- **Static Ingestion**: The restaurant database is ingested on the first run. Embeddings are cached indefinitely to prevent redundant computation.
+- **Volatile Index**: The vector index is rebuilt from the cache on startup to ensure high-speed proximity searches.
+- **Sanitized History**: Only the last 10 exchanges are sent to the agents to prevent prompt injection and context window pollution.

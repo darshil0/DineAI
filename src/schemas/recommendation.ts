@@ -23,10 +23,7 @@ export const FinalRecommendationsSchema = {
       items: {
         type: Type.OBJECT,
         properties: {
-          rank: {
-            type: Type.INTEGER,
-            description: 'Rank of the recommendation (1 is best)',
-          },
+          rank: { type: Type.INTEGER, description: 'Rank of the recommendation (1 is best)' },
           name: { type: Type.STRING, description: 'Name of the restaurant' },
           rationale: {
             type: Type.STRING,

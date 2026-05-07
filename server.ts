@@ -13,40 +13,18 @@ dotenv.config();
 async function startServer() {
   const app = express();
   const PORT = 3000;
-  let isShuttingDown = false;
 
   // Initialize Agent Skills
   bootstrapSkills();
 
   // Ingest restaurants into Vector DB
-  try {
-    await ingestRestaurants();
-  } catch (error) {
-    console.error('Failed to ingest restaurants, continuing with empty Vector DB:', error);
-  }
+  await ingestRestaurants();
 
-  // Graceful shutdown with timeout guard
-  const shutdown = async () => {
-    if (isShuttingDown) return;
-    isShuttingDown = true;
-
-    console.log('Shutting down gracefully...');
-    const shutdownTimeout = setTimeout(() => {
-      console.error('Shutdown timeout exceeded, forcing exit');
-      process.exit(1);
-    }, 5000); // 5 second timeout
-
-    try {
-      // Properly await the save operation
-      vectorDb.saveToIndex();
-      console.log('Vector index saved successfully');
-      clearTimeout(shutdownTimeout);
-      process.exit(0);
-    } catch (error) {
-      console.error('Error during shutdown:', error);
-      clearTimeout(shutdownTimeout);
-      process.exit(1);
-    }
+  // Graceful shutdown
+  const shutdown = () => {
+    console.log('Shutting down...');
+    vectorDb.saveToIndex();
+    process.exit(0);
   };
 
   process.on('SIGINT', shutdown);
@@ -57,19 +35,10 @@ async function startServer() {
 
   // API routes
   app.get('/api/health', (req, res) => {
-    res.json({ status: 'ok', timestamp: new Date().toISOString() });
+    res.json({ status: 'ok' });
   });
 
   app.use('/api/chat', chatRouter);
-
-  // Error handling middleware
-  app.use((err: any, req: express.Request, res: express.Response, next: express.NextFunction) => {
-    console.error('Express error:', err);
-    res.status(err.status || 500).json({
-      error: err.message || 'Internal Server Error',
-      userMessage: 'An unexpected error occurred. Please try again.',
-    });
-  });
 
   // Vite middleware for development
   if (process.env.NODE_ENV !== 'production') {
@@ -87,12 +56,8 @@ async function startServer() {
   }
 
   app.listen(PORT, '0.0.0.0', () => {
-    console.log(`Server running on http://localhost:3000`);
-    console.log(`Environment: ${process.env.NODE_ENV || 'development'}`);
+    console.log(`Server running on http://localhost:${PORT}`);
   });
 }
 
-startServer().catch((error) => {
-  console.error('Failed to start server:', error);
-  process.exit(1);
-});
+startServer();

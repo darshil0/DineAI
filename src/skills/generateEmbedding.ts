@@ -1,7 +1,5 @@
 import { AgentSkill } from './types.js';
 import { getGeminiClient } from '../lib/geminiClient.js';
-import { withRetry } from '../lib/utils.js';
-import { SkillError } from '../lib/errors.js';
 
 export interface GenerateEmbeddingInput {
   text: string;
@@ -16,19 +14,17 @@ export const generateEmbeddingSkill: AgentSkill<GenerateEmbeddingInput, Generate
   description: 'Generates a vector embedding for a given text string using Gemini.',
   async run({ text }) {
     const ai = getGeminiClient();
-    const response = await withRetry(() =>
-      ai.models.embedContent({
-        model: 'gemini-embedding-2-preview',
-        contents: text,
-      }),
-    );
+    const response = await ai.models.embedContent({
+      model: 'gemini-embedding-2-preview',
+      contents: text,
+    });
 
     if (
       !response.embeddings ||
       response.embeddings.length === 0 ||
       !response.embeddings[0].values
     ) {
-      throw new SkillError('generateEmbedding', new Error('Empty embedding received from API'));
+      throw new Error('Failed to generate embedding');
     }
 
     return { embedding: response.embeddings[0].values };

@@ -16,17 +16,25 @@ export const scoreRestaurantSkill: AgentSkill<ScoreInput, ScoreOutput> = {
   name: 'scoreRestaurant',
   description: 'Computes an overall match score between a user taste profile and a restaurant.',
   async run({ profile, restaurant, similarity }) {
-    let heuristicScore = 0;
+    let score = 0;
+    const hasSimilarity = typeof similarity === 'number';
 
-    // 1. Cuisine match (Weight: 0.4)
+    // 1. Base on vector similarity if provided
+    if (hasSimilarity) {
+      score += (similarity as number) * 0.5;
+    }
+
+    // 2. Cuisine match (Weight: 0.3 with sim, 0.4 without)
+    const cuisineWeight = hasSimilarity ? 0.3 : 0.4;
     if (profile.cuisines?.length) {
       const lowerCuisines = profile.cuisines.map((c) => c.toLowerCase());
       if (lowerCuisines.includes(restaurant.cuisine.toLowerCase())) {
-        heuristicScore += 0.4;
+        score += cuisineWeight;
       }
     }
 
-    // 2. Price match (Weight: 0.3)
+    // 3. Price match (Weight: 0.2 with sim, 0.3 without)
+    const priceWeight = hasSimilarity ? 0.2 : 0.3;
     if (profile.price_range && restaurant.price_tier) {
       const priceMap: Record<string, number> = { $: 1, $$: 2, $$$: 3, $$$$: 4 };
       const userPrice = priceMap[profile.price_range] || 0;
@@ -35,25 +43,33 @@ export const scoreRestaurantSkill: AgentSkill<ScoreInput, ScoreOutput> = {
       if (userPrice > 0 && restaurantPrice > 0) {
         const diff = Math.abs(userPrice - restaurantPrice);
         if (diff === 0) {
-          heuristicScore += 0.3; // Exact match
+          score += priceWeight; // Exact match
         } else if (diff === 1) {
-          heuristicScore += 0.15; // Close match (one tier away)
+          score += priceWeight / 2; // Close match (one tier away)
         } else if (diff >= 3) {
-          heuristicScore -= 0.2; // Significant mismatch
+          score -= 0.2; // Significant mismatch
         }
       }
     }
 
-    // 3. Ambiance overlap (Weight: 0.2)
+    // 4. Ambiance overlap
     if (profile.ambiance?.length && restaurant.tags?.length) {
       const lowerTags = restaurant.tags.map((t) => t.toLowerCase());
       const hasAmbianceMatch = profile.ambiance.some((a) => lowerTags.includes(a.toLowerCase()));
       if (hasAmbianceMatch) {
-        heuristicScore += 0.2;
+        score += 0.2;
       }
     }
 
-    // 4. Dietary compatibility (Weight: 0.1)
+    // 5. Neighborhood match
+    if (profile.neighborhoods?.length && restaurant.neighborhood) {
+      const lowerNeighborhoods = profile.neighborhoods.map((n) => n.toLowerCase());
+      if (lowerNeighborhoods.includes(restaurant.neighborhood.toLowerCase())) {
+        score += 0.2;
+      }
+    }
+
+    // 6. Dietary compatibility
     if (
       profile.dietary_notes &&
       profile.dietary_notes.toLowerCase() !== 'none' &&
@@ -62,19 +78,11 @@ export const scoreRestaurantSkill: AgentSkill<ScoreInput, ScoreOutput> = {
       const lowerTags = restaurant.tags.map((t) => t.toLowerCase());
       const dietaryNote = profile.dietary_notes.toLowerCase();
       if (lowerTags.some((tag) => tag.includes(dietaryNote) || dietaryNote.includes(tag))) {
-        heuristicScore += 0.1;
+        score += 0.1;
       }
     }
 
-    let finalScore: number;
-    if (typeof similarity === 'number') {
-      // 50% vector similarity, 50% heuristics
-      finalScore = similarity * 0.5 + heuristicScore * 0.5;
-    } else {
-      finalScore = heuristicScore;
-    }
-
-    const matchScore = Math.max(0, Math.min(1, finalScore));
+    const matchScore = Math.max(0, Math.min(1, score));
     return { matchScore };
   },
 };

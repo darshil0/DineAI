@@ -15,7 +15,7 @@ export async function buildProfile(
 ): Promise<UserTasteProfile> {
   const ai = getGeminiClient();
   console.log('Running Profile Builder Agent...');
-
+  
   // 1. Run Skills in parallel to gather insights
   const extractCuisines = getSkill<ExtractCuisinesInput, ExtractCuisinesOutput>('extractCuisines');
   const analyzeFoodPhoto = getSkill<AnalyzeFoodPhotoInput, AnalyzeFoodPhotoOutput>(
@@ -55,11 +55,11 @@ export async function buildProfile(
   let enrichedMessage = message;
 
   if (cuisinesOutput && cuisinesOutput.cuisines.length > 0) {
-    enrichedMessage += `\n\n[Skill Insight: User explicitly mentioned these cuisines: ${JSON.stringify(cuisinesOutput.cuisines)}]`;
+    enrichedMessage += `\n\n[Skill Insight: User explicitly mentioned these cuisines: ${cuisinesOutput.cuisines.join(', ')}]`;
   }
 
   if (photoOutput) {
-    enrichedMessage += `\n\n[Skill Insight: User uploaded a photo. Analysis: ${JSON.stringify(photoOutput)}]`;
+    enrichedMessage += `\n\n[Skill Insight: User uploaded a photo of ${photoOutput.description}. Inferred cuisines: ${photoOutput.cuisines.join(', ')}. Inferred ambiance: ${photoOutput.ambiance.join(', ')}]`;
   }
 
   const profileParts: any[] = [
