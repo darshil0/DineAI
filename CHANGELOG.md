@@ -2,6 +2,20 @@
 
 All notable changes to this project will be documented in this file.
 
+## [2.2.7] - 2026-05-07
+
+### Added
+- **Standardized Config Templates**: Updated `.env.example` and `.prettierrc` to follow professional industry standards.
+
+### Fixed
+- **Documentation Polish**: Standardized `AGENTS.md` and finalized all project guides to meet high-level technical documentation standards.
+
+## [2.2.6] - 2026-05-07
+
+### Added
+- **Architecture Diagrams**: Integrated Mermaid.js diagrams into `DESIGN.md` for better system visualization.
+- **Technical Specifications**: Converted `SKILLS.md` into a formal technical spec with detailed input/output schemas.
+
 ## [2.2.5] - 2026-05-07
 
 ### Added
