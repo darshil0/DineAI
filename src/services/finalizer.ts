@@ -34,8 +34,17 @@ export async function finalizeRecommendations(
       }),
     );
 
-    const finalData = JSON.parse(finalizerResponse.text || '{"recommendations":[]}');
-    const finalRecommendations = finalData.recommendations || [];
+    let finalRecommendations: Recommendation[] = [];
+    try {
+      const finalData = JSON.parse(finalizerResponse.text || '{"recommendations":[]}');
+      finalRecommendations = finalData.recommendations || [];
+    } catch (parseError) {
+      console.error('Failed to parse Finalizer response as JSON:', parseError);
+      console.error('Raw response text:', finalizerResponse.text);
+      // Return empty array rather than crashing — graceful degradation
+      return [];
+    }
+
     console.log(`Generated ${finalRecommendations.length} final recommendations.`);
     return finalRecommendations;
   } catch (error: unknown) {
