@@ -15,7 +15,7 @@ export async function buildProfile(
 ): Promise<UserTasteProfile> {
   const ai = getGeminiClient();
   console.log('Running Profile Builder Agent...');
-  
+
   // 1. Run Skills in parallel to gather insights
   const extractCuisines = getSkill<ExtractCuisinesInput, ExtractCuisinesOutput>('extractCuisines');
   const analyzeFoodPhoto = getSkill<AnalyzeFoodPhotoInput, AnalyzeFoodPhotoOutput>(
@@ -26,26 +26,25 @@ export async function buildProfile(
     throw new Error('Required skills are not registered.');
   }
 
+  // NOTE: .catch() is placed OUTSIDE the withRetry callback so that transient 429/5xx errors
+  // can be retried before being converted to a SkillError. If the .catch() were inside the
+  // callback, it would intercept every error — including retryable ones — and prevent retries.
   const skillPromises: Promise<any>[] = [
-    withRetry(() =>
-      extractCuisines.run({ text: message }).catch((e) => {
-        throw new SkillError('extractCuisines', e);
-      }),
-    ),
+    withRetry(() => extractCuisines.run({ text: message })).catch((e) => {
+      throw new SkillError('extractCuisines', e);
+    }),
   ];
 
   if (imageFile) {
     skillPromises.push(
       withRetry(() =>
-        analyzeFoodPhoto
-          .run({
-            mimeType: imageFile.mimetype,
-            data: imageFile.buffer.toString('base64'),
-          })
-          .catch((e) => {
-            throw new SkillError('analyzeFoodPhoto', e);
-          }),
-      ),
+        analyzeFoodPhoto.run({
+          mimeType: imageFile.mimetype,
+          data: imageFile.buffer.toString('base64'),
+        }),
+      ).catch((e) => {
+        throw new SkillError('analyzeFoodPhoto', e);
+      }),
     );
   }
 
@@ -64,7 +63,11 @@ export async function buildProfile(
 
   const profileParts: any[] = [
     {
-      text: buildProfilePrompt(JSON.stringify(currentProfile || {}), history, enrichedMessage),
+      text: buildProfilePrompt(
+        currentProfile ? JSON.stringify(currentProfile) : 'None',
+        history,
+        enrichedMessage,
+      ),
     },
   ];
 
@@ -81,7 +84,13 @@ export async function buildProfile(
       }),
     );
 
-    const userTasteProfile = JSON.parse(profileResponse.text || '{}');
+    let userTasteProfile: UserTasteProfile = {};
+    try {
+      userTasteProfile = JSON.parse(profileResponse.text || '{}');
+    } catch (parseError) {
+      console.error('Failed to parse ProfileBuilder response as JSON:', parseError);
+    }
+
     console.log('Taste Profile:', userTasteProfile);
     return userTasteProfile;
   } catch (error: unknown) {
