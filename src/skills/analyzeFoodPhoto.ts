@@ -4,18 +4,7 @@ import { cleanJson, withRetry } from '../lib/utils.js';
 import { Type } from '@google/genai';
 import { SkillError } from '../lib/errors.js';
 
-export interface AnalyzeFoodPhotoInput {
-  mimeType: string;
-  data: string; // Base64 encoded image data
-}
-
-export interface AnalyzeFoodPhotoOutput {
-  cuisines: string[];
-  ambiance: string[];
-  description: string;
-}
-
-export const analyzeFoodPhotoSkill: AgentSkill<AnalyzeFoodPhotoInput, AnalyzeFoodPhotoOutput> = {
+export const analyzeFoodPhotoSkill = {
   name: 'analyzeFoodPhoto',
   description: 'Analyzes a food photo to infer cuisines, ambiance/vibe, and a brief description.',
   async run({ mimeType, data }) {
