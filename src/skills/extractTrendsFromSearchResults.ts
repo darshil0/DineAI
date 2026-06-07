@@ -4,23 +4,11 @@ import { Type } from '@google/genai';
 import { cleanJson, withRetry } from '../lib/utils.js';
 import { SkillError } from '../lib/errors.js';
 
-interface ExtractTrendsInput {
-  searchResults: string;
-  city: string;
-}
-
-interface TrendInfo {
-  trendingCuisines: string[];
-  newOpenings: string[];
-  viralDishes: string[];
-  summary: string;
-}
-
-export const extractTrendsFromSearchResultsSkill: AgentSkill<ExtractTrendsInput, TrendInfo> = {
+export const extractTrendsFromSearchResultsSkill = {
   name: 'extractTrendsFromSearchResults',
   description:
     'Extracts structured food trends, new openings, and viral dishes from raw search results.',
-  run: async (input: ExtractTrendsInput) => {
+  run: async (input) => {
     const ai = getGeminiClient();
 
     const response = await withRetry(() => ai.models.generateContent({
