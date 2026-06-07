@@ -12,22 +12,16 @@ db.exec(`
   )
 `);
 
-interface CacheRow {
-  embedding: string;
-}
-
 export const embeddingCache = {
-  get(id: string): number[] | null {
-    const row = db.prepare('SELECT embedding FROM embedding_cache WHERE id = ?').get(id) as
-      | CacheRow
-      | undefined;
+  get(id) {
+    const row = db.prepare('SELECT embedding FROM embedding_cache WHERE id = ?').get(id);
     if (row) {
       return JSON.parse(row.embedding);
     }
     return null;
   },
 
-  set(id: string, embedding: number[]) {
+  set(id, embedding) {
     db.prepare('INSERT OR REPLACE INTO embedding_cache (id, embedding) VALUES (?, ?)').run(
       id,
       JSON.stringify(embedding),
