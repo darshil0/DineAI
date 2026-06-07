@@ -4,15 +4,7 @@ import { cleanJson, withRetry } from '../lib/utils.js';
 import { Type } from '@google/genai';
 import { SkillError } from '../lib/errors.js';
 
-export interface ExtractCuisinesInput {
-  text: string;
-}
-
-export interface ExtractCuisinesOutput {
-  cuisines: string[];
-}
-
-export const extractCuisinesSkill: AgentSkill<ExtractCuisinesInput, ExtractCuisinesOutput> = {
+export const extractCuisinesSkill = {
   name: 'extractCuisines',
   description: 'Extracts cuisine preferences from user text.',
   async run({ text }) {
