@@ -4,13 +4,7 @@ import remarkGfm from 'remark-gfm';
 import { User, Bot } from 'lucide-react';
 import { cn } from '../lib/utils.js';
 
-interface ChatMessageProps {
-  role: 'user' | 'assistant';
-  content: string;
-  isLoading?: boolean;
-}
-
-export const ChatMessage: React.FC<ChatMessageProps> = ({ role, content, isLoading }) => {
+export const ChatMessage = ({ role, content, isLoading = false }) => {
   const isUser = role === 'user';
 
   return (
