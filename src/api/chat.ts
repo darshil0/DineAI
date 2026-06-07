@@ -19,7 +19,9 @@ const upload = multer({
     if (allowedMimeTypes.includes(file.mimetype)) {
       cb(null, true);
     } else {
-      cb(new ValidationError('Invalid file type. Only JPG, PNG, WEBP, and GIF are allowed.'));
+      // FIX 1: Use regular Error instead of ValidationError in fileFilter
+      // Multer expects standard Error objects in fileFilter
+      cb(new Error('Invalid file type. Only JPG, PNG, WEBP, and GIF are allowed.'));
     }
   },
 });
@@ -61,7 +63,9 @@ router.post('/', upload.single('image'), async (req, res) => {
     let currentProfile: UserTasteProfile | null = null;
     if (profileStr) {
       try {
-        currentProfile = JSON.parse(profileStr);
+        // FIX 2: Validate currentProfile against UserTasteProfile schema
+        const parsed = JSON.parse(profileStr);
+        currentProfile = UserTasteProfile.parse(parsed);
       } catch (e) {
         console.warn('Invalid profile format provided, ignoring.', e);
       }
@@ -75,6 +79,12 @@ router.post('/', upload.single('image'), async (req, res) => {
       currentProfile,
       imageFile,
     );
+    
+    // FIX 3: Add null check for userTasteProfile
+    if (!userTasteProfile) {
+      throw new ValidationError('Failed to build user taste profile.');
+    }
+    
     const profileDuration = Date.now() - startProfile;
     console.log(`[Telemetry] ProfileBuilder lat=${profileDuration}ms`);
 
@@ -110,7 +120,8 @@ router.post('/', upload.single('image'), async (req, res) => {
       trends: trendReportText,
       recommendations: finalRecommendations,
     });
-  } catch (error: unknown) {
+  } catch (error) {
+    // FIX 4: Remove TypeScript type annotation (error: unknown) for .js file
     handleApiError(res, error);
   }
 });
