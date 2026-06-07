@@ -3,12 +3,7 @@ import { UserTasteProfile } from '../schemas/index.js';
 import { Sparkles, AlertCircle, CalendarHeart, MapPin, Ban, Heart } from 'lucide-react';
 import { cn } from '../lib/utils.js';
 
-interface TasteProfileBadgeProps {
-  profile?: UserTasteProfile | null;
-  loading?: boolean;
-}
-
-export const TasteProfileBadge: React.FC<TasteProfileBadgeProps> = ({ profile, loading }) => {
+export const TasteProfileBadge = ({ profile, loading = false }) => {
   if (loading) {
     return (
       <div className="mx-auto mb-6 max-w-2xl animate-pulse glass-card p-4">
@@ -57,7 +52,7 @@ export const TasteProfileBadge: React.FC<TasteProfileBadgeProps> = ({ profile, l
             </p>
             <div className="flex flex-wrap gap-1.5">
               {hasCuisines &&
-                profile.cuisines!.map((cuisine) => (
+                profile.cuisines.map((cuisine) => (
                   <span
                     key={cuisine}
                     className="inline-flex items-center gap-1 rounded-full bg-white/5 border border-white/10 px-2.5 py-0.5 text-[11px] font-medium text-[var(--color-text-main)]"
@@ -80,7 +75,7 @@ export const TasteProfileBadge: React.FC<TasteProfileBadgeProps> = ({ profile, l
                 Locations
               </p>
               <div className="flex flex-wrap gap-1.5">
-                {profile.neighborhoods!.map((nb) => (
+                {profile.neighborhoods.map((nb) => (
                   <span
                     key={nb}
                     className="inline-flex items-center gap-1 rounded-full bg-white/5 border border-white/10 px-2.5 py-0.5 text-[11px] font-medium text-[var(--color-text-main)]"
@@ -101,7 +96,7 @@ export const TasteProfileBadge: React.FC<TasteProfileBadgeProps> = ({ profile, l
             </p>
             <div className="flex flex-wrap gap-1.5">
               {hasAmbiance &&
-                profile.ambiance!.map((amb) => (
+                profile.ambiance.map((amb) => (
                   <span
                     key={amb}
                     className="inline-flex items-center gap-1 rounded-full bg-white/5 border border-white/10 px-2.5 py-0.5 text-[11px] font-medium text-[var(--color-text-main)]"
@@ -110,7 +105,7 @@ export const TasteProfileBadge: React.FC<TasteProfileBadgeProps> = ({ profile, l
                   </span>
                 ))}
               {hasOccasions &&
-                profile.special_occasions!.map((occ) => (
+                profile.special_occasions.map((occ) => (
                   <span
                     key={occ}
                     className="inline-flex items-center gap-1 rounded-full bg-[var(--color-brand-primary)]/5 border border-[var(--color-brand-primary)]/10 px-2.5 py-0.5 text-[11px] font-medium text-[var(--color-brand-primary)]"
@@ -135,7 +130,7 @@ export const TasteProfileBadge: React.FC<TasteProfileBadgeProps> = ({ profile, l
                   </span>
                 )}
                 {hasAvoidPatterns &&
-                  profile.avoid_patterns!.map((pattern) => (
+                  profile.avoid_patterns.map((pattern) => (
                     <span
                       key={pattern}
                       className="inline-flex items-center gap-1 rounded-full bg-white/5 border border-white/10 px-2.5 py-0.5 text-[11px] font-medium text-[var(--color-text-muted)]"
