@@ -2,28 +2,22 @@
 import fs from 'fs';
 import path from 'path';
 
-export interface VectorRecord {
-  id: string;
-  embedding: number[];
-  metadata: any;
-}
-
 const INDEX_FILE = path.join(process.cwd(), 'vector_index.json');
 
 class LocalVectorDB {
-  private records: VectorRecord[] = [];
+  records = [];
 
   constructor() {
     this.loadFromIndex();
   }
 
-  private normalize(vec: number[]): number[] {
+  normalize(vec) {
     const norm = Math.sqrt(vec.reduce((sum, val) => sum + val * val, 0));
     if (norm === 0) return vec;
     return vec.map((val) => val / norm);
   }
 
-  async add(record: VectorRecord) {
+  async add(record) {
     const normalizedRecord = {
       ...record,
       embedding: this.normalize(record.embedding),
@@ -36,11 +30,11 @@ class LocalVectorDB {
     }
   }
 
-  isEmpty(): boolean {
+  isEmpty() {
     return this.records.length === 0;
   }
 
-  async upsert(records: VectorRecord[]) {
+  async upsert(records) {
     for (const record of records) {
       const normalizedRecord = {
         ...record,
@@ -55,7 +49,7 @@ class LocalVectorDB {
     }
   }
 
-  async query(queryEmbedding: number[], topK: number = 10) {
+  async query(queryEmbedding, topK = 10) {
     const normalizedQuery = this.normalize(queryEmbedding);
     const scored = this.records.map((record) => {
       const score = this.dotProduct(normalizedQuery, record.embedding);
@@ -67,7 +61,7 @@ class LocalVectorDB {
     return scored.slice(0, topK);
   }
 
-  private dotProduct(vecA: number[], vecB: number[]) {
+  dotProduct(vecA, vecB) {
     let dotProduct = 0;
     for (let i = 0; i < vecA.length; i++) {
       dotProduct += vecA[i] * vecB[i];
@@ -88,7 +82,7 @@ class LocalVectorDB {
     }
   }
 
-  private loadFromIndex() {
+  loadFromIndex() {
     try {
       if (fs.existsSync(INDEX_FILE)) {
         const data = fs.readFileSync(INDEX_FILE, 'utf8');
