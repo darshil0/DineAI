@@ -1,18 +1,4 @@
-export interface Restaurant {
-  id: string;
-  name: string;
-  cuisine: string;
-  price_tier: '$' | '$$' | '$$$' | '$$$$';
-  neighborhood: string;
-  rating: number;
-  description: string;
-  tags: string[];
-  address?: string;
-  phone?: string;
-  hours?: string;
-}
-
-export const restaurants: Restaurant[] = [
+export const restaurants = [
   {
     id: '1',
     name: "L'Artusi",
