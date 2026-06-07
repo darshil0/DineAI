@@ -1,8 +1,8 @@
 import { GoogleGenAI } from '@google/genai';
 
-let aiClient: GoogleGenAI | null = null;
+let aiClient = null;
 
-export function getGeminiClient(): GoogleGenAI {
+export function getGeminiClient() {
   if (!aiClient) {
     const apiKey = process.env.GEMINI_API_KEY;
     if (!apiKey) {
