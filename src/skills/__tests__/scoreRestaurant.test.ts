@@ -22,46 +22,80 @@ async function testScoreRestaurant() {
     tags: ['date night', 'pasta', 'wine', 'lively ambiance', 'vegetarian friendly', 'casual'],
   };
 
-  // 1. Perfect match
-  const { matchScore: score1 } = await scoreRestaurantSkill.run({ profile, restaurant });
-  console.log(`✅ Perfect match score: ${score1.toFixed(2)} (Expected: 1.0)`);
+  try {
+    // 1. Perfect match (with similarity)
+    const { matchScore: score1, rationale: rationale1 } = await scoreRestaurantSkill.run({ 
+      profile, 
+      restaurant,
+      similarity: 0.9,
+    });
+    console.log(`✅ Perfect match score: ${score1.toFixed(2)} (Expected: ~1.0)`);
+    console.log(`   Rationale: ${rationale1}`);
 
-  // 2. Mismatch cuisine
-  const { matchScore: score2 } = await scoreRestaurantSkill.run({
-    profile: { ...profile, cuisines: ['French'] },
-    restaurant,
-  });
-  console.log(`✅ Mismatch cuisine score: ${score2.toFixed(2)} (Expected: 0.7)`);
+    // 2. Mismatch cuisine (without similarity)
+    const { matchScore: score2, rationale: rationale2 } = await scoreRestaurantSkill.run({
+      profile: { ...profile, cuisines: ['French'] },
+      restaurant,
+    });
+    console.log(`✅ Mismatch cuisine score: ${score2.toFixed(2)} (Expected: ~0.7)`);
+    console.log(`   Rationale: ${rationale2}`);
 
-  // 3. Mismatch price
-  const { matchScore: score3 } = await scoreRestaurantSkill.run({
-    profile: { ...profile, price_range: '$$$$' },
-    restaurant,
-  });
-  console.log(`✅ Mismatch price score: ${score3.toFixed(2)} (Expected: 0.8)`);
+    // 3. Mismatch price (price diff=2, gets half weight)
+    const { matchScore: score3, rationale: rationale3 } = await scoreRestaurantSkill.run({
+      profile: { ...profile, price_range: '$$$$' },
+      restaurant,
+    });
+    console.log(`✅ Mismatch price score: ${score3.toFixed(2)} (Expected: ~0.85)`);
+    console.log(`   Rationale: ${rationale3}`);
 
-  // 4. Mismatch neighborhood
-  const { matchScore: score4 } = await scoreRestaurantSkill.run({
-    profile: { ...profile, neighborhoods: ['Midtown'] },
-    restaurant,
-  });
-  console.log(`✅ Mismatch neighborhood score: ${score4.toFixed(2)} (Expected: 0.8)`);
+    // 4. Mismatch neighborhood
+    const { matchScore: score4, rationale: rationale4 } = await scoreRestaurantSkill.run({
+      profile: { ...profile, neighborhoods: ['Midtown'] },
+      restaurant,
+    });
+    console.log(`✅ Mismatch neighborhood score: ${score4.toFixed(2)} (Expected: ~0.85)`);
+    console.log(`   Rationale: ${rationale4}`);
 
-  // 5. Mismatch ambiance
-  const { matchScore: score5 } = await scoreRestaurantSkill.run({
-    profile: { ...profile, ambiance: ['Formal'] },
-    restaurant,
-  });
-  console.log(`✅ Mismatch ambiance score: ${score5.toFixed(2)} (Expected: 0.8)`);
+    // 5. Mismatch ambiance
+    const { matchScore: score5, rationale: rationale5 } = await scoreRestaurantSkill.run({
+      profile: { ...profile, ambiance: ['Formal'] },
+      restaurant,
+    });
+    console.log(`✅ Mismatch ambiance score: ${score5.toFixed(2)} (Expected: ~0.85)`);
+    console.log(`   Rationale: ${rationale5}`);
 
-  // 6. Mismatch dietary
-  const { matchScore: score6 } = await scoreRestaurantSkill.run({
-    profile: { ...profile, dietary_notes: 'Gluten-Free' },
-    restaurant,
-  });
-  console.log(`✅ Mismatch dietary score: ${score6.toFixed(2)} (Expected: 0.9)`);
+    // 6. Mismatch dietary
+    const { matchScore: score6, rationale: rationale6 } = await scoreRestaurantSkill.run({
+      profile: { ...profile, dietary_notes: 'Gluten-Free' },
+      restaurant,
+    });
+    console.log(`✅ Mismatch dietary score: ${score6.toFixed(2)} (Expected: ~1.0)`);
+    console.log(`   Rationale: ${rationale6}`);
 
-  console.log('--- scoreRestaurant Tests Complete ---');
+    // 7. Low similarity match
+    const { matchScore: score7, rationale: rationale7 } = await scoreRestaurantSkill.run({
+      profile,
+      restaurant,
+      similarity: 0.2,
+    });
+    console.log(`✅ Low similarity score: ${score7.toFixed(2)} (Expected: ~0.56)`);
+    console.log(`   Rationale: ${rationale7}`);
+
+    // 8. Error handling test - empty profile
+    try {
+      await scoreRestaurantSkill.run({ 
+        profile: { cuisines: [], price_range: '', ambiance: [], dietary_notes: '', neighborhoods: [] },
+        restaurant,
+      });
+      console.log('❌ Should have thrown for empty profile');
+    } catch (error) {
+      console.log(`✅ Error handling works: ${(error as Error).message}`);
+    }
+
+    console.log('--- scoreRestaurant Tests Complete ---');
+  } catch (error) {
+    console.error('❌ Test suite failed:', error);
+  }
 }
 
 testScoreRestaurant();
