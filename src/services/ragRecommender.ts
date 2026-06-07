@@ -9,7 +9,12 @@ import { vectorDb } from '../lib/vectorDb.js';
 import { AgentServiceError, SkillError } from '../lib/errors.js';
 import { withRetry } from '../lib/utils.js';
 
-export async function recommendCandidates(profile: UserTasteProfile): Promise<Restaurant[]> {
+export type RestaurantCandidate = Restaurant & {
+  match_score?: number;
+  whyMatch?: string;
+};
+
+export async function recommendCandidates(profile: UserTasteProfile): Promise<RestaurantCandidate[]> {
   console.log('Running RAG Recommender Agent...');
 
   try {
@@ -89,7 +94,7 @@ export async function recommendCandidates(profile: UserTasteProfile): Promise<Re
       }),
     );
 
-    let candidateList: Restaurant[] = [];
+    let candidateList: RestaurantCandidate[] = [];
     try {
       const parsed = JSON.parse(cleanJson(ragResponse.text || '[]'));
       // Validate that the result is an array before using it
