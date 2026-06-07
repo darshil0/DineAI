@@ -2,92 +2,55 @@
 
 > **v2.3.0** — AI-powered restaurant recommendations via a multi-agent pipeline built on Google Gemini, Express 5, and React 19.
 
-DineAI orchestrates four specialized AI agents to deliver personalized, real-time dining suggestions. It combines a custom **Express 5 / Node.js** backend, a modular **Agent Skills** architecture, an in-memory vector database for semantic retrieval, **Gemini Structured Outputs** for schema-validated responses, and a **React 19 / Tailwind CSS 4** frontend — resulting in a production-grade pipeline that is both resilient and explainable.
+DineAI orchestrates four specialized AI agents to deliver personalized, real-time dining suggestions. It combines a custom **Express 5 / Node.js** backend, a modular **Agent Skills** architecture, an in-memory vector database for semantic retrieval, **Gemini Structured Outputs** for schema-validated responses, and a **React 19 / Tailwind CSS 4** frontend.
 
 ---
 
 ## ✨ Features
 
-- **Multi-Agent Orchestration** — A sequential pipeline of four agents (Profile Builder → RAG Recommender → Trend Analyst → Finalizer), each with a single responsibility and independently testable skills.
-- **Dynamic Taste Profiles** — Automatically infers preferences from conversation history, photo uploads, and real-time feedback. Profiles evolve with every message.
-- **Semantic Search (RAG)** — Gemini embeddings + a custom in-memory `LocalVectorDB` power sub-millisecond similarity search across the full restaurant catalog, with heuristic re-ranking via the `scoreRestaurant` skill.
-- **Real-Time Trend Analysis** — Google Search grounding surfaces trending cuisines, new openings, and viral dishes, then cross-references them against your taste profile before any recommendation is made.
-- **Explainable AI** — Every recommendation carries two rationales: a `whyMatch` heuristic score from `scoreRestaurant` and a narrative `rationale` synthesized by the Finalizer — both rendered on the card.
-- **Multimodal Input** — Upload a food photo; the `analyzeFoodPhoto` skill infers cuisine types and ambiance to enrich your profile automatically.
-- **Interactive Feedback Loop** — Like / Dislike signals are queued as natural-language context and injected into the next prompt, updating `disliked_cuisines` and `avoid_patterns` in real time.
-- **Advanced Filtering** — Multi-select filter bar for cuisine, price tier, and neighborhood, applied client-side with no additional API calls.
-- **Favorites Collection** — Heart any restaurant to save it to a persistent local collection, accessible from the header at any time.
-- **Onboarding Tutorial** — A five-step modal explains the multi-agent pipeline, taste profiles, and visual input on first visit.
-- **Premium UI** — Dark mode with "Culinary Gold" accents (`#d4af37`), glassmorphism cards, Playfair Display typography, and Motion-powered transitions throughout.
-- **High Resilience** — All Gemini API calls are wrapped in `withRetry` (3 attempts, exponential backoff). All agent responses are validated against Zod schemas before use.
+* **Multi-Agent Orchestration:** A sequential pipeline of four agents (Profile Builder → RAG Recommender → Trend Analyst → Finalizer), each with a single responsibility and independently testable skills.
+* **Dynamic Taste Profiles:** Automatically infers preferences from conversation history, photo uploads, and real-time feedback. Profiles evolve with every message.
+* **Semantic Search (RAG):** Gemini embeddings + a custom in-memory `LocalVectorDB` power sub-millisecond similarity search across the full restaurant catalog, with heuristic re-ranking via the `scoreRestaurant` skill.
+* **Real-Time Trend Analysis:** Google Search grounding surfaces trending cuisines, new openings, and viral dishes, cross-referencing them against the taste profile before recommending.
+* **Explainable AI:** Every recommendation carries two rationales: a `whyMatch` heuristic score from `scoreRestaurant` and a narrative `rationale` synthesized by the Finalizer.
+* **Multimodal Input:** Upload a food photo (max 5 MB); the `analyzeFoodPhoto` skill infers cuisine types and ambiance to enrich the profile.
+* **Interactive Feedback Loop:** Like / Dislike signals are queued as natural-language context and injected into the next prompt, updating `disliked_cuisines` and `avoid_patterns`.
+* **Advanced Filtering:** Multi-select filter bar for cuisine, price tier, and neighborhood, applied client-side.
+* **Favorites Collection:** Save restaurants to a persistent local collection, accessible from the header.
+* **Onboarding Tutorial:** A five-step modal explains the pipeline, taste profiles, and visual input.
+* **High Resilience:** All Gemini API calls are wrapped in `withRetry` (3 attempts, exponential backoff). Responses are validated against Zod schemas.
 
 ---
 
 ## 🏗️ Architecture
 
-DineAI runs as a single Node.js server that serves both the Express API and the Vite dev server (in development) or pre-built static assets (in production).
-
-```
-User Request
-     │
-     ▼
-┌─────────────────────┐
-│  Profile Builder    │  gemini-2.0-flash
-│  extractCuisines    │  gemini-2.0-flash
-│  analyzeFoodPhoto   │  gemini-2.0-flash  (if image uploaded)
-└────────┬────────────┘
-         │ UserTasteProfile
-    ┌────┴────┐
-    │         │  (parallel)
-    ▼         ▼
-┌───────┐  ┌──────────────┐
-│  RAG  │  │ Trend Analyst│  gemini-2.5-pro-preview-05-06
-│Recom- │  │ + Google     │  + extractTrendsFromSearchResults (flash)
-│mender │  │   Search     │  + classifyTrendRelevanceToProfile (pro)
-└───┬───┘  └──────┬───────┘
-    │              │
-    └──────┬───────┘
-           │ candidates + trend report
-           ▼
-┌─────────────────────┐
-│     Finalizer       │  gemini-2.5-pro-preview-05-06
-│  Top 3–5 ranked     │
-│  recommendations    │
-└─────────────────────┘
-```
+DineAI runs as a single Node.js server. In development, Vite middleware proxies frontend requests to the Express API. In production, Express serves the pre-built static assets from `dist/`.
 
 ### Agent Skills
 
-Each skill is a composable, independently testable TypeScript function registered at startup via `bootstrapSkills()`.
+Each skill is a composable TypeScript function registered via `bootstrapSkills()`.
 
 | Skill | Model | Purpose |
-|---|---|---|
-| `extractCuisines` | `gemini-2.0-flash` | Parses cuisine names from user text |
+| :--- | :--- | :--- |
+| `extractCuisines` | `gemini-2.0-flash` | Parses cuisine names from text |
 | `analyzeFoodPhoto` | `gemini-2.0-flash` | Infers cuisines and ambiance from a photo |
-| `generateEmbedding` | `gemini-embedding-2-preview` | Produces 768-dim vectors for semantic search |
+| `generateEmbedding` | `gemini-embedding-2-preview` | Produces 768-dim semantic vectors |
 | `scoreRestaurant` | Heuristic | Weighted match score (cuisine 0.4, price 0.3, ambiance 0.2, dietary 0.1) |
 | `extractTrendsFromSearchResults` | `gemini-2.0-flash` | Structures raw search snippets into trend data |
-| `classifyTrendRelevanceToProfile` | `gemini-2.5-pro-preview-05-06` | Scores trend relevance against the user's profile |
+| `classifyTrendRelevanceToProfile` | `gemini-2.5-pro-preview-05-06` | Scores trend relevance against the profile |
 
 ---
 
 ## 🛠️ Technology Stack
 
 | Category | Technology | Version |
-|---|---|---|
+| :--- | :--- | :--- |
 | **Frontend** | React + Tailwind CSS | 19.2.7 / 4.3.0 |
 | **Build** | Vite | 8.0.16 |
 | **Backend** | Node.js + Express | ≥18.0.0 / 5.2.1 |
 | **AI SDK** | `@google/genai` | 2.8.0 |
-| **Performance Tier** | `gemini-2.0-flash` | Text, vision, extraction |
-| **Reasoning Tier** | `gemini-2.5-pro-preview-05-06` | Synthesis, trend classification |
-| **Embeddings** | `gemini-embedding-2-preview` | 768-dim semantic vectors |
 | **Vector DB** | Custom `LocalVectorDB` | In-memory, persisted to `vector_index.json` |
-| **Embedding Cache** | `better-sqlite3` | `embeddings_cache.db` — zero API cost on restart |
-| **Validation** | Zod | 4.4.3 |
-| **Animation** | Motion | 12.40.0 |
-| **Icons** | Lucide React | 1.17.0 |
-| **TypeScript** | TypeScript | 5.9.3 |
+| **Embedding Cache** | `better-sqlite3` | `embeddings_cache.db` (Keyed by MD5 content hash) |
 
 ---
 
@@ -95,40 +58,38 @@ Each skill is a composable, independently testable TypeScript function registere
 
 ### Prerequisites
 
-- **Node.js** v18.0.0 or higher
-- **npm** v9.0.0 or higher
-- **Google Gemini API Key** — obtain one from [Google AI Studio](https://aistudio.google.com/)
+* **Node.js** v18.0.0 or higher
+* **npm** v9.0.0 or higher
+* **Google Gemini API Key** — obtain one from Google AI Studio.
 
 ### Installation
 
-1. Clone the repository:
-   ```bash
-   git clone https://github.com/darshil0/DineAI.git
-   cd DineAI
-   ```
-
-2. Install dependencies:
-   ```bash
-   npm install
-   ```
-
-3. Create a `.env` file in the project root:
-   ```env
-   GEMINI_API_KEY=your_api_key_here
-   PORT=3000
-   NODE_ENV=development
-   ```
-   See `.env.example` for all available options.
+1.  Clone the repository:
+    ```bash
+    git clone [https://github.com/darshil0/DineAI.git](https://github.com/darshil0/DineAI.git)
+    cd DineAI
+    ```
+2.  Install dependencies:
+    ```bash
+    npm install
+    ```
+3.  Create a `.env` file in the project root:
+    ```env
+    GEMINI_API_KEY=your_api_key_here
+    PORT=3000
+    NODE_ENV=development
+    ```
 
 ### Running the App
 
 ```bash
 npm run dev
+
 ```
 
-This starts both the Express backend and the Vite dev server. Open **http://localhost:5173** in your browser. The Express API is available at **http://localhost:3000**.
+Open **http://localhost:3000** in your browser. The Vite dev server and Express API share this port via middleware.
 
-On first start, if no `vector_index.json` is found, DineAI automatically embeds the full restaurant catalog (120 restaurants). Embeddings are cached in `embeddings_cache.db` so subsequent restarts are instant.
+On first start, if no `vector_index.json` is found, DineAI embeds the full catalog (120 restaurants). Embeddings are cached in `embeddings_cache.db` using a content hash of the restaurant metadata to ensure updates automatically invalidate stale vectors.
 
 ---
 
@@ -137,115 +98,31 @@ On first start, if no `vector_index.json` is found, DineAI automatically embeds 
 ### Available Scripts
 
 | Script | Command | Description |
-|---|---|---|
+| --- | --- | --- |
 | `dev` | `tsx server.ts` | Start backend + Vite dev server |
 | `build` | `vite build` | Build production frontend to `dist/` |
-| `preview` | `vite preview` | Preview the production build locally |
+| `preview` | `NODE_ENV=production tsx server.ts` | Run the production build locally |
 | `lint` | `tsc --noEmit` | Run TypeScript type checking |
-| `test` | see below | Run all unit test suites |
+| `test` | `npm run test:all` | Run all unit test suites |
 | `verify` | `tsx src/scripts/verifySystem.ts` | Full end-to-end system check |
-| `clean` | `rm -rf dist` | Remove build output |
-
-The `test` script runs three suites in sequence:
-```bash
-npx tsx src/lib/__tests__/utils.test.ts
-npx tsx src/lib/__tests__/vectorDb.test.ts
-npx tsx src/skills/__tests__/scoreRestaurant.test.ts
-```
-
-### Project Structure
-
-```
-DineAI/
-├── server.ts                     # Express 5 entry point + Vite middleware
-├── src/
-│   ├── api/
-│   │   └── chat.ts               # POST /api/chat — orchestrates the full pipeline
-│   ├── components/
-│   │   ├── ChatInterface.tsx      # Main shell: state, input, history, favorites
-│   │   ├── ChatMessage.tsx        # Markdown-rendered message bubbles
-│   │   ├── FilterControls.tsx     # Multi-select cuisine / price / neighborhood bar
-│   │   ├── OnboardingTutorial.tsx # First-visit five-step modal
-│   │   ├── RecommendationCard.tsx # Card with heuristic + narrative rationale
-│   │   └── TasteProfileBadge.tsx  # Live taste profile display
-│   ├── data/
-│   │   └── restaurants.ts         # 120-restaurant knowledge base with full metadata
-│   ├── lib/
-│   │   ├── cache.ts               # SQLite-backed embedding cache
-│   │   ├── errors.ts              # AppError / AgentServiceError / SkillError / ValidationError
-│   │   ├── geminiClient.ts        # Singleton GoogleGenAI client
-│   │   ├── utils.ts               # cleanJson, withRetry (exponential backoff), cn
-│   │   ├── vectorDb.ts            # LocalVectorDB: upsert, cosine query, JSON persistence
-│   │   └── __tests__/             # utils.test.ts, vectorDb.test.ts
-│   ├── prompts/
-│   │   └── index.ts               # All system prompts and prompt-builder functions
-│   ├── schemas/
-│   │   ├── recommendation.ts      # Recommendation interface + FinalRecommendationsSchema
-│   │   └── userTasteProfile.ts    # UserTasteProfile interface + UserTasteProfileSchema
-│   ├── scripts/
-│   │   ├── ingestRestaurants.ts   # Batch-embed catalog → VectorDB + cache
-│   │   └── verifySystem.ts        # End-to-end smoke test
-│   ├── services/
-│   │   ├── profileBuilder.ts      # Profile Builder Agent
-│   │   ├── ragRecommender.ts      # RAG Recommender Agent (exports RestaurantCandidate)
-│   │   ├── trendAnalyst.ts        # Food Trend Analyst Agent
-│   │   └── finalizer.ts           # Recommendation Finalizer Agent
-│   └── skills/
-│       ├── analyzeFoodPhoto.ts
-│       ├── bootstrap.ts           # Registers all skills into the registry
-│       ├── classifyTrendRelevanceToProfile.ts
-│       ├── extractCuisines.ts
-│       ├── extractTrendsFromSearchResults.ts
-│       ├── generateEmbedding.ts
-│       ├── registry.ts            # registerSkill / getSkill / listSkills
-│       ├── scoreRestaurant.ts     # Deterministic heuristic scorer
-│       ├── types.ts               # AgentSkill<I,O> interface
-│       └── __tests__/
-│           └── scoreRestaurant.test.ts
-├── .env.example
-├── AGENTS.md                      # Multi-agent architecture and reliability standards
-├── CHANGELOG.md
-├── CONTRIBUTING.md
-├── DESIGN.md                      # System design and philosophy
-├── SECURITY.md
-├── SKILLS.md                      # Agent skills technical specification
-├── tsconfig.json
-├── vite.config.ts
-└── package.json
-```
 
 ### Key Design Decisions
 
-**Dual-model strategy** — `gemini-2.0-flash` handles all extraction and vision tasks where throughput matters; `gemini-2.5-pro-preview-05-06` is reserved for reasoning-heavy synthesis (Finalizer, trend classification, RAG fallback) where quality is the priority.
-
-**`RestaurantCandidate` type** — `recommendCandidates()` returns `Restaurant & { match_score?: number; whyMatch?: string }` rather than bare `Restaurant[]`. This ensures the heuristic rationale computed by `scoreRestaurant` flows through to the Finalizer's prompt and is rendered on every recommendation card.
-
-**Partial index recovery** — The ingestion guard compares `existingCount >= restaurants.length` rather than `existingCount > 0`, so a partially ingested vector index (e.g., from a previous interrupted run) is automatically completed on next startup rather than silently producing degraded results.
-
-**Embedding cache** — `embeddings_cache.db` (SQLite via `better-sqlite3`) stores pre-computed vectors keyed by `name-neighborhood`. The full 120-restaurant catalog only incurs API costs on the very first cold start.
-
-**History truncation** — Only the last 10 conversation exchanges are forwarded to any agent, capping context window costs and reducing PII exposure.
+* **Dual-model strategy:** `gemini-2.0-flash` handles extraction and vision; `gemini-2.5-pro-preview-05-06` is reserved for reasoning-heavy synthesis.
+* **RestaurantCandidate type:** `recommendCandidates()` returns `Restaurant & { match_score?: number; whyMatch?: string }`. This ensures the heuristic rationale flows through to the Finalizer.
+* **Partial index recovery:** The ingestion guard compares `existingCount >= restaurants.length`. Partially ingested indexes are automatically completed on next startup.
+* **Embedding cache:** Vectors are stored via `better-sqlite3`. The cache key is an MD5 hash of the restaurant object, preventing stale embeddings when catalog data changes.
+* **History truncation:** Only the last 10 conversation exchanges are forwarded to agents to cap context window costs.
 
 ---
 
 ## 🔒 Security
 
-- API key is consumed server-side only — never exposed to the browser.
-- CORS is restricted to `localhost` origins only; `GET` and `POST` methods only.
-- All incoming payloads are validated with Zod before entering the agent pipeline.
-- Conversation history is truncated to 10 exchanges to limit PII persistence.
-- File uploads are capped at 5 MB and restricted to `image/jpeg`, `image/png`, `image/webp`, and `image/gif`.
+* API key is consumed server-side only.
+* In development, CORS is restricted to `localhost`. In production, CORS is configured strictly for same-origin requests as the API and frontend share the same domain.
+* All incoming payloads are validated with Zod.
+* File uploads are capped at 5 MB and restricted to `image/jpeg`, `image/png`, `image/webp`, and `image/gif`.
 
-See [SECURITY.md](./SECURITY.md) for the vulnerability reporting process.
+See `SECURITY.md` for the vulnerability reporting process.
 
----
-
-## 🤝 Contributing
-
-Contributions are welcome. Please read [CONTRIBUTING.md](./CONTRIBUTING.md) before opening a pull request — it covers branching conventions, the `withRetry` / `SkillError` resilience contract, and the test requirements that must pass before merging.
-
----
-
-## 📄 License
-
-MIT — see [LICENSE](./LICENSE).
+```
