@@ -2,6 +2,42 @@
 
 All notable changes to this project will be documented in this file.
 
+## [2.3.0] - 2026-06-07
+
+### Fixed
+- **Missing `cleanJson` Import** (`profileBuilder.ts`): `cleanJson` was called on every profile-building response but never imported from `utils.ts`, causing a `ReferenceError` at runtime that broke every chat request. Added `cleanJson` to the import alongside `withRetry`.
+- **`whyMatch` Type Erasure in RAG Pipeline** (`ragRecommender.ts`, `finalizer.ts`): The `recommendCandidates` function returned `Promise<Restaurant[]>`, silently stripping the `whyMatch` and `match_score` fields that `scoreRestaurant` computed and attached to each candidate. Introduced the exported `RestaurantCandidate` type (`Restaurant & { match_score?: number; whyMatch?: string }`) and updated `finalizer.ts` to accept it, ensuring heuristic rationales flow through to the finalizer prompt and recommendation cards correctly.
+- **Partial Vector Index Not Re-Ingested** (`ingestRestaurants.ts`): The early-return guard used `existingCount > 0`, which silently skipped re-ingestion whenever even a single record was present. A partial index (caused by a previous interrupted run) would produce incomplete semantic search results with no warning. Changed the guard to `existingCount >= restaurants.length` so only a fully populated index is skipped; partial indexes are detected, logged, and completed.
+- **Express v5 Wildcard Route Syntax** (`server.ts`): Express v5 no longer accepts bare `*` wildcards in route paths. The production SPA fallback `app.get('*', ...)` would silently fail to match any route, returning 404 for all non-API paths. Updated to the Express v5 named-parameter syntax: `app.get('/{*splat}', ...)`.
+
+### Changed
+- **Dependency Upgrades**: Updated all dependencies to their latest compatible versions (see table below). The `@google/genai` v1 → v2 major bump introduces breaking changes only in the Interactions API; the `generateContent` and `embedContent` calls used throughout DineAI are unaffected.
+
+| Package | From | To | Type |
+| --- | --- | --- | --- |
+| `@google/genai` | `^1.51.0` | `^2.8.0` | Major |
+| `express` | `^4.21.2` | `^5.2.1` | Major |
+| `@vitejs/plugin-react` | `^5.0.4` | `^6.0.2` | Major |
+| `@types/express` | `^4.17.21` | `^5.0.6` | Major |
+| `@types/node` | `^22.14.0` | `^25.9.2` | Major |
+| `@tailwindcss/vite` | `^4.1.14` | `^4.3.0` | Minor |
+| `tailwindcss` | `^4.1.14` | `^4.3.0` | Minor |
+| `dotenv` | `^17.2.3` | `^17.4.2` | Minor |
+| `lucide-react` | `^1.14.0` | `^1.17.0` | Minor |
+| `@types/multer` | `^2.0.0` | `^2.1.0` | Minor |
+| `autoprefixer` | `^10.4.21` | `^10.5.0` | Minor |
+| `better-sqlite3` | `^12.4.1` | `^12.10.0` | Patch |
+| `motion` | `^12.38.0` | `^12.40.0` | Patch |
+| `multer` | `^2.1.0` | `^2.1.1` | Patch |
+| `react` | `^19.2.5` | `^19.2.7` | Patch |
+| `react-dom` | `^19.2.5` | `^19.2.7` | Patch |
+| `tsx` | `^4.21.0` | `^4.22.4` | Patch |
+| `typescript` | `~5.8.2` | `~5.9.3` | Patch |
+| `vite` | `^8.0.10` | `^8.0.16` | Patch |
+| `zod` | `^4.4.2` | `^4.4.3` | Patch |
+
+---
+
 ## [2.2.9] - 2026-06-07
 
 ### Added
