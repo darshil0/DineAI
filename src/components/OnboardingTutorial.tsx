@@ -11,13 +11,7 @@ import {
   UtensilsCrossed
 } from 'lucide-react';
 
-interface Step {
-  title: string;
-  description: string;
-  icon: React.ReactNode;
-}
-
-const steps: Step[] = [
+const steps = [
   {
     title: "Welcome to DineAI",
     description: "Your intelligent culinary companion. We don't just find food; we discover experiences tailored specifically to your soul.",
@@ -45,11 +39,7 @@ const steps: Step[] = [
   }
 ];
 
-interface OnboardingTutorialProps {
-  onComplete: () => void;
-}
-
-export const OnboardingTutorial: React.FC<OnboardingTutorialProps> = ({ onComplete }) => {
+export const OnboardingTutorial = ({ onComplete }) => {
   const [currentStep, setCurrentStep] = useState(0);
   const [isVisible, setIsVisible] = useState(true);
 
