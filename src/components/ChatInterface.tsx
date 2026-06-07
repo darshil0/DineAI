@@ -40,33 +40,8 @@ const STORAGE_KEY = 'dineai_chat_history';
 const ONBOARDING_STORAGE_KEY = 'dineai_onboarding_completed';
 const FAVORITES_STORAGE_KEY = 'dineai_favorites';
 
-// Speech Recognition Types
-interface SpeechRecognition extends EventTarget {
-  continuous: boolean;
-  interimResults: boolean;
-  lang: string;
-  onresult: (event: SpeechRecognitionEvent) => void;
-  onerror: (event: SpeechRecognitionErrorEvent) => void;
-  onend: () => void;
-  start: () => void;
-  stop: () => void;
-}
-
-interface SpeechRecognitionEvent extends Event {
-  results: {
-    [index: number]: {
-      [index: number]: {
-        transcript: string;
-      };
-      length: number;
-    };
-    length: number;
-  };
-}
-
-interface SpeechRecognitionErrorEvent extends Event {
-  error: string;
-}
+// FIX 1: Remove manual SpeechRecognition interfaces (conflict with browser types)
+// The browser already provides these types via window.SpeechRecognition
 
 export default function ChatInterface() {
   const [messages, setMessages] = useState<Message[]>([]);
@@ -91,7 +66,9 @@ export default function ChatInterface() {
   const fileInputRef = useRef<HTMLInputElement>(null);
   const textareaRef = useRef<HTMLTextAreaElement>(null);
   const recognitionRef = useRef<SpeechRecognition | null>(null);
-  const loadingTimeoutsRef = useRef<NodeJS.Timeout[]>([]);
+  
+  // FIX 2: Replace NodeJS.Timeout with browser-compatible type
+  const loadingTimeoutsRef = useRef<ReturnType<typeof setTimeout>[]>([]);
   
   const setInitialMessage = useCallback(() => {
     setMessages([
@@ -156,12 +133,12 @@ export default function ChatInterface() {
     const SpeechRecognition =
       (window as any).SpeechRecognition || (window as any).webkitSpeechRecognition;
     if (SpeechRecognition) {
-      const recognition = new SpeechRecognition() as SpeechRecognition;
+      const recognition = new SpeechRecognition();
       recognition.continuous = false;
       recognition.interimResults = false;
       recognition.lang = 'en-US';
 
-      recognition.onresult = (event: SpeechRecognitionEvent) => {
+      recognition.onresult = (event) => {
         const transcript = event.results[0][0].transcript;
         setInput((prev) => {
           const newText = prev.trim() ? `${prev} ${transcript}` : transcript;
@@ -170,7 +147,7 @@ export default function ChatInterface() {
         setIsListening(false);
       };
 
-      recognition.onerror = (event: SpeechRecognitionErrorEvent) => {
+      recognition.onerror = (event) => {
         console.error('Speech recognition error:', event.error);
         setIsListening(false);
       };
@@ -380,14 +357,15 @@ export default function ChatInterface() {
       };
 
       setMessages((prev) => [...prev, assistantMessage]);
-    } catch (error: any) {
+    } catch (error) {
+      // FIX 3: Remove TypeScript type annotation ': any'
       console.error('Error:', error);
       setMessages((prev) => [
         ...prev,
         {
           id: (Date.now() + 1).toString(),
           role: 'assistant',
-          content: `⚠️ **Service Interruption:** ${error.message || 'Something went wrong while processing your request.'}`,
+          content: `⚠️ **Service Interruption:** ${error instanceof Error ? error.message : 'Something went wrong while processing your request.'}`,
         },
       ]);
     } finally {
@@ -526,8 +504,9 @@ export default function ChatInterface() {
                         />
                       )}
 
-                      {msg.recommendations
-                        .filter((r) => {
+                      {/* FIX 4: Store filtered results to avoid duplicate filtering */}
+                      {(() => {
+                        const filteredRecommendations = msg.recommendations.filter((r) => {
                           const matchCuisine =
                             filters.cuisines.length === 0 ||
                             (r.cuisine && filters.cuisines.includes(r.cuisine));
@@ -538,40 +517,41 @@ export default function ChatInterface() {
                             filters.neighborhoods.length === 0 ||
                             (r.neighborhood && filters.neighborhoods.includes(r.neighborhood));
                           return matchCuisine && matchPrice && matchNeighborhood;
-                        })
-                        .map((rec) => (
-                          <motion.div
-                            key={`${msg.id}-${rec.name}`}
-                            initial={{ opacity: 0, y: 10 }}
-                            animate={{ opacity: 1, y: 0 }}
-                            transition={{ delay: 0.3 }}
-                          >
-                            <RecommendationCard
-                              recommendation={rec}
-                              isFavorite={favorites.some((f) => f.name === rec.name)}
-                              onFeedback={handleRecommendationFeedback}
-                              onToggleFavorite={handleToggleFavorite}
-                            />
-                          </motion.div>
-                        ))}
+                        });
 
-                      {msg.recommendations.filter((r) => {
-                        const matchCuisine = filters.cuisines.length === 0 || (r.cuisine && filters.cuisines.includes(r.cuisine));
-                        const matchPrice = filters.prices.length === 0 || (r.price_level && filters.prices.includes(r.price_level));
-                        const matchNeighborhood = filters.neighborhoods.length === 0 || (r.neighborhood && filters.neighborhoods.includes(r.neighborhood));
-                        return matchCuisine && matchPrice && matchNeighborhood;
-                      }).length === 0 && (
-                        <div className="rounded-[2rem] border border-dashed border-white/10 bg-white/[0.02] p-10 text-center">
-                          <Filter className="mx-auto mb-4 h-10 w-10 text-white/5" />
-                          <p className="text-sm text-[var(--color-text-muted)]">No selections match your current refinement.</p>
-                          <button
-                            onClick={() => setFilters({ cuisines: [], prices: [], neighborhoods: [] })}
-                            className="mt-4 text-[10px] font-black text-[var(--color-brand-primary)] uppercase tracking-widest hover:underline"
-                          >
-                            Reset Refinements
-                          </button>
-                        </div>
-                      )}
+                        return (
+                          <>
+                            {filteredRecommendations.map((rec) => (
+                              <motion.div
+                                key={`${msg.id}-${rec.name}`}
+                                initial={{ opacity: 0, y: 10 }}
+                                animate={{ opacity: 1, y: 0 }}
+                                transition={{ delay: 0.3 }}
+                              >
+                                <RecommendationCard
+                                  recommendation={rec}
+                                  isFavorite={favorites.some((f) => f.name === rec.name)}
+                                  onFeedback={handleRecommendationFeedback}
+                                  onToggleFavorite={handleToggleFavorite}
+                                />
+                              </motion.div>
+                            ))}
+
+                            {filteredRecommendations.length === 0 && (
+                              <div className="rounded-[2rem] border border-dashed border-white/10 bg-white/[0.02] p-10 text-center">
+                                <Filter className="mx-auto mb-4 h-10 w-10 text-white/5" />
+                                <p className="text-sm text-[var(--color-text-muted)]">No selections match your current refinement.</p>
+                                <button
+                                  onClick={() => setFilters({ cuisines: [], prices: [], neighborhoods: [] })}
+                                  className="mt-4 text-[10px] font-black text-[var(--color-brand-primary)] uppercase tracking-widest hover:underline"
+                                >
+                                  Reset Refinements
+                                </button>
+                              </div>
+                            )}
+                          </>
+                        );
+                      })()}
                     </div>
                   )}
                 </motion.div>
@@ -621,6 +601,7 @@ export default function ChatInterface() {
           )}
         </AnimatePresence>
 
+        {/* FIX 5: Fix form structure - remove extra closing div */}
         <form onSubmit={handleSubmit} className="flex items-end gap-3 max-w-3xl mx-auto">
           <div className="flex flex-1 flex-col rounded-[2rem] border border-white/10 bg-white/5 p-2 transition-all focus-within:border-[var(--color-brand-primary)]/50 focus-within:bg-white/[0.08] focus-within:shadow-[0_0_30px_-5px_rgba(212,175,55,0.1)]">
             {queuedFeedback.length > 0 && (
@@ -650,61 +631,61 @@ export default function ChatInterface() {
                 ref={fileInputRef}
                 onChange={handleImageSelect}
               />
-            <button
-              type="button"
-              onClick={toggleListening}
-              className={cn(
-                'relative rounded-2xl p-4 transition-all',
-                isListening
-                  ? 'bg-rose-500/20 text-rose-500 shadow-[0_0_20px_rgba(244,63,94,0.3)]'
-                  : 'text-white/20 hover:text-[var(--color-brand-primary)] hover:bg-white/5'
-              )}
-            >
-              {isListening ? <MicOff className="h-5 w-5" /> : <Mic className="h-5 w-5" />}
-              {isListening && (
-                <span className="absolute top-3 right-3 h-2 w-2 animate-ping rounded-full bg-rose-500" />
-              )}
-            </button>
-            <button
-              type="button"
-              onClick={detectLocation}
-              disabled={isLocating}
-              className={cn(
-                'rounded-2xl p-4 transition-all',
-                isLocating
-                  ? 'text-[var(--color-brand-primary)] animate-pulse'
-                  : 'text-white/20 hover:text-[var(--color-brand-primary)] hover:bg-white/5'
-              )}
-            >
-              <MapPin className="h-5 w-5" />
-            </button>
-            <button
-              type="button"
-              onClick={() => fileInputRef.current?.click()}
-              className="rounded-2xl p-4 text-white/20 transition-all hover:text-[var(--color-brand-primary)] hover:bg-white/5"
-            >
-              <ImageIcon className="h-5 w-5" />
-            </button>
-            <textarea
-              ref={textareaRef}
-              value={input}
-              onChange={(e) => {
-                setInput(e.target.value);
-                e.target.style.height = 'auto';
-                e.target.style.height = `${e.target.scrollHeight}px`;
-              }}
-              onKeyDown={(e) => {
-                if (e.key === 'Enter' && !e.shiftKey) {
-                  e.preventDefault();
-                  submitMessage();
-                }
-              }}
-              placeholder="Tell me what you're craving..."
-              className="max-h-40 min-h-[56px] flex-1 resize-none border-none bg-transparent px-4 py-4 text-sm text-[var(--color-text-main)] placeholder-white/20 outline-none focus:ring-0 leading-relaxed"
-              rows={1}
-            />
+              <button
+                type="button"
+                onClick={toggleListening}
+                className={cn(
+                  'relative rounded-2xl p-4 transition-all',
+                  isListening
+                    ? 'bg-rose-500/20 text-rose-500 shadow-[0_0_20px_rgba(244,63,94,0.3)]'
+                    : 'text-white/20 hover:text-[var(--color-brand-primary)] hover:bg-white/5'
+                )}
+              >
+                {isListening ? <MicOff className="h-5 w-5" /> : <Mic className="h-5 w-5" />}
+                {isListening && (
+                  <span className="absolute top-3 right-3 h-2 w-2 animate-ping rounded-full bg-rose-500" />
+                )}
+              </button>
+              <button
+                type="button"
+                onClick={detectLocation}
+                disabled={isLocating}
+                className={cn(
+                  'rounded-2xl p-4 transition-all',
+                  isLocating
+                    ? 'text-[var(--color-brand-primary)] animate-pulse'
+                    : 'text-white/20 hover:text-[var(--color-brand-primary)] hover:bg-white/5'
+                )}
+              >
+                <MapPin className="h-5 w-5" />
+              </button>
+              <button
+                type="button"
+                onClick={() => fileInputRef.current?.click()}
+                className="rounded-2xl p-4 text-white/20 transition-all hover:text-[var(--color-brand-primary)] hover:bg-white/5"
+              >
+                <ImageIcon className="h-5 w-5" />
+              </button>
+              <textarea
+                ref={textareaRef}
+                value={input}
+                onChange={(e) => {
+                  setInput(e.target.value);
+                  e.target.style.height = 'auto';
+                  e.target.style.height = `${e.target.scrollHeight}px`;
+                }}
+                onKeyDown={(e) => {
+                  if (e.key === 'Enter' && !e.shiftKey) {
+                    e.preventDefault();
+                    submitMessage();
+                  }
+                }}
+                placeholder="Tell me what you're craving..."
+                className="max-h-40 min-h-[56px] flex-1 resize-none border-none bg-transparent px-4 py-4 text-sm text-[var(--color-text-main)] placeholder-white/20 outline-none focus:ring-0 leading-relaxed"
+                rows={1}
+              />
+            </div>
           </div>
-        </div>
           <button
             type="submit"
             disabled={(!input.trim() && !selectedImage) || isLoading}
