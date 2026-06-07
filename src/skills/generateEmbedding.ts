@@ -15,20 +15,27 @@ export const generateEmbeddingSkill: AgentSkill<GenerateEmbeddingInput, Generate
   name: 'generateEmbedding',
   description: 'Generates a vector embedding for a given text string using Gemini.',
   async run({ text }) {
+    // Validate input
+    if (!text || typeof text !== 'string' || text.trim().length === 0) {
+      throw new SkillError('generateEmbedding', new Error('Input text must be a non-empty string'));
+    }
+
     const ai = getGeminiClient();
     const response = await withRetry(() => ai.models.embedContent({
       model: 'gemini-embedding-2-preview',
-      contents: text,
+      contents: [text], // Fix 1: contents must be an array
+      taskType: 'RETRIEVAL_QUERY', // Fix 3: specify task type for better quality
     }));
 
+    // Fix 2: response uses 'embedding' (singular), not 'embeddings'
     if (
-      !response.embeddings ||
-      response.embeddings.length === 0 ||
-      !response.embeddings[0].values
+      !response.embedding ||
+      !response.embedding.values ||
+      response.embedding.values.length === 0
     ) {
       throw new SkillError('generateEmbedding', new Error('Empty embedding received from API'));
     }
 
-    return { embedding: response.embeddings[0].values };
+    return { embedding: response.embedding.values };
   },
 };
