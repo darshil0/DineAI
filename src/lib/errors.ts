@@ -1,8 +1,8 @@
 export class AppError extends Error {
-  public statusCode: number;
-  public userFriendlyMessage: string;
+  statusCode;
+  userFriendlyMessage;
 
-  constructor(message: string, statusCode: number = 500, userFriendlyMessage?: string) {
+  constructor(message, statusCode = 500, userFriendlyMessage) {
     super(message);
     this.name = this.constructor.name;
     this.statusCode = statusCode;
@@ -13,7 +13,7 @@ export class AppError extends Error {
 }
 
 export class AgentServiceError extends AppError {
-  constructor(agentName: string, originalError: any) {
+  constructor(agentName, originalError) {
     const message = `Agent [${agentName}] failed: ${originalError.message || originalError}`;
     const userFriendlyMessage = `The ${agentName} agent encountered an issue while processing your request. We're working on it!`;
     super(message, 500, userFriendlyMessage);
@@ -21,7 +21,7 @@ export class AgentServiceError extends AppError {
 }
 
 export class SkillError extends AppError {
-  constructor(skillName: string, originalError: any) {
+  constructor(skillName, originalError) {
     const message = `Skill [${skillName}] failed: ${originalError.message || originalError}`;
     const userFriendlyMessage = `A specialized tool (${skillName}) failed to complete its task. This might affect the quality of your recommendations.`;
     super(message, 500, userFriendlyMessage);
@@ -29,12 +29,12 @@ export class SkillError extends AppError {
 }
 
 export class ValidationError extends AppError {
-  constructor(message: string) {
+  constructor(message) {
     super(message, 400, message);
   }
 }
 
-export function handleApiError(res: any, error: any) {
+export function handleApiError(res, error) {
   console.error('API Error:', error);
 
   if (error instanceof AppError) {
