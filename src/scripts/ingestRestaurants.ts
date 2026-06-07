@@ -17,9 +17,15 @@ export async function ingestRestaurants() {
   console.log('Starting restaurant ingestion into Vector DB...');
 
   const existingCount = await vectorDb.count();
-  if (existingCount > 0) {
+  if (existingCount >= restaurants.length) {
     console.log(`Vector DB already has ${existingCount} records. Skipping ingestion.`);
     return;
+  }
+
+  if (existingCount > 0) {
+    console.log(
+      `Vector DB has ${existingCount}/${restaurants.length} records — partial index detected. Re-ingesting missing entries.`,
+    );
   }
 
   const chunks = chunk(restaurants, 5); // Process in batches of 5
