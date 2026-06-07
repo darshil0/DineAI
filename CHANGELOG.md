@@ -2,6 +2,16 @@
 
 All notable changes to this project will be documented in this file.
 
+## [Unreleased]
+
+### Added
+- **Contributing Guidelines**: Created `CONTRIBUTING.md` to establish clear contribution standards, coding practices, and testing workflows.
+- **Security Policy**: Added `SECURITY.md` to provide a clear process for reporting vulnerabilities and document security best practices.
+
+### Changed
+- **Documentation Overhaul**: Extensively rewrote `README.md` for better clarity, improved project overview, and detailed setup/development guidance.
+- **Workflow Improvements**: Synchronized all documentation with the latest technology stack (React 19, Tailwind CSS 4, Vite 8).
+
 ## [2.2.8] - 2026-05-07
 
 ### Added
