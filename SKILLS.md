@@ -1,8 +1,8 @@
 # Agent Skills: Technical Specification
 
-This document provides a detailed technical specification for the modular "Agent Skills" architecture used in DineAI. Each skill is a composable, independently testable TypeScript function that the orchestrator uses to perform specific tasks.
+This document defines the modular **Agent Skills** architecture used in DineAI. Each skill is a composable, independently testable TypeScript function used by the orchestrator to perform a specific task.
 
-## 🧱 Skill Interface Definition
+## Skill interface
 
 All skills implement a standard interface to ensure consistent registration and execution:
 
@@ -14,96 +14,91 @@ interface AgentSkill<I, O> {
 }
 ```
 
----
-
-## 🛠️ Core Skills Catalog
+## Core skills catalog
 
 ### 1. `extractCuisines`
-**Purpose**: Parses unstructured user text to identify specific, canonical cuisine names.
+
+**Purpose**: Parse unstructured user text to identify canonical cuisine names.
 
 | Specification | Value |
 | :--- | :--- |
-| **Model** | `gemini-2.0-flash` |
-| **Input** | `{ text: string }` |
-| **Output** | `{ cuisines: string[] }` |
-| **Strategy** | Zero-shot extraction using Gemini Structured Outputs. |
-| **File** | `src/skills/extractCuisines.ts` |
-
----
+| Model | `gemini-2.0-flash` |
+| Input | `{ text: string }` |
+| Output | `{ cuisines: string[] }` |
+| Strategy | Zero-shot extraction using Gemini Structured Outputs. |
+| File | `src/skills/extractCuisines.ts` |
 
 ### 2. `analyzeFoodPhoto`
-**Purpose**: Multimodal analysis of dining photos to infer food categories and restaurant ambiance.
+
+**Purpose**: Perform multimodal analysis of dining photos to infer food categories and restaurant ambiance.
 
 | Specification | Value |
 | :--- | :--- |
-| **Model** | `gemini-2.0-flash` (Vision) |
-| **Input** | `{ data: string (base64), mimeType: string }` |
-| **Output** | `{ cuisines: string[], ambiance: string[], description: string }` |
-| **File** | `src/skills/analyzeFoodPhoto.ts` |
-
----
+| Model | `gemini-2.0-flash` |
+| Input | `{ data: string; mimeType: string }` |
+| Output | `{ cuisines: string[]; ambiance: string[]; description: string }` |
+| Strategy | Multimodal image analysis using Gemini vision capabilities. |
+| File | `src/skills/analyzeFoodPhoto.ts` |
 
 ### 3. `generateEmbedding`
-**Purpose**: Generates high-dimensional vector representations for semantic search.
+
+**Purpose**: Generate vector representations for semantic search.
 
 | Specification | Value |
 | :--- | :--- |
-| **Model** | `gemini-embedding-2-preview` |
-| **Input** | `{ text: string }` |
-| **Output** | `{ embedding: number[] }` |
-| **Dimensions** | 768 (Standard) |
-| **File** | `src/skills/generateEmbedding.ts` |
-
----
+| Model | `gemini-embedding-2-preview` |
+| Input | `{ text: string }` |
+| Output | `{ embedding: number[] }` |
+| Dimensions | `768` |
+| File | `src/skills/generateEmbedding.ts` |
 
 ### 4. `scoreRestaurant`
-**Purpose**: A localized business logic engine that computes match relevance and explainable rationales.
+
+**Purpose**: Compute match relevance and explainable rationales using deterministic business logic.
 
 | Specification | Value |
 | :--- | :--- |
-| **Model** | Heuristic (Deterministic) |
-| **Input** | `{ profile: UserTasteProfile, restaurant: Restaurant, similarity?: number }` |
-| **Output** | `{ matchScore: number, rationale: string }` |
-| **Weights** | Cuisine (0.4), Price (0.3), Ambiance (0.2), Dietary (0.1) |
-| **File** | `src/skills/scoreRestaurant.ts` |
-
----
+| Model | Heuristic (deterministic) |
+| Input | `{ profile: UserTasteProfile; restaurant: Restaurant; similarity?: number }` |
+| Output | `{ matchScore: number; rationale: string }` |
+| Weights | Cuisine `0.4`, Price `0.3`, Ambiance `0.2`, Dietary `0.1` |
+| File | `src/skills/scoreRestaurant.ts` |
 
 ### 5. `extractTrendsFromSearchResults`
-**Purpose**: Synthesizes raw web search snippets into structured culinary trends.
+
+**Purpose**: Synthesize raw web search snippets into structured culinary trends.
 
 | Specification | Value |
 | :--- | :--- |
-| **Model** | `gemini-2.0-flash` |
-| **Input** | `{ results: any[] (Raw search results) }` |
-| **Output** | `{ trendingCuisines: string[], newOpenings: string[], viralDishes: string[], summary: string }` |
-| **File** | `src/skills/extractTrendsFromSearchResults.ts` |
-
----
+| Model | `gemini-2.0-flash` |
+| Input | `{ results: unknown[] }` |
+| Output | `{ trendingCuisines: string[]; newOpenings: string[]; viralDishes: string[]; summary: string }` |
+| File | `src/skills/extractTrendsFromSearchResults.ts` |
 
 ### 6. `classifyTrendRelevanceToProfile`
-**Purpose**: Evaluates the intersection between current trends and a specific user's taste profile.
+
+**Purpose**: Evaluate the intersection between current trends and a specific user's taste profile.
 
 | Specification | Value |
 | :--- | :--- |
-| **Model** | `gemini-2.5-pro-preview-05-06` |
-| **Input** | `{ profile: UserTasteProfile, trends: { trendingCuisines: string[], newOpenings: string[], viralDishes: string[] } }` |
-| **Output** | `{ relevantCuisines: string[], relevantOpenings: string[], relevantDishes: string[], overallRelevanceScore: number, rationale: string }` |
-| **File** | `src/skills/classifyTrendRelevanceToProfile.ts` |
+| Model | `gemini-2.5-pro-preview-06-05` |
+| Input | `{ profile: UserTasteProfile; trends: { trendingCuisines: string[]; newOpenings: string[]; viralDishes: string[] } }` |
+| Output | `{ relevantCuisines: string[]; relevantOpenings: string[]; relevantDishes: string[]; overallRelevanceScore: number; rationale: string }` |
+| File | `src/skills/classifyTrendRelevanceToProfile.ts` |
 
----
-
-## 🛡️ Error Handling Standards
+## Error handling standards
 
 All skills MUST adhere to the following reliability standards:
 
-1. **Transient Failures**: Skills do not handle retries internally; they must be wrapped in `withRetry` by the orchestrator.
-2. **Terminal Errors**: If a skill fails due to invalid input or persistent API failure, it must throw a `SkillError` providing its name and the original cause.
-3. **Empty States**: If no results are found (e.g., no cuisines extracted), skills must return a valid "empty" response (e.g., `[]`) rather than throwing an error.
+1. **Transient failures**: Skills do not retry internally. They must be wrapped in `withRetry` by the orchestrator. Retry behavior should be centralized so it is consistent across skills. [npmjs](https://www.npmjs.com/package/ts-retry?activeTab=readme)
+2. **Terminal errors**: If a skill fails due to invalid input or a persistent API failure, it must throw a `SkillError` that includes the skill name and the original cause.
+3. **Empty states**: If no results are found, skills must return a valid empty response rather than throwing an error, such as `[]` or an object with empty arrays as appropriate.
 
-## 🧪 Testing Requirement
+## Testing requirements
 
-Every skill has a corresponding test file in `src/skills/__tests__/` that verifies:
+Every skill must have a corresponding test file in `src/skills/__tests__/` that verifies:
+
 - Correct output schema validation.
-- Handling of edge cases (e.g., empty strings).
-- Deterministic logic (for heuristic skills).
+- Handling of edge cases, including empty strings and empty result sets.
+- Deterministic logic for heuristic skills.
+- Proper error propagation for invalid input and unrecoverable failures.
