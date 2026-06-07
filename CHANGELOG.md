@@ -2,7 +2,7 @@
 
 All notable changes to this project will be documented in this file.
 
-## [Unreleased]
+## [2.2.9] - 2026-06-07
 
 ### Added
 - **Contributing Guidelines**: Created `CONTRIBUTING.md` to establish clear contribution standards, coding practices, and testing workflows.
