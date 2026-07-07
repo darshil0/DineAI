@@ -67,7 +67,7 @@ All notable changes to this project will be documented in this file.
 - **Enhanced Data Persistence**: Integrated `saveToIndex()` into the `ingestRestaurants` script to ensure that embedded restaurant data is persisted to disk immediately after ingestion.
 
 ### Changed
-- **Model Alignment**: Upgraded the `classifyTrendRelevanceToProfile` skill to use the Reasoning Tier model (`gemini-2.5-pro-preview-05-06`) as per the architectural specification.
+- **Model Alignment**: Upgraded the `classifyTrendRelevanceToProfile` skill to use the Reasoning Tier model (`gemini-1.5-pro`) as per the architectural specification.
 - **Deduplication Strategy**: Updated restaurant ingestion to use a `name-neighborhood` keying strategy for deduplication, ensuring more robust record management.
 - **Documentation Synchronization**: Updated `SKILLS.md` to perfectly align with the actual implementation's field names (camelCase) and schema definitions.
 
@@ -129,13 +129,13 @@ All notable changes to this project will be documented in this file.
 
 ### Changed
 
-- **README**: Updated technology stack table to reflect correct live model IDs (`gemini-2.0-flash`, `gemini-2.5-pro-preview-05-06`) and clarified the High Resilience Architecture feature to mention `withRetry` and `SkillError` propagation explicitly.
+- **README**: Updated technology stack table to reflect correct live model IDs (`gemini-2.0-flash`, `gemini-1.5-pro`) and clarified the High Resilience Architecture feature to mention `withRetry` and `SkillError` propagation explicitly.
 
 ## [2.2.1] - 2026-05-07
 
 ### Fixed
 
-- **Invalid Model Names** (`profileBuilder.ts`, `ragRecommender.ts`, `trendAnalyst.ts`, `finalizer.ts`, `extractCuisines.ts`, `analyzeFoodPhoto.ts`, `extractTrendsFromSearchResults.ts`, `classifyTrendRelevanceToProfile.ts`): Replaced all references to non-existent model identifiers `gemini-3-flash-preview` and `gemini-3.1-pro-preview` with the correct, live model IDs `gemini-2.0-flash` and `gemini-2.5-pro-preview-05-06` respectively. These bad identifiers would have caused every API call to fail at runtime with a model-not-found error.
+- **Invalid Model Names** (`profileBuilder.ts`, `ragRecommender.ts`, `trendAnalyst.ts`, `finalizer.ts`, `extractCuisines.ts`, `analyzeFoodPhoto.ts`, `extractTrendsFromSearchResults.ts`, `classifyTrendRelevanceToProfile.ts`): Replaced all references to non-existent model identifiers `gemini-3-flash-preview` and `gemini-3.1-pro-preview` with the correct, live model IDs `gemini-2.0-flash` and `gemini-1.5-pro` respectively. These bad identifiers would have caused every API call to fail at runtime with a model-not-found error.
 - **Missing `withRetry` in Ingestion Script and Agent Skills** (`ingestRestaurants.ts`, `extractCuisines.ts`, `analyzeFoodPhoto.ts`, `generateEmbedding.ts`, `extractTrendsFromSearchResults.ts`, `classifyTrendRelevanceToProfile.ts`): Model calls were invoked directly without `withRetry`, violating the AGENTS.md resilience contract. Wrapped all internal `generateContent` and `embedContent` calls in `withRetry` to ensure application-wide resistance to transient `429` failures.
 - **Missing `@types/better-sqlite3` Dev Dependency** (`package.json`): The `better-sqlite3` package was used in `cache.ts` but its TypeScript type definitions were absent from `devDependencies`, causing `tsc --noEmit` (`npm run lint`) to fail. Added `@types/better-sqlite3@^7.6.13`.
 - **Incorrect `moduleResolution`** (`tsconfig.json`): `"moduleResolution": "node"` is incompatible with the project's ESM module system and the `.js`-extension import style used by `tsx` and Vite. Changed to `"moduleResolution": "bundler"`, which correctly resolves `.ts` source files referenced via `.js` extensions.
