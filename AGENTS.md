@@ -25,7 +25,7 @@ To handle transient `429 Too Many Requests` or `5xx` errors from the Gemini API,
 ### 2. Dual-Model Selection Strategy
 We balance speed and reasoning depth through a tiered model approach:
 - **Performance Tier (`gemini-2.0-flash`)**: Used for text extraction, vision analysis, and intermediate classification.
-- **Reasoning Tier (`gemini-2.5-pro-preview-05-06`)**: Reserved for high-complexity tasks like final recommendation synthesis and Google Search grounding.
+- **Reasoning Tier (`gemini-1.5-pro`)**: Reserved for high-complexity tasks like final recommendation synthesis and Google Search grounding.
 
 ### 3. Parsing Robustness
 To handle non-deterministic LLM output (e.g., markdown-wrapped JSON), all parsing MUST use the `cleanJson` utility before calling `JSON.parse`.
