@@ -5,6 +5,8 @@ All notable changes to this project will be documented in this file.
 ## [Unreleased]
 
 ### Fixed
+- **Hardcoded PORT** (`server.ts`): The server always listened on port `3000` regardless of the `PORT` environment variable, contradicting `.env.example`'s documented "Defaults to 3000 if not specified" behavior. Changed to `Number(process.env.PORT) || 3000`.
+- **Unused Microphone Permission** (`metadata.json`): `requestFramePermissions` requested `microphone` access, but no documented feature (README, DESIGN.md, SKILLS.md) uses audio input — the app only supports text and photo uploads. Removed the unused permission.
 - **`dotenv.config()` Import-Order Bug** (`server.ts`): `dotenv.config()` was called after `chatRouter` and its dependencies were imported, so any module reading `process.env` (e.g. a singleton Gemini client) at import time would see an undefined API key regardless of a valid `.env` file. Moved `dotenv.config()` to execute before all other imports.
 - **Missing Global Error Handler** (`server.ts`): No Express error-handling middleware was registered, so errors thrown from `chatRouter` (including `AppError`/`SkillError` instances) fell through to Express's default handler and leaked raw stack traces instead of the structured `{ statusCode, userFriendlyMessage }` response the error classes were designed to produce. Added a terminal 4-arg error handler registered after all routes and the Vite/static middleware.
 - **Malformed Version Table** (`SECURITY.md`): The supported-versions table had two rows collapsed onto a single malformed line, breaking table rendering. Split into two proper rows.
