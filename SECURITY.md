@@ -6,7 +6,8 @@ Currently, only the latest version of DineAI is supported with security updates.
 
 | Version | Supported          |
 | ------- | ------------------ |
-| Latest  | :white_check_mark: | < 2.0.0 | :x:                |
+| Latest  | :white_check_mark: |
+| < 2.0.0 | :x:                |
 
 ## Reporting a Vulnerability
 
