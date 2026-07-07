@@ -5,7 +5,20 @@ import { UserTasteProfile } from '../schemas/userTasteProfile.js';
 import { cleanJson, withRetry } from '../lib/utils.js';
 import { SkillError } from '../lib/errors.js';
 
-export const classifyTrendRelevanceToProfileSkill = {
+export interface ClassifyTrendInput {
+  profile: UserTasteProfile;
+  trends: any;
+}
+
+export interface ClassifyTrendOutput {
+  rationale: string;
+  relevantCuisines: string[];
+  relevantOpenings: string[];
+  relevantDishes: string[];
+  overallRelevanceScore: number;
+}
+
+export const classifyTrendRelevanceToProfileSkill: AgentSkill<ClassifyTrendInput, ClassifyTrendOutput> = {
   name: 'classifyTrendRelevanceToProfile',
   description:
     "Determines which food trends are most relevant to a user's specific taste profile.",
@@ -13,8 +26,10 @@ export const classifyTrendRelevanceToProfileSkill = {
     const ai = getGeminiClient();
 
     const response = await withRetry(() => ai.models.generateContent({
-      model: 'gemini-2.5-pro-preview-05-06',
-      contents: `Compare the user's taste profile with these food trends.
+      model: 'gemini-1.5-pro',
+      contents: [{
+        parts: [{
+          text: `Compare the user's taste profile with these food trends.
       
       User Taste Profile:
       ${JSON.stringify(input.profile, null, 2)}
@@ -22,7 +37,9 @@ export const classifyTrendRelevanceToProfileSkill = {
       Food Trends:
       ${JSON.stringify(input.trends, null, 2)}
       
-      Identify which trends the user would likely be interested in based on their preferred cuisines, price range, ambiance, and dietary notes.`,
+      Identify which trends the user would likely be interested in based on their preferred cuisines, price range, ambiance, and dietary notes.`
+        }]
+      }],
       config: {
         responseMimeType: 'application/json',
         responseSchema: {
@@ -43,7 +60,7 @@ export const classifyTrendRelevanceToProfileSkill = {
           ],
         },
       },
-    }));
+    })) as any;
 
     try {
       return JSON.parse(cleanJson(response.text || '{}'));

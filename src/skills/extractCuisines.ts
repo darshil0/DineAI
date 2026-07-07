@@ -4,7 +4,15 @@ import { cleanJson, withRetry } from '../lib/utils.js';
 import { Type } from '@google/genai';
 import { SkillError } from '../lib/errors.js';
 
-export const extractCuisinesSkill = {
+export interface ExtractCuisinesInput {
+  text: string;
+}
+
+export interface ExtractCuisinesOutput {
+  cuisines: string[];
+}
+
+export const extractCuisinesSkill: AgentSkill<ExtractCuisinesInput, ExtractCuisinesOutput> = {
   name: 'extractCuisines',
   description: 'Extracts cuisine preferences from user text.',
   async run({ text }) {
@@ -17,7 +25,7 @@ ${text}`;
 
     const result = await withRetry(() => ai.models.generateContent({
       model: 'gemini-2.0-flash',
-      contents: prompt,
+      contents: [{ parts: [{ text: prompt }] }],
       config: {
         responseMimeType: 'application/json',
         responseSchema: {
@@ -32,7 +40,7 @@ ${text}`;
           required: ['cuisines'],
         },
       },
-    }));
+    })) as any;
 
     try {
       const data = JSON.parse(cleanJson(result.text || '{"cuisines":[]}'));

@@ -4,7 +4,6 @@ import { UserTasteProfile } from '../schemas/index.js';
 import { restaurants, Restaurant } from '../data/restaurants.js';
 import { RAG_RECOMMENDER_SYSTEM, buildRagPrompt } from '../prompts/index.js';
 import { getSkill } from '../skills/registry.js';
-import { GenerateEmbeddingInput, GenerateEmbeddingOutput } from '../skills/generateEmbedding.js';
 import { vectorDb } from '../lib/vectorDb.js';
 import { AgentServiceError, SkillError } from '../lib/errors.js';
 import { withRetry } from '../lib/utils.js';
@@ -19,11 +18,11 @@ export async function recommendCandidates(profile: UserTasteProfile): Promise<Re
 
   try {
     // 1. Try Vector DB approach first
-    const generateEmbedding = getSkill<GenerateEmbeddingInput, GenerateEmbeddingOutput>(
+    const generateEmbedding = getSkill<any, any>(
       'generateEmbedding',
     );
     const scoreRestaurant = getSkill<
-      { profile: UserTasteProfile; restaurant: Restaurant; similarity?: number },
+      any,
       { matchScore: number; rationale: string }
     >('scoreRestaurant');
 
@@ -42,11 +41,11 @@ export async function recommendCandidates(profile: UserTasteProfile): Promise<Re
 
       // NOTE: .catch() is placed OUTSIDE the withRetry callback so that transient 429/5xx errors
       // are retried before being converted to a SkillError.
-      const { embedding } = await withRetry(() => generateEmbedding.run({ text: queryText })).catch(
+      const { embedding } = (await withRetry(() => generateEmbedding.run({ text: queryText })).catch(
         (e) => {
           throw new SkillError('generateEmbedding', e);
         },
-      );
+      )) as any;
       const results = await vectorDb.query(embedding, 20); // Get top 20 to re-rank
 
       const filteredResults = results.filter((r) => r.score >= 0.1);
@@ -85,14 +84,14 @@ export async function recommendCandidates(profile: UserTasteProfile): Promise<Re
   try {
     const ragResponse = await withRetry(() =>
       ai.models.generateContent({
-        model: 'gemini-2.5-pro-preview-05-06',
-        contents: buildRagPrompt(JSON.stringify(profile), JSON.stringify(restaurants)),
+        model: 'gemini-1.5-pro',
+        contents: [{ parts: [{ text: buildRagPrompt(JSON.stringify(profile), JSON.stringify(restaurants)) }] }],
         config: {
           responseMimeType: 'application/json',
-          systemInstruction: RAG_RECOMMENDER_SYSTEM,
+          systemInstruction: { parts: [{ text: RAG_RECOMMENDER_SYSTEM }] },
         },
       }),
-    );
+    ) as any;
 
     let candidateList: RestaurantCandidate[] = [];
     try {

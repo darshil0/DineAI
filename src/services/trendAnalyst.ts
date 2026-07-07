@@ -20,14 +20,14 @@ export async function analyzeTrends(
     // 1. Get raw search results using Google Search
     const trendResponse = await withRetry(() =>
       ai.models.generateContent({
-        model: 'gemini-2.5-pro-preview-05-06',
-        contents: buildTrendPrompt(cuisinesStr),
+        model: 'gemini-1.5-pro',
+        contents: [{ parts: [{ text: buildTrendPrompt(cuisinesStr) }] }],
         config: {
-          tools: [{ googleSearch: {} }],
-          systemInstruction: TREND_ANALYST_SYSTEM,
+          tools: [{ googleSearchRetrieval: { dynamicRetrievalConfig: { mode: 'MODE_DYNAMIC' } } as any }],
+          systemInstruction: { parts: [{ text: TREND_ANALYST_SYSTEM }] },
         },
       }),
-    );
+    ) as any;
 
     const rawSearchResults = trendResponse.text || 'No trends found.';
 

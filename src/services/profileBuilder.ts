@@ -2,8 +2,6 @@ import { getGeminiClient } from '../lib/geminiClient.js';
 import { UserTasteProfileSchema, UserTasteProfile } from '../schemas/index.js';
 import { PROFILE_BUILDER_SYSTEM, buildProfilePrompt } from '../prompts/index.js';
 import { getSkill } from '../skills/registry.js';
-import { ExtractCuisinesInput, ExtractCuisinesOutput } from '../skills/extractCuisines.js';
-import { AnalyzeFoodPhotoInput, AnalyzeFoodPhotoOutput } from '../skills/analyzeFoodPhoto.js';
 import { AgentServiceError, SkillError } from '../lib/errors.js';
 import { withRetry, cleanJson } from '../lib/utils.js';
 
@@ -17,8 +15,8 @@ export async function buildProfile(
   console.log('Running Profile Builder Agent...');
 
   // 1. Run Skills in parallel to gather insights
-  const extractCuisines = getSkill<ExtractCuisinesInput, ExtractCuisinesOutput>('extractCuisines');
-  const analyzeFoodPhoto = getSkill<AnalyzeFoodPhotoInput, AnalyzeFoodPhotoOutput>(
+  const extractCuisines = getSkill<any, any>('extractCuisines');
+  const analyzeFoodPhoto = getSkill<any, any>(
     'analyzeFoodPhoto',
   );
 
@@ -75,14 +73,14 @@ export async function buildProfile(
     const profileResponse = await withRetry(() =>
       ai.models.generateContent({
         model: 'gemini-2.0-flash',
-        contents: { parts: profileParts },
+        contents: [{ parts: profileParts }],
         config: {
           responseMimeType: 'application/json',
           responseSchema: UserTasteProfileSchema,
-          systemInstruction: PROFILE_BUILDER_SYSTEM,
+          systemInstruction: { parts: [{ text: PROFILE_BUILDER_SYSTEM }] },
         },
       }),
-    );
+    ) as any;
 
     let userTasteProfile: UserTasteProfile = {};
     try {

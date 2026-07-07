@@ -13,15 +13,15 @@ db.exec(`
 `);
 
 export const embeddingCache = {
-  get(id) {
-    const row = db.prepare('SELECT embedding FROM embedding_cache WHERE id = ?').get(id);
+  get(id: string): number[] | null {
+    const row = db.prepare('SELECT embedding FROM embedding_cache WHERE id = ?').get(id) as { embedding: string } | undefined;
     if (row) {
       return JSON.parse(row.embedding);
     }
     return null;
   },
 
-  set(id, embedding) {
+  set(id: string, embedding: number[]) {
     db.prepare('INSERT OR REPLACE INTO embedding_cache (id, embedding) VALUES (?, ?)').run(
       id,
       JSON.stringify(embedding),

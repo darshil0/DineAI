@@ -63,9 +63,9 @@ router.post('/', upload.single('image'), async (req, res) => {
     let currentProfile: UserTasteProfile | null = null;
     if (profileStr) {
       try {
-        // FIX 2: Validate currentProfile against UserTasteProfile schema
         const parsed = JSON.parse(profileStr);
-        currentProfile = UserTasteProfile.parse(parsed);
+        const { UserTasteProfileZodSchema } = await import('../schemas/index.js');
+        currentProfile = UserTasteProfileZodSchema.parse(parsed) as UserTasteProfile;
       } catch (e) {
         console.warn('Invalid profile format provided, ignoring.', e);
       }
@@ -120,8 +120,7 @@ router.post('/', upload.single('image'), async (req, res) => {
       trends: trendReportText,
       recommendations: finalRecommendations,
     });
-  } catch (error) {
-    // FIX 4: Remove TypeScript type annotation (error: unknown) for .js file
+  } catch (error: any) {
     handleApiError(res, error);
   }
 });

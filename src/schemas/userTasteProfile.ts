@@ -1,4 +1,5 @@
 import { Type } from '@google/genai';
+import { z } from 'zod';
 
 /**
  * Represents a user's dining preferences and taste profile
@@ -70,3 +71,17 @@ export const UserTasteProfileSchema = {
   },
   // No required array since all properties are optional
 };
+
+/**
+ * Zod schema for validating UserTasteProfile objects in API requests.
+ */
+export const UserTasteProfileZodSchema = z.object({
+  cuisines: z.array(z.string()).optional(),
+  disliked_cuisines: z.array(z.string()).optional(),
+  price_range: z.enum(['$', '$$', '$$$', '$$$$']).optional(),
+  ambiance: z.array(z.string()).optional(),
+  dietary_notes: z.string().optional(),
+  avoid_patterns: z.array(z.string()).optional(),
+  special_occasions: z.array(z.string()).optional(),
+  neighborhoods: z.array(z.string()).optional(),
+});

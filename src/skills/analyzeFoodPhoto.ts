@@ -4,7 +4,18 @@ import { cleanJson, withRetry } from '../lib/utils.js';
 import { Type } from '@google/genai';
 import { SkillError } from '../lib/errors.js';
 
-export const analyzeFoodPhotoSkill = {
+export interface AnalyzeFoodPhotoInput {
+  mimeType: string;
+  data: string;
+}
+
+export interface AnalyzeFoodPhotoOutput {
+  cuisines: string[];
+  ambiance: string[];
+  description: string;
+}
+
+export const analyzeFoodPhotoSkill: AgentSkill<AnalyzeFoodPhotoInput, AnalyzeFoodPhotoOutput> = {
   name: 'analyzeFoodPhoto',
   description: 'Analyzes a food photo to infer cuisines, ambiance/vibe, and a brief description.',
   async run({ mimeType, data }) {
@@ -14,7 +25,7 @@ Extract the most likely cuisines it represents, the ambiance or vibe it suggests
 
     const result = await withRetry(() => ai.models.generateContent({
       model: 'gemini-2.0-flash',
-      contents: [{ inlineData: { mimeType, data } }, { text: prompt }],
+      contents: [{ parts: [{ inlineData: { mimeType, data } }, { text: prompt }] }],
       config: {
         responseMimeType: 'application/json',
         responseSchema: {
@@ -37,7 +48,7 @@ Extract the most likely cuisines it represents, the ambiance or vibe it suggests
           },
         },
       },
-    }));
+    })) as any;
 
     try {
       const output = JSON.parse(

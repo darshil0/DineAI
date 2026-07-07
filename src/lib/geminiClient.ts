@@ -1,6 +1,6 @@
 import { GoogleGenAI } from '@google/genai';
 
-let aiClient = null;
+let aiClient: GoogleGenAI | null = null;
 
 export function getGeminiClient() {
   if (!aiClient) {

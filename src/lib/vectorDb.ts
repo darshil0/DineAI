@@ -4,20 +4,27 @@ import path from 'path';
 
 const INDEX_FILE = path.join(process.cwd(), 'vector_index.json');
 
+export interface VectorRecord {
+  id: string;
+  embedding: number[];
+  metadata: any;
+  score?: number;
+}
+
 class LocalVectorDB {
-  records = [];
+  records: VectorRecord[] = [];
 
   constructor() {
     this.loadFromIndex();
   }
 
-  normalize(vec) {
+  normalize(vec: number[]) {
     const norm = Math.sqrt(vec.reduce((sum, val) => sum + val * val, 0));
     if (norm === 0) return vec;
     return vec.map((val) => val / norm);
   }
 
-  async add(record) {
+  async add(record: VectorRecord) {
     const normalizedRecord = {
       ...record,
       embedding: this.normalize(record.embedding),
@@ -34,7 +41,7 @@ class LocalVectorDB {
     return this.records.length === 0;
   }
 
-  async upsert(records) {
+  async upsert(records: VectorRecord[]) {
     for (const record of records) {
       const normalizedRecord = {
         ...record,
@@ -49,7 +56,7 @@ class LocalVectorDB {
     }
   }
 
-  async query(queryEmbedding, topK = 10) {
+  async query(queryEmbedding: number[], topK = 10) {
     const normalizedQuery = this.normalize(queryEmbedding);
     const scored = this.records.map((record) => {
       const score = this.dotProduct(normalizedQuery, record.embedding);
@@ -57,11 +64,11 @@ class LocalVectorDB {
     });
 
     // Sort descending by similarity score
-    scored.sort((a, b) => b.score - a.score);
+    scored.sort((a, b) => b.score! - a.score!);
     return scored.slice(0, topK);
   }
 
-  dotProduct(vecA, vecB) {
+  dotProduct(vecA: number[], vecB: number[]) {
     let dotProduct = 0;
     for (let i = 0; i < vecA.length; i++) {
       dotProduct += vecA[i] * vecB[i];

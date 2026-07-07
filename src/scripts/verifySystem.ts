@@ -1,9 +1,9 @@
 import dotenv from 'dotenv';
 import { bootstrapSkills } from '../skills/bootstrap.js';
 import { getSkill } from '../skills/registry.js';
-import { ExtractCuisinesInput, ExtractCuisinesOutput } from '../skills/extractCuisines.js';
-import { AnalyzeFoodPhotoInput, AnalyzeFoodPhotoOutput } from '../skills/analyzeFoodPhoto.js';
-import { GenerateEmbeddingInput, GenerateEmbeddingOutput } from '../skills/generateEmbedding.js';
+import { extractCuisinesSkill } from '../skills/extractCuisines.js';
+import { analyzeFoodPhotoSkill } from '../skills/analyzeFoodPhoto.js';
+import { generateEmbeddingSkill } from '../skills/generateEmbedding.js';
 import { restaurants, Restaurant } from '../data/restaurants.js';
 import { UserTasteProfile } from '../schemas/index.js';
 import { recommendCandidates } from '../services/ragRecommender.js';
@@ -20,7 +20,7 @@ async function runVerification() {
 
     // 2. Test extractCuisines skill
     console.log('Testing extractCuisines skill...');
-    const extractCuisines = getSkill<ExtractCuisinesInput, ExtractCuisinesOutput>(
+    const extractCuisines = getSkill<any, any>(
       'extractCuisines',
     );
     if (!extractCuisines) throw new Error('extractCuisines skill not registered');
@@ -30,14 +30,14 @@ async function runVerification() {
     console.log('Cuisines:', cuisinesResult.cuisines);
     if (
       !cuisinesResult.cuisines.includes('Italian') &&
-      !cuisinesResult.cuisines.some((c) => c.toLowerCase().includes('italian'))
+      !cuisinesResult.cuisines.some((c: string) => c.toLowerCase().includes('italian'))
     ) {
       console.warn('Warning: Italian not found in cuisines output.');
     }
 
     // 3. Test generateEmbedding skill
     console.log('\nTesting generateEmbedding skill...');
-    const generateEmbedding = getSkill<GenerateEmbeddingInput, GenerateEmbeddingOutput>(
+    const generateEmbedding = getSkill<any, any>(
       'generateEmbedding',
     );
     if (!generateEmbedding) throw new Error('generateEmbedding skill not registered');

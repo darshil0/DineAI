@@ -18,21 +18,25 @@ export async function finalizeRecommendations(
   try {
     const finalizerResponse = await withRetry(() =>
       ai.models.generateContent({
-        model: 'gemini-2.5-pro-preview-05-06',
-        contents: buildFinalizerPrompt(
-          JSON.stringify(profile),
-          message,
-          JSON.stringify(candidates),
-          trendReport,
-          history,
-        ),
+        model: 'gemini-1.5-pro',
+        contents: [{
+          parts: [{
+            text: buildFinalizerPrompt(
+              JSON.stringify(profile),
+              message,
+              JSON.stringify(candidates),
+              trendReport,
+              history,
+            )
+          }]
+        }],
         config: {
           responseMimeType: 'application/json',
           responseSchema: FinalRecommendationsSchema,
-          systemInstruction: FINALIZER_SYSTEM,
+          systemInstruction: { parts: [{ text: FINALIZER_SYSTEM }] },
         },
       }),
-    );
+    ) as any;
 
     let finalRecommendations: Recommendation[] = [];
     try {
