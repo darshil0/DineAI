@@ -1,14 +1,14 @@
+import dotenv from 'dotenv';
+dotenv.config();
+
 import express from 'express';
 import { createServer as createViteServer } from 'vite';
-import dotenv from 'dotenv';
 import path from 'path';
 import cors from 'cors';
 import chatRouter from './src/api/chat.js';
 import { bootstrapSkills } from './src/skills/bootstrap.js';
 import { ingestRestaurants } from './src/scripts/ingestRestaurants.js';
 import { vectorDb } from './src/lib/vectorDb.js';
-
-dotenv.config();
 
 async function startServer() {
   const app = express();
@@ -66,6 +66,18 @@ async function startServer() {
       res.sendFile(path.join(distPath, 'index.html'));
     });
   }
+
+  // Global error handler — must be registered last (after all routes and
+  // the Vite/static middleware) so Express recognizes it via its 4-arg
+  // signature and it catches errors from every preceding handler. Converts
+  // AppError/SkillError into a consistent JSON response instead of leaking
+  // Express's default HTML/stack trace.
+  app.use((err: any, req: express.Request, res: express.Response, next: express.NextFunction) => {
+    console.error(err);
+    const statusCode = err?.statusCode ?? 500;
+    const message = err?.userFriendlyMessage ?? 'An unexpected error occurred.';
+    res.status(statusCode).json({ error: message });
+  });
 
   app.listen(PORT, '0.0.0.0', () => {
     console.log(`Server running on http://localhost:${PORT}`);
