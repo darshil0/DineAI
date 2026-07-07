@@ -5,6 +5,11 @@ All notable changes to this project will be documented in this file.
 ## [Unreleased]
 
 ### Fixed
+- **`dotenv.config()` Import-Order Bug** (`server.ts`): `dotenv.config()` was called after `chatRouter` and its dependencies were imported, so any module reading `process.env` (e.g. a singleton Gemini client) at import time would see an undefined API key regardless of a valid `.env` file. Moved `dotenv.config()` to execute before all other imports.
+- **Missing Global Error Handler** (`server.ts`): No Express error-handling middleware was registered, so errors thrown from `chatRouter` (including `AppError`/`SkillError` instances) fell through to Express's default handler and leaked raw stack traces instead of the structured `{ statusCode, userFriendlyMessage }` response the error classes were designed to produce. Added a terminal 4-arg error handler registered after all routes and the Vite/static middleware.
+- **Malformed Version Table** (`SECURITY.md`): The supported-versions table had two rows collapsed onto a single malformed line, breaking table rendering. Split into two proper rows.
+- **Reasoning-Tier Model Name Inconsistency** (`README.md`): The "Model Selection & Resilience" section named `gemini-2.5-pro-preview-05-06`, contradicting the architecture diagram, skills table, and tech stack table in the same file (and `AGENTS.md`), all of which use `gemini-1.5-pro`. Standardized on `gemini-1.5-pro`.
+
 - **Gemini SDK Request Format**: Standardized all model interactions to use the strictly required `{ contents: [{ parts: [...] }], systemInstruction: { parts: [...] } }` structure, resolving intermittent API failures and vision processing errors.
 - **Chat API Validation Crash**: Fixed a server-side crash in `src/api/chat.ts` caused by attempting to call `.parse()` on a TypeScript interface. Introduced `UserTasteProfileZodSchema` for proper Zod-based runtime validation of incoming taste profiles.
 - **Google Search Grounding**: Updated the `Trend Analyst` agent to use the modern `googleSearchRetrieval` tool configuration with `MODE_DYNAMIC`, ensuring search-grounded responses are properly triggered.
