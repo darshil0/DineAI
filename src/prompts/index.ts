@@ -20,13 +20,13 @@ Output: {
   "neighborhoods": []
 }`;
 
-export const buildProfilePrompt = (currentProfile, history, message) => {
+export const buildProfilePrompt = (currentProfile: any, history: string, message: string) => {
   let formattedHistory = 'None';
   if (history && history !== 'None') {
     try {
       const historyArr = JSON.parse(history);
-      formattedHistory = historyArr
-        .map((m) => `${m.role.toUpperCase()}: ${m.content}`)
+      formattedHistory = (historyArr as any[])
+        .map((m: any) => `${m.role.toUpperCase()}: ${m.content}`)
         .join('\n');
     } catch (e) {
       formattedHistory = history;
@@ -58,7 +58,7 @@ CRITICAL RULES:
 5. Only use the provided data; do NOT hallucinate restaurants or fields.
 6. Assign a match_score between 0.0 and 1.0.`;
 
-export const buildRagPrompt = (profile, restaurants) => `
+export const buildRagPrompt = (profile: string, restaurants: string) => `
 Rank the provided restaurants from best to worst match for the UserTasteProfile.
 Filter the list and return the top 10 candidates that best match.
 Assign a match_score between 0.0 and 1.0.
@@ -76,7 +76,7 @@ CRITICAL RULES:
 3. If search results are sparse, return fewer trends rather than guessing.
 4. Avoid generic or global trends unless tied to the user's city/region.`;
 
-export const buildTrendPrompt = (cuisinesStr) => `
+export const buildTrendPrompt = (cuisinesStr: string) => `
 Search for current food trends, new restaurant openings, and viral dishes in New York City that might relate to these cuisines: ${cuisinesStr}.
 
 Extract and format your response exactly like this:
@@ -102,18 +102,18 @@ EXAMPLE RATIONALE:
 "L'Artusi is a perfect match for your date night in the West Village. It hits your budget ($$$) and offers the lively, romantic ambiance you're looking for, plus their house-made pasta is legendary."`;
 
 export const buildFinalizerPrompt = (
-  profile,
-  message,
-  candidates,
-  trends,
-  history,
+  profile: string,
+  message: string,
+  candidates: string,
+  trends: string,
+  history: string,
 ) => {
   let formattedHistory = 'None';
   if (history && history !== 'None') {
     try {
       const historyArr = JSON.parse(history);
-      formattedHistory = historyArr
-        .map((m) => `${m.role.toUpperCase()}: ${m.content}`)
+      formattedHistory = (historyArr as any[])
+        .map((m: any) => `${m.role.toUpperCase()}: ${m.content}`)
         .join('\n');
     } catch (e) {
       formattedHistory = history;

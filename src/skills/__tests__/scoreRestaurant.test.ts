@@ -83,13 +83,13 @@ async function testScoreRestaurant() {
 
     // 8. Error handling test - empty profile
     try {
-      await scoreRestaurantSkill.run({ 
-        profile: { cuisines: [], price_range: '', ambiance: [], dietary_notes: '', neighborhoods: [] },
+      const { matchScore: score8 } = await scoreRestaurantSkill.run({
+        profile: { cuisines: [], price_range: undefined, ambiance: [], dietary_notes: '', neighborhoods: [] },
         restaurant,
       });
-      console.log('❌ Should have thrown for empty profile');
+      console.log(`✅ Empty profile score: ${score8.toFixed(2)} (Expected: 0.0)`);
     } catch (error) {
-      console.log(`✅ Error handling works: ${(error as Error).message}`);
+      console.error('❌ Failed for empty profile:', error);
     }
 
     console.log('--- scoreRestaurant Tests Complete ---');

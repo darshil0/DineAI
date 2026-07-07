@@ -23,9 +23,9 @@ export const generateEmbeddingSkill: AgentSkill<GenerateEmbeddingInput, Generate
     const ai = getGeminiClient();
     const response = await withRetry(() => ai.models.embedContent({
       model: 'gemini-embedding-2-preview',
-      contents: [text], // Fix 1: contents must be an array
-      taskType: 'RETRIEVAL_QUERY', // Fix 3: specify task type for better quality
-    }));
+      contents: [{ parts: [{ text }] }],
+      taskType: 'RETRIEVAL_QUERY',
+    } as any)) as any;
 
     // Fix 2: response uses 'embedding' (singular), not 'embeddings'
     if (

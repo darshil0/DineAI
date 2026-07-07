@@ -1,4 +1,4 @@
-export function cleanJson(str) {
+export function cleanJson(str: string): string {
   let cleaned = str.trim();
   if (cleaned.startsWith('```json')) {
     cleaned = cleaned.substring(7);
@@ -11,14 +11,14 @@ export function cleanJson(str) {
   return cleaned.trim();
 }
 
-export async function withRetry(
-  fn,
+export async function withRetry<T>(
+  fn: () => Promise<T>,
   retries = 3,
   delay = 1000,
-) {
+): Promise<T> {
   try {
     return await fn();
-  } catch (error) {
+  } catch (error: any) {
     if (retries <= 0) throw error;
 
     // Check for 429 Too Many Requests, transient server errors (5xx), or network issues
@@ -53,6 +53,6 @@ export async function withRetry(
   }
 }
 
-export function cn(...inputs) {
+export function cn(...inputs: any[]) {
   return inputs.filter(Boolean).join(' ');
 }

@@ -2,6 +2,19 @@
 
 All notable changes to this project will be documented in this file.
 
+## [Unreleased]
+
+### Fixed
+- **Gemini SDK Request Format**: Standardized all model interactions to use the strictly required `{ contents: [{ parts: [...] }], systemInstruction: { parts: [...] } }` structure, resolving intermittent API failures and vision processing errors.
+- **Chat API Validation Crash**: Fixed a server-side crash in `src/api/chat.ts` caused by attempting to call `.parse()` on a TypeScript interface. Introduced `UserTasteProfileZodSchema` for proper Zod-based runtime validation of incoming taste profiles.
+- **Google Search Grounding**: Updated the `Trend Analyst` agent to use the modern `googleSearchRetrieval` tool configuration with `MODE_DYNAMIC`, ensuring search-grounded responses are properly triggered.
+- **Restaurant Scoring Alignment**: Refactored the `scoreRestaurant` skill to align with the canonical design: heuristic weights now sum to 1.0 (Cuisine 0.4, Price 0.3, Ambiance 0.2, Dietary 0.1) and are blended 50/50 with vector similarity when available.
+- **ESM & TypeScript Resolution**: Fixed numerous broken imports and missing `.js` extensions across the service and skill layers.
+- **Type Safety Hardening**: Resolved over 50 TypeScript errors in core logic by adding missing type definitions, fixing generic constraints on `AgentSkill`, and ensuring proper casting for SDK responses.
+
+### Added
+- **UserTasteProfileZodSchema**: A dedicated Zod schema for validating taste profiles in API requests, exported from `src/schemas/userTasteProfile.ts`.
+
 ## [2.3.0] - 2026-06-07
 
 ### Fixed
