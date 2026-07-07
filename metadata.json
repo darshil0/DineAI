@@ -1,5 +1,4 @@
 {
   "name": "DineAI",
-  "description": "Multi-Agent Restaurant Recommendation Chatbot using RAG and Gemini",
-  "requestFramePermissions": ["microphone"]
+  "description": "Multi-Agent Restaurant Recommendation Chatbot using RAG and Gemini"
 }
