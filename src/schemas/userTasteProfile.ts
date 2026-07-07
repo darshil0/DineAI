@@ -27,13 +27,11 @@ export const UserTasteProfileSchema = {
       type: Type.ARRAY, 
       items: { type: Type.STRING }, 
       description: 'Preferred cuisines',
-      minItems: 1,
     },
     disliked_cuisines: {
       type: Type.ARRAY,
       items: { type: Type.STRING },
       description: 'Cuisines to avoid',
-      minItems: 1,
     },
     price_range: {
       type: Type.STRING,
@@ -44,7 +42,6 @@ export const UserTasteProfileSchema = {
       type: Type.ARRAY,
       items: { type: Type.STRING },
       description: 'Preferred ambiance or vibe',
-      minItems: 1,
     },
     dietary_notes: { 
       type: Type.STRING, 
@@ -54,19 +51,16 @@ export const UserTasteProfileSchema = {
       type: Type.ARRAY,
       items: { type: Type.STRING },
       description: 'Specific patterns or ingredients to avoid',
-      minItems: 1,
     },
     special_occasions: {
       type: Type.ARRAY,
       items: { type: Type.STRING },
       description: 'Any special occasions mentioned',
-      minItems: 1,
     },
     neighborhoods: {
       type: Type.ARRAY,
       items: { type: Type.STRING },
       description: 'Preferred neighborhoods or areas',
-      minItems: 1,
     },
   },
   // No required array since all properties are optional
