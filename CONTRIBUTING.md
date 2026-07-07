@@ -22,6 +22,7 @@ Thank you for your interest in contributing to DineAI! We welcome contributions 
 ## 💻 Coding Standards
 
 -   **TypeScript**: Use TypeScript for all new code. Ensure your code passes `npm run lint`.
+- **ESM Modules**: We use ESM. All internal imports must include the `.js` extension (e.g., `import { x } from './utils.js'`).
 -   **Modular Agent Skills**: If adding new AI capabilities, follow the `AgentSkill` interface defined in `SKILLS.md`.
 -   **Resilience**: Wrap all Gemini API calls in the `withRetry` utility from `src/lib/utils.ts`.
 -   **Error Handling**: Use the custom error classes from `src/lib/errors.ts` (`AppError`, `SkillError`, etc.).
@@ -43,11 +44,26 @@ npm run verify
 npm run lint
 ```
 
+## 🧪 Adding a New Skill
+
+To add a new capability to DineAI:
+
+1.  **Define Types**: Add input/output interfaces in `src/skills/[skillName].ts`.
+2.  **Implement Logic**: Create the skill object implementing `AgentSkill<I, O>`.
+3.  **Register Skill**: Add the skill to `src/skills/bootstrap.ts` to make it available to agents.
+4.  **Write Tests**: Add unit tests in `src/skills/__tests__/[skillName].test.ts`.
+
 ## 🤖 Agent-Specific Guidelines
 
 If you are working on the agent orchestration or specific skills, please refer to:
 -   `AGENTS.md`: For overall agent architecture and reliability standards.
 -   `SKILLS.md`: For technical specifications of individual skills.
+
+## 💾 Working with Vector DB
+
+- **Ingestion**: The `src/scripts/ingestRestaurants.ts` script handles batch embedding.
+- **Deduplication**: We use a `name-neighborhood` slug for deduplication.
+- **Persistence**: The index is saved to `vector_index.json` on shutdown.
 
 ## 📝 Reporting Issues
 
