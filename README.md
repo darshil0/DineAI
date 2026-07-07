@@ -27,7 +27,7 @@ DineAI orchestrates four specialized AI agents to deliver personalized, real-tim
 
 DineAI employs a tiered model strategy to balance reasoning depth with execution speed:
 
-- **Reasoning Tier (`gemini-2.5-pro-preview-05-06`)**: Reserved for high-complexity synthesis tasks (Finalizer), search-grounded trend analysis (Trend Analyst), and fallback RAG filtering.
+- **Reasoning Tier (`gemini-1.5-pro`)**: Reserved for high-complexity synthesis tasks (Finalizer), search-grounded trend analysis (Trend Analyst), and fallback RAG filtering.
 - **Performance Tier (`gemini-2.0-flash`)**: Used for high-throughput extraction (Profile Builder, `extractCuisines`) and multimodal vision analysis (`analyzeFoodPhoto`).
 - **Embedding Tier (`gemini-embedding-2-preview`)**: Generates 768-dimensional semantic vectors for RAG.
 
