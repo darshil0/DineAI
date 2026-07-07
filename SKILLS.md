@@ -253,7 +253,7 @@ Maximum raw score: **1.5** (at sim=1.0 with all heuristics matching) → clamped
 | Field | Value |
 | :--- | :--- |
 | **File** | `src/skills/classifyTrendRelevanceToProfile.ts` |
-| **Model** | `gemini-2.5-pro-preview-05-06` |
+| **Model** | `gemini-1.5-pro` |
 
 **Input**
 ```typescript

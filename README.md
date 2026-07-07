@@ -58,7 +58,7 @@ User Request
     │         │  (parallel)
     ▼         ▼
 ┌───────┐  ┌──────────────┐
-│  RAG  │  │ Trend Analyst│  gemini-2.5-pro-preview-05-06
+│  RAG  │  │ Trend Analyst│  gemini-1.5-pro
 │Recom- │  │ + Google     │  + extractTrendsFromSearchResults (flash)
 │mender │  │   Search     │  + classifyTrendRelevanceToProfile (pro)
 └───┬───┘  └──────┬───────┘
@@ -67,7 +67,7 @@ User Request
            │ candidates + trend report
            ▼
 ┌─────────────────────┐
-│     Finalizer       │  gemini-2.5-pro-preview-05-06
+│     Finalizer       │  gemini-1.5-pro
 │  Top 3–5 ranked     │
 │  recommendations    │
 └─────────────────────┘
@@ -84,7 +84,7 @@ Each skill is a composable, independently testable TypeScript function registere
 | `generateEmbedding` | `gemini-embedding-2-preview` | Produces 768-dim vectors for semantic search |
 | `scoreRestaurant` | Heuristic | Weighted match score (cuisine 0.4, price 0.3, ambiance 0.2, dietary 0.1) |
 | `extractTrendsFromSearchResults` | `gemini-2.0-flash` | Structures raw search snippets into trend data |
-| `classifyTrendRelevanceToProfile` | `gemini-2.5-pro-preview-05-06` | Scores trend relevance against the user's profile |
+| `classifyTrendRelevanceToProfile` | `gemini-1.5-pro` | Scores trend relevance against the user's profile |
 
 ---
 
@@ -97,7 +97,7 @@ Each skill is a composable, independently testable TypeScript function registere
 | **Backend** | Node.js + Express | ≥18.0.0 / 5.2.1 |
 | **AI SDK** | `@google/genai` | 2.8.0 |
 | **Performance Tier** | `gemini-2.0-flash` | Text, vision, extraction |
-| **Reasoning Tier** | `gemini-2.5-pro-preview-05-06` | Synthesis, trend classification |
+| **Reasoning Tier** | `gemini-1.5-pro` | Synthesis, trend classification |
 | **Embeddings** | `gemini-embedding-2-preview` | 768-dim semantic vectors |
 | **Vector DB** | Custom `LocalVectorDB` | In-memory, persisted to `vector_index.json` |
 | **Embedding Cache** | `better-sqlite3` | `embeddings_cache.db` — zero API cost on restart |
@@ -233,7 +233,7 @@ DineAI/
 
 ### Key Design Decisions
 
-**Dual-model strategy** — `gemini-2.0-flash` handles all extraction and vision tasks where throughput matters; `gemini-2.5-pro-preview-05-06` is reserved for reasoning-heavy synthesis (Finalizer, trend classification, RAG fallback) where quality is the priority.
+**Dual-model strategy** — `gemini-2.0-flash` handles all extraction and vision tasks where throughput matters; `gemini-1.5-pro` is reserved for reasoning-heavy synthesis (Finalizer, trend classification, RAG fallback) where quality is the priority.
 
 **`RestaurantCandidate` type** — `recommendCandidates()` returns `Restaurant & { match_score?: number; whyMatch?: string }` rather than bare `Restaurant[]`. This ensures the heuristic rationale computed by `scoreRestaurant` flows through to the Finalizer's prompt and is rendered on every recommendation card.
 
