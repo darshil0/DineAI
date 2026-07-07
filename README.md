@@ -23,6 +23,23 @@ DineAI orchestrates four specialized AI agents to deliver personalized, real-tim
 
 ---
 
+## 🧠 Model Selection & Resilience
+
+DineAI employs a tiered model strategy to balance reasoning depth with execution speed:
+
+- **Reasoning Tier (`gemini-2.5-pro-preview-05-06`)**: Reserved for high-complexity synthesis tasks (Finalizer), search-grounded trend analysis (Trend Analyst), and fallback RAG filtering.
+- **Performance Tier (`gemini-2.0-flash`)**: Used for high-throughput extraction (Profile Builder, `extractCuisines`) and multimodal vision analysis (`analyzeFoodPhoto`).
+- **Embedding Tier (`gemini-embedding-2-preview`)**: Generates 768-dimensional semantic vectors for RAG.
+
+### Resilience Contract
+Every AI interaction is protected by a multi-layered resilience strategy:
+1. **Exponential Backoff**: All calls are wrapped in `withRetry`, specifically targeting `429 Too Many Requests` errors.
+2. **Schema Validation**: Outgoing profiles are validated at runtime via `UserTasteProfileZodSchema` to prevent pipeline crashes.
+3. **Structured Error Handling**: Failures are wrapped in specialized `SkillError` or `AgentServiceError` classes, providing both technical logs and user-friendly feedback.
+4. **Embedding Cache**: `embeddings_cache.db` (SQLite) persists vectors for the restaurant catalog, ensuring zero API cost and instant startup on subsequent runs.
+
+---
+
 ## 🏗️ Architecture
 
 DineAI runs as a single Node.js server that serves both the Express API and the Vite dev server (in development) or pre-built static assets (in production).
