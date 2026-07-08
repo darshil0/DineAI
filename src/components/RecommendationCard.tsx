@@ -13,14 +13,22 @@ import {
 import { Recommendation } from '../schemas/index.js';
 import { cn } from '../lib/utils.js';
 
-export const RecommendationCard = ({
+interface RecommendationCardProps {
+  recommendation?: Recommendation;
+  loading?: boolean;
+  isFavorite?: boolean;
+  onFeedback?: (name: string, type: 'like' | 'dislike') => void;
+  onToggleFavorite?: (rec: Recommendation) => void;
+}
+
+export const RecommendationCard: React.FC<RecommendationCardProps> = ({
   recommendation,
   loading,
-  isFavorite,
-  onFeedback,
-  onToggleFavorite,
+  isFavorite = false,
+  onFeedback = () => {},
+  onToggleFavorite = () => {},
 }) => {
-  const [feedback, setFeedback] = useState(null);
+  const [feedback, setFeedback] = useState<'liked' | 'disliked' | null>(null);
 
   if (loading) {
     return (
