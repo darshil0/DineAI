@@ -1,6 +1,19 @@
 @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Playfair+Display:wght@700;800&display=swap');
 @import 'tailwindcss';
 
+@theme {
+  --color-brand-primary: #d4af37;
+  --color-brand-secondary: #c5a028;
+  --color-bg-deep: #121212;
+  --color-bg-card: #1e1e1e;
+  --color-text-main: #fdfcf0;
+  --color-text-muted: #a0a0a0;
+
+  --utility-glass-card: bg-[var(--glass-bg)] border border-[var(--glass-border)] backdrop-blur-md rounded-2xl shadow-xl;
+  --utility-bubble-user: bg-gradient-to-br from-[var(--color-brand-primary)] to-[var(--color-brand-secondary)] text-black rounded-2xl rounded-tr-none shadow-lg px-4 py-2;
+  --utility-bubble-assistant: bg-[var(--glass-bg)] border border-[var(--glass-border)] backdrop-blur-md rounded-2xl shadow-xl rounded-tl-none px-4 py-2;
+}
+
 /* Custom Culinary Theme Variables */
 :root {
   --color-brand-primary: #d4af37; /* Culinary Gold */
