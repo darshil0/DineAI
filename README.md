@@ -31,7 +31,7 @@ DineAI employs a tiered model strategy to balance reasoning depth with execution
 
 - **Reasoning Tier (`gemini-1.5-pro`)**: Reserved for high-complexity synthesis tasks (Finalizer), search-grounded trend analysis (Trend Analyst), and fallback RAG filtering.
 - **Performance Tier (`gemini-2.0-flash`)**: Used for high-throughput extraction (Profile Builder, `extractCuisines`) and multimodal vision analysis (`analyzeFoodPhoto`).
-- **Embedding Tier (`gemini-embedding-2-preview`)**: Generates 768-dimensional semantic vectors for RAG.
+- **Embedding Tier (`text-embedding-004`)**: Generates semantic vectors for RAG.
 
 ### Resilience Contract
 Every AI interaction is protected by a multi-layered resilience strategy:
@@ -83,7 +83,7 @@ Each skill is a composable, independently testable TypeScript function registere
 |---|---|---|
 | `extractCuisines` | `gemini-2.0-flash` | Parses cuisine names from user text |
 | `analyzeFoodPhoto` | `gemini-2.0-flash` | Infers cuisines and ambiance from a photo |
-| `generateEmbedding` | `gemini-embedding-2-preview` | Produces 768-dim vectors for semantic search |
+| `generateEmbedding` | `text-embedding-004` | Produces semantic vectors for search |
 | `scoreRestaurant` | Heuristic | Weighted match score (cuisine 0.4, price 0.3, ambiance 0.2, dietary 0.1) |
 | `extractTrendsFromSearchResults` | `gemini-2.0-flash` | Structures raw search snippets into trend data |
 | `classifyTrendRelevanceToProfile` | `gemini-1.5-pro` | Scores trend relevance against the user's profile |
@@ -100,13 +100,15 @@ Each skill is a composable, independently testable TypeScript function registere
 | **AI SDK** | `@google/genai` | 2.8.0 |
 | **Performance Tier** | `gemini-2.0-flash` | Text, vision, extraction |
 | **Reasoning Tier** | `gemini-1.5-pro` | Synthesis, trend classification |
-| **Embeddings** | `gemini-embedding-2-preview` | 768-dim semantic vectors |
+| **Embeddings** | `text-embedding-004` | Semantic vectors |
 | **Vector DB** | Custom `LocalVectorDB` | In-memory, persisted to `vector_index.json` |
 | **Embedding Cache** | `better-sqlite3` | `embeddings_cache.db` — zero API cost on restart |
 | **Validation** | Zod | 4.4.3 |
 | **Animation** | Motion | 12.40.0 |
 | **Icons** | Lucide React | 1.17.0 |
 | **TypeScript** | TypeScript | 5.9.3 |
+| **File Uploads** | Multer | 2.1.1 |
+| **Markdown Rendering** | react-markdown + remark-gfm | 10.1.0 / 4.0.1 |
 
 ---
 
@@ -145,7 +147,7 @@ Each skill is a composable, independently testable TypeScript function registere
 npm run dev
 ```
 
-This starts both the Express backend and the Vite dev server. Open **http://localhost:5173** in your browser. The Express API is available at **http://localhost:3000**.
+This single command starts the Express backend and the Vite dev server together. Open **http://localhost:5173** for the frontend; the Express API itself is available at **http://localhost:3000**. In production (`npm run build` followed by `npm start`), Express serves the pre-built static assets directly, and both frontend and API are reachable from the same port.
 
 On first start, if no `vector_index.json` is found, DineAI automatically embeds the full restaurant catalog (120 restaurants). Embeddings are cached in `embeddings_cache.db` so subsequent restarts are instant.
 
@@ -158,6 +160,7 @@ On first start, if no `vector_index.json` is found, DineAI automatically embeds 
 | Script | Command | Description |
 |---|---|---|
 | `dev` | `tsx server.ts` | Start backend + Vite dev server |
+| `start` | `tsx server.ts` | Start server in production mode |
 | `build` | `vite build` | Build production frontend to `dist/` |
 | `preview` | `vite preview` | Preview the production build locally |
 | `lint` | `tsc --noEmit` | Run TypeScript type checking |
@@ -165,7 +168,7 @@ On first start, if no `vector_index.json` is found, DineAI automatically embeds 
 | `verify` | `tsx src/scripts/verifySystem.ts` | Full end-to-end system check |
 | `clean` | `rm -rf dist` | Remove build output |
 
-The `test` script runs three suites in sequence:
+The `test` script runs three suites in sequence, executed directly with `tsx` (no separate test runner is used):
 ```bash
 npx tsx src/lib/__tests__/utils.test.ts
 npx tsx src/lib/__tests__/vectorDb.test.ts
@@ -235,7 +238,7 @@ DineAI/
 
 ### Key Design Decisions
 
-**Dual-model strategy** — `gemini-2.0-flash` handles all extraction and vision tasks where throughput matters; `gemini-1.5-pro` is reserved for reasoning-heavy synthesis (Finalizer, trend classification, RAG fallback) where quality is the priority.
+**Dual-model strategy** — `gemini-2.0-flash` handles extraction and vision tasks where throughput matters; `gemini-1.5-pro` is reserved for reasoning-heavy synthesis (Finalizer, trend classification, RAG fallback) where output quality is the priority.
 
 **`RestaurantCandidate` type** — `recommendCandidates()` returns `Restaurant & { match_score?: number; whyMatch?: string }` rather than bare `Restaurant[]`. This ensures the heuristic rationale computed by `scoreRestaurant` flows through to the Finalizer's prompt and is rendered on every recommendation card.
 
