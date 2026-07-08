@@ -138,7 +138,7 @@ export default function ChatInterface() {
       recognition.interimResults = false;
       recognition.lang = 'en-US';
 
-      recognition.onresult = (event) => {
+      recognition.onresult = (event: SpeechRecognitionEvent) => {
         const transcript = event.results[0][0].transcript;
         setInput((prev) => {
           const newText = prev.trim() ? `${prev} ${transcript}` : transcript;
@@ -147,7 +147,7 @@ export default function ChatInterface() {
         setIsListening(false);
       };
 
-      recognition.onerror = (event) => {
+      recognition.onerror = (event: SpeechRecognitionErrorEvent) => {
         console.error('Speech recognition error:', event.error);
         setIsListening(false);
       };
@@ -506,7 +506,7 @@ export default function ChatInterface() {
 
                       {/* FIX 4: Store filtered results to avoid duplicate filtering */}
                       {(() => {
-                        const filteredRecommendations = msg.recommendations.filter((r) => {
+                        const filteredRecommendations = (msg.recommendations || []).filter((r) => {
                           const matchCuisine =
                             filters.cuisines.length === 0 ||
                             (r.cuisine && filters.cuisines.includes(r.cuisine));

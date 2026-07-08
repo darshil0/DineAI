@@ -5,7 +5,21 @@ import { motion, AnimatePresence } from 'motion/react';
 import { Recommendation } from '../schemas/index.js';
 import { cn } from '../lib/utils.js';
 
-const MultiSelect = ({
+interface MultiSelectOption {
+  label: string;
+  value: string;
+}
+
+interface MultiSelectProps {
+  label: string;
+  icon: React.ReactNode;
+  options: MultiSelectOption[];
+  selected: string[];
+  onChange: (selected: string[]) => void;
+  align?: 'left' | 'right';
+}
+
+const MultiSelect: React.FC<MultiSelectProps> = ({
   label,
   icon,
   options,
@@ -14,11 +28,11 @@ const MultiSelect = ({
   align = 'left',
 }) => {
   const [isOpen, setIsOpen] = useState(false);
-  const containerRef = useRef(null);
+  const containerRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
-    const handleClickOutside = (event) => {
-      if (containerRef.current && !containerRef.current.contains(event.target)) {
+    const handleClickOutside = (event: MouseEvent) => {
+      if (containerRef.current && !containerRef.current.contains(event.target as Node)) {
         setIsOpen(false);
       }
     };
@@ -26,7 +40,7 @@ const MultiSelect = ({
     return () => document.removeEventListener('mousedown', handleClickOutside);
   }, []);
 
-  const toggleOption = (value) => {
+  const toggleOption = (value: string) => {
     if (selected.includes(value)) {
       onChange(selected.filter((v) => v !== value));
     } else {
@@ -108,14 +122,32 @@ const MultiSelect = ({
   );
 };
 
-export const FilterControls = ({ 
-  recommendations, 
-  filters, 
-  onFilterChange 
+interface Filters {
+  cuisines: string[];
+  prices: string[];
+  neighborhoods: string[];
+}
+
+interface FilterControlsProps {
+  recommendations: Recommendation[];
+  filters: Filters;
+  onFilterChange: (filters: Filters) => void;
+}
+
+export const FilterControls: React.FC<FilterControlsProps> = ({
+  recommendations,
+  filters,
+  onFilterChange,
 }) => {
-  const cuisines = Array.from(new Set(recommendations.map(r => r.cuisine).filter(Boolean)));
-  const prices = Array.from(new Set(recommendations.map(r => r.price_level).filter(Boolean)));
-  const neighborhoods = Array.from(new Set(recommendations.map(r => r.neighborhood).filter(Boolean)));
+  const cuisines = Array.from(
+    new Set(recommendations.map((r) => r.cuisine).filter((c): c is string => !!c))
+  );
+  const prices = Array.from(
+    new Set(recommendations.map((r) => r.price_level).filter((p): p is string => !!p))
+  );
+  const neighborhoods = Array.from(
+    new Set(recommendations.map((r) => r.neighborhood).filter((n): n is string => !!n))
+  );
 
   const hasActiveFilters = filters.cuisines.length > 0 || filters.prices.length > 0 || filters.neighborhoods.length > 0;
 
@@ -190,7 +222,12 @@ export const FilterControls = ({
   );
 };
 
-const FilterChip = ({ label, onRemove }) => (
+interface FilterChipProps {
+  label: string;
+  onRemove: () => void;
+}
+
+const FilterChip: React.FC<FilterChipProps> = ({ label, onRemove }) => (
   <span className="inline-flex items-center gap-1.5 rounded-full bg-white/5 border border-white/10 px-3 py-1 text-[10px] font-bold text-[var(--color-text-main)]">
     {label}
     <button onClick={onRemove} className="text-[var(--color-text-muted)] hover:text-white transition-colors">

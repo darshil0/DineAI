@@ -39,7 +39,11 @@ const steps = [
   }
 ];
 
-export const OnboardingTutorial = ({ onComplete }) => {
+interface OnboardingTutorialProps {
+  onComplete: () => void;
+}
+
+export const OnboardingTutorial: React.FC<OnboardingTutorialProps> = ({ onComplete }) => {
   const [currentStep, setCurrentStep] = useState(0);
   const [isVisible, setIsVisible] = useState(true);
 
