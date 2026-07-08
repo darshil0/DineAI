@@ -183,27 +183,27 @@ listSkills(): string[]
 | Cuisine match | `+0.4` | Profile cuisine matches restaurant cuisine (case-insensitive) |
 | Price — exact | `+0.3` | `profile.price_range === restaurant.price_tier` |
 | Price — adjacent | `+0.15` | Price tier differs by 1 level |
-| Price — far off | `−0.2` | Price tier differs by 3+ levels |
 | Ambiance overlap | `+0.2` | Any profile ambiance value found in restaurant tags |
-| Neighborhood match | `+0.2` | Profile neighborhood matches restaurant neighborhood (case-insensitive) |
 | Dietary compatibility | `+0.1` | Dietary note found in restaurant tags (substring match) |
+| Neighborhood match | `+0.1` | Bonus boost if neighborhood matches |
 
-Maximum raw score: **1.2** → clamped to **1.0**.
+Maximum raw score: **1.1** → clamped to **1.0**.
 
 **Scoring — with `similarity`** (vector + heuristic hybrid mode)
 
 | Signal | Weight | Condition |
 | :--- | :--- | :--- |
-| Vector similarity | `sim × 0.5` | Base semantic score |
-| Cuisine match | `+0.3` | Profile cuisine matches restaurant cuisine |
-| Price — exact | `+0.2` | Exact price tier match |
-| Price — adjacent | `+0.1` | Price tier differs by 1 level |
-| Price — far off | `−0.2` | Price tier differs by 3+ levels |
-| Ambiance overlap | `+0.2` | Any profile ambiance in restaurant tags |
-| Neighborhood match | `+0.2` | Neighborhood match |
-| Dietary compatibility | `+0.1` | Dietary note in restaurant tags |
+| Vector similarity | `sim × 0.5` | Base semantic score (50%) |
+| Heuristic blend | `heur × 0.5` | Weighted heuristics (50%) |
 
-Maximum raw score: **1.5** (at sim=1.0 with all heuristics matching) → clamped to **1.0**.
+**Heuristic Weights (sum to 1.0):**
+- Cuisine: 0.4
+- Price: 0.3
+- Ambiance: 0.2
+- Dietary: 0.1
+- Neighborhood: +0.1 bonus (clamped)
+
+Maximum raw score: **1.0** (50/50 blend).
 
 **Behaviour**
 - Always returns a valid `{ matchScore, rationale }` — never throws.
