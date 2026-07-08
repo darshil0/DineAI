@@ -18,6 +18,8 @@ DineAI orchestrates four specialized AI agents to deliver personalized, real-tim
 - **Advanced Filtering** — Multi-select filter bar for cuisine, price tier, and neighborhood, applied client-side with no additional API calls.
 - **Favorites Collection** — Heart any restaurant to save it to a persistent local collection, accessible from the header at any time.
 - **Onboarding Tutorial** — A five-step modal explains the multi-agent pipeline, taste profiles, and visual input on first visit.
+- **Voice-to-Text Input** — Hands-free interaction powered by the Web Speech API, allowing users to dictate preferences naturally.
+- **Skeleton Loading States** — Shimmer effects for cards and badges provide instant visual feedback and maintain UI stability while background agents process.
 - **Premium UI** — Dark mode with "Culinary Gold" accents (`#d4af37`), glassmorphism cards, Playfair Display typography, and Motion-powered transitions throughout.
 - **High Resilience** — All Gemini API calls are wrapped in `withRetry` (3 attempts, exponential backoff). All agent responses are validated against Zod schemas before use.
 
@@ -126,7 +128,7 @@ Each skill is a composable, independently testable TypeScript function registere
 
 2. Install dependencies:
    ```bash
-   npm install
+   npm install --legacy-peer-deps
    ```
 
 3. Create a `.env` file in the project root:

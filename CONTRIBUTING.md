@@ -9,6 +9,7 @@ Thank you for your interest in contributing to DineAI! We welcome contributions 
     ```bash
     git clone https://github.com/YOUR_USERNAME/DineAI.git
     cd DineAI
+    npm install --legacy-peer-deps
     ```
 3.  **Create a new branch** for your feature or bugfix:
     ```bash
@@ -21,7 +22,7 @@ Thank you for your interest in contributing to DineAI! We welcome contributions 
 
 ## 💻 Coding Standards
 
--   **TypeScript**: Use TypeScript for all new code. Ensure your code passes `npm run lint`.
+-   **TypeScript**: Use TypeScript for all new code. Ensure your code passes `npm run lint`. Ambient types for the Web Speech API are managed in `src/types/speech-recognition.d.ts`.
 - **ESM Modules**: We use ESM. All internal imports must include the `.js` extension (e.g., `import { x } from './utils.js'`).
 -   **Modular Agent Skills**: If adding new AI capabilities, follow the `AgentSkill` interface defined in `SKILLS.md`.
 -   **Resilience**: Wrap all Gemini API calls in the `withRetry` utility from `src/lib/utils.ts`.
