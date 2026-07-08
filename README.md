@@ -94,19 +94,19 @@ Each skill is a composable, independently testable TypeScript function registere
 
 | Category | Technology | Version |
 |---|---|---|
-| **Frontend** | React + Tailwind CSS | 19.2.7 / 4.3.0 |
-| **Build** | Vite | 8.0.16 |
-| **Backend** | Node.js + Express | ≥18.0.0 / 5.2.1 |
-| **AI SDK** | `@google/genai` | 2.8.0 |
+| **Frontend** | React + Tailwind CSS | 19.2.7 (Verified) / 4.3.0 |
+| **Build** | Vite | 8.0.16 (Verified) |
+| **Backend** | Node.js + Express | ≥18.0.0 / 5.2.1 (Verified) |
+| **AI SDK** | `@google/genai` | 2.8.0 (Verified) |
 | **Performance Tier** | `gemini-2.0-flash` | Text, vision, extraction |
 | **Reasoning Tier** | `gemini-1.5-pro` | Synthesis, trend classification |
 | **Embeddings** | `text-embedding-004` | Semantic vectors |
 | **Vector DB** | Custom `LocalVectorDB` | In-memory, persisted to `vector_index.json` |
 | **Embedding Cache** | `better-sqlite3` | `embeddings_cache.db` — zero API cost on restart |
-| **Validation** | Zod | 4.4.3 |
-| **Animation** | Motion | 12.40.0 |
-| **Icons** | Lucide React | 1.17.0 |
-| **TypeScript** | TypeScript | 5.9.3 |
+| **Validation** | Zod | 4.4.3 (Verified) |
+| **Animation** | Motion | 12.40.0 (Verified) |
+| **Icons** | Lucide React | 1.17.0 (Verified) |
+| **TypeScript** | TypeScript | 5.9.3 (Verified) |
 | **File Uploads** | Multer | 2.1.1 |
 | **Markdown Rendering** | react-markdown + remark-gfm | 10.1.0 / 4.0.1 |
 
@@ -147,7 +147,7 @@ Each skill is a composable, independently testable TypeScript function registere
 npm run dev
 ```
 
-This single command starts the Express backend and the Vite dev server together. Open **http://localhost:5173** for the frontend; the Express API itself is available at **http://localhost:3000**. In production (`npm run build` followed by `npm start`), Express serves the pre-built static assets directly, and both frontend and API are reachable from the same port.
+This starts both the Express backend and the Vite dev server. In development, access the frontend at **http://localhost:5173** (Vite) and the API at **http://localhost:3000** (Express). In production (`npm run build` followed by `npm start`), Express serves both the static assets and the API from the same port (**http://localhost:3000** by default).
 
 On first start, if no `vector_index.json` is found, DineAI automatically embeds the full restaurant catalog (120 restaurants). Embeddings are cached in `embeddings_cache.db` so subsequent restarts are instant.
 
@@ -238,7 +238,7 @@ DineAI/
 
 ### Key Design Decisions
 
-**Dual-model strategy** — `gemini-2.0-flash` handles extraction and vision tasks where throughput matters; `gemini-1.5-pro` is reserved for reasoning-heavy synthesis (Finalizer, trend classification, RAG fallback) where output quality is the priority.
+**Tiered model orchestration** — Balancing throughput and reasoning by routing extraction/vision to `gemini-2.0-flash` and complex synthesis to `gemini-1.5-pro`.
 
 **`RestaurantCandidate` type** — `recommendCandidates()` returns `Restaurant & { match_score?: number; whyMatch?: string }` rather than bare `Restaurant[]`. This ensures the heuristic rationale computed by `scoreRestaurant` flows through to the Finalizer's prompt and is rendered on every recommendation card.
 

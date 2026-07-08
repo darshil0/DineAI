@@ -115,7 +115,7 @@ To achieve sub-millisecond similarity search without cloud database overhead, Di
 | **In-Memory Store** | Memory-mapped JSON Array | Sub-millisecond vector similarity search ($O(N)$ brute-force or localized graph index). |
 | **Embeddings Cache** | SQLite (`embeddings_cache.db`) | Local key-value cache mapping raw text blocks to vectors. Prevents redundant API consumption costs during ingest. |
 | **Metadata Index** | SQLite relational tables | Fast execution of deterministic hard filters (e.g., `WHERE open_now = 1 AND vegan = 1`). |
-| **Vector Generation** | `gemini-embedding-2-preview` | Generates 768-dimensional dense vector representations. |
+| **Vector Generation** | `text-embedding-004` | Generates 768-dimensional dense vector representations. |
 
 ---
 
