@@ -129,7 +129,7 @@ listSkills(): string[]
 | Field | Value |
 | :--- | :--- |
 | **File** | `src/skills/generateEmbedding.ts` |
-| **Model** | `gemini-embedding-2-preview` |
+| **Model** | `text-embedding-004` |
 | **Dimensions** | 768 |
 
 **Input**

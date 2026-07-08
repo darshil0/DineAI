@@ -22,7 +22,7 @@ export const generateEmbeddingSkill: AgentSkill<GenerateEmbeddingInput, Generate
 
     const ai = getGeminiClient();
     const response = await withRetry(() => ai.models.embedContent({
-      model: 'gemini-embedding-2-preview',
+      model: 'text-embedding-004',
       contents: [{ parts: [{ text }] }],
       taskType: 'RETRIEVAL_QUERY',
     } as any)) as any;

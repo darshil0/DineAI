@@ -274,7 +274,7 @@ All notable changes to this project will be documented in this file.
 
 ### Improved
 
-- **Gemini Model Upgrades**: Transitioned to `gemini-3-flash-preview` for text/vision tasks and `gemini-embedding-2-preview` for semantic search, ensuring the latest and most efficient models are used.
+- **Gemini Model Upgrades**: Transitioned to `gemini-2.0-flash` for text/vision tasks and `text-embedding-004` for semantic search, ensuring the latest and most efficient models are used.
 - **Refined Price Matching**: Updated the `scoreRestaurant` skill with numeric price tier mapping, allowing for partial matches and mismatch penalties to better align with user budgets.
 - **Standardized AI Clients**: Refactored all agent skills to use a centralized `getGeminiClient` utility for consistent API key handling and configuration.
 
