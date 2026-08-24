@@ -32,7 +32,7 @@ export const RecommendationCard: React.FC<RecommendationCardProps> = ({
 
   if (loading) {
     return (
-      <div className="mb-4 animate-pulse glass-card p-5">
+      <div className="glass-card mb-4 animate-pulse p-5">
         <div className="mb-3 flex items-start justify-between">
           <div className="flex items-center gap-3">
             <div className="h-8 w-8 rounded-full bg-white/5" />
@@ -82,17 +82,17 @@ export const RecommendationCard: React.FC<RecommendationCardProps> = ({
   const googleMapsUrl = `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(`${name} ${address || ''}`)}`;
 
   return (
-    <div className="group relative mb-6 overflow-hidden glass-card p-6 transition-all hover:bg-white/[0.07] hover:scale-[1.01] hover:shadow-2xl">
+    <div className="group glass-card relative mb-6 overflow-hidden p-6 transition-all hover:scale-[1.01] hover:bg-white/[0.07] hover:shadow-2xl">
       {/* Top Banner for Rank */}
       <div className="absolute top-0 left-0 h-1 w-full bg-gradient-to-r from-transparent via-[var(--color-brand-primary)] to-transparent opacity-30" />
 
       <div className="mb-4 flex items-start justify-between">
         <div className="flex items-center gap-4">
-          <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-[var(--color-brand-primary)]/10 border border-[var(--color-brand-primary)]/30 text-base font-black text-[var(--color-brand-primary)] shadow-inner">
+          <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl border border-[var(--color-brand-primary)]/30 bg-[var(--color-brand-primary)]/10 text-base font-black text-[var(--color-brand-primary)] shadow-inner">
             {rank}
           </div>
           <div>
-            <h3 className="text-xl font-bold tracking-tight text-[var(--color-text-main)] group-hover:text-[var(--color-brand-primary)] transition-colors">
+            <h3 className="text-xl font-bold tracking-tight text-[var(--color-text-main)] transition-colors group-hover:text-[var(--color-brand-primary)]">
               {name}
             </h3>
             <div className="mt-1 flex items-center gap-2">
@@ -120,20 +120,24 @@ export const RecommendationCard: React.FC<RecommendationCardProps> = ({
 
       {/* Why it matches (Heuristic Rationale) */}
       {(whyMatch || rationale) && (
-        <div className="mb-4 rounded-xl bg-white/5 border border-white/10 p-3">
-           <p className="text-xs italic leading-relaxed text-[var(--color-text-main)]/90">
-             <span className="text-[9px] font-bold tracking-widest uppercase not-italic text-[var(--color-brand-primary)] mr-2">Why it matches:</span>
-             {whyMatch || rationale}
-           </p>
+        <div className="mb-4 rounded-xl border border-white/10 bg-white/5 p-3">
+          <p className="text-xs leading-relaxed text-[var(--color-text-main)]/90 italic">
+            <span className="mr-2 text-[9px] font-bold tracking-widest text-[var(--color-brand-primary)] uppercase not-italic">
+              Why it matches:
+            </span>
+            {whyMatch || rationale}
+          </p>
         </div>
       )}
 
       {/* Trend Insights */}
       {trend_relevance && trend_relevance !== 'None' && (
-        <div className="mb-5 flex items-start gap-3 rounded-xl bg-[var(--color-brand-primary)]/5 border border-[var(--color-brand-primary)]/10 p-4">
+        <div className="mb-5 flex items-start gap-3 rounded-xl border border-[var(--color-brand-primary)]/10 bg-[var(--color-brand-primary)]/5 p-4">
           <TrendingUp className="mt-0.5 h-4 w-4 shrink-0 text-[var(--color-brand-primary)]" />
           <div>
-            <p className="text-xs font-bold text-[var(--color-brand-primary)] uppercase tracking-widest mb-1">Culinary Trend</p>
+            <p className="mb-1 text-xs font-bold tracking-widest text-[var(--color-brand-primary)] uppercase">
+              Culinary Trend
+            </p>
             <p className="text-xs leading-relaxed text-[var(--color-text-main)]/80 italic">
               {trend_relevance}
             </p>
@@ -152,7 +156,7 @@ export const RecommendationCard: React.FC<RecommendationCardProps> = ({
           {address && (
             <div className="flex items-center gap-2 text-[11px] text-[var(--color-text-muted)]">
               <MapPin className="h-3 w-3 text-[var(--color-brand-primary)]/50" />
-              <span className="truncate max-w-[180px]">{address}</span>
+              <span className="max-w-[180px] truncate">{address}</span>
             </div>
           )}
           {hours && (
@@ -172,7 +176,7 @@ export const RecommendationCard: React.FC<RecommendationCardProps> = ({
                 'rounded-lg p-2 transition-all',
                 feedback === 'liked'
                   ? 'bg-emerald-500/20 text-emerald-400'
-                  : 'text-white/20 hover:text-emerald-400 hover:bg-emerald-500/10'
+                  : 'text-white/20 hover:bg-emerald-500/10 hover:text-emerald-400',
               )}
             >
               <ThumbsUp className={cn('h-4 w-4', feedback === 'liked' && 'fill-current')} />
@@ -184,7 +188,7 @@ export const RecommendationCard: React.FC<RecommendationCardProps> = ({
                 'rounded-lg p-2 transition-all',
                 feedback === 'disliked'
                   ? 'bg-rose-500/20 text-rose-400'
-                  : 'text-white/20 hover:text-rose-400 hover:bg-rose-500/10'
+                  : 'text-white/20 hover:bg-rose-500/10 hover:text-rose-400',
               )}
             >
               <ThumbsDown className={cn('h-4 w-4', feedback === 'disliked' && 'fill-current')} />
@@ -197,7 +201,7 @@ export const RecommendationCard: React.FC<RecommendationCardProps> = ({
               'rounded-lg p-2 transition-all',
               isFavorite
                 ? 'bg-rose-500/20 text-rose-500'
-                : 'text-white/20 hover:text-rose-500 hover:bg-rose-500/10'
+                : 'text-white/20 hover:bg-rose-500/10 hover:text-rose-500',
             )}
           >
             <Heart className={cn('h-4 w-4', isFavorite && 'fill-current')} />

@@ -26,8 +26,8 @@ Introduced in v2.3.0. Exported from `src/services/ragRecommender.ts` and used as
 
 ```typescript
 type RestaurantCandidate = Restaurant & {
-  match_score?: number;   // computed by scoreRestaurant
-  whyMatch?: string;      // human-readable heuristic rationale
+  match_score?: number; // computed by scoreRestaurant
+  whyMatch?: string; // human-readable heuristic rationale
 };
 ```
 
@@ -51,6 +51,7 @@ listSkills(): string[]
 ```
 
 **Registration order** (`src/skills/bootstrap.ts`):
+
 1. `extractCuisines`
 2. `analyzeFoodPhoto`
 3. `generateEmbedding`
@@ -66,23 +67,28 @@ listSkills(): string[]
 
 **Purpose**: Parses unstructured user text to identify specific, canonical cuisine names.
 
-| Field | Value |
-| :--- | :--- |
-| **File** | `src/skills/extractCuisines.ts` |
-| **Model** | `gemini-2.0-flash` |
+| Field        | Value                                               |
+| :----------- | :-------------------------------------------------- |
+| **File**     | `src/skills/extractCuisines.ts`                     |
+| **Model**    | `gemini-2.0-flash`                                  |
 | **Strategy** | Zero-shot extraction with Gemini Structured Outputs |
 
 **Input**
+
 ```typescript
-{ text: string }
+{
+  text: string;
+}
 ```
 
 **Output**
+
 ```typescript
 { cuisines: string[] }
 ```
 
 **Behaviour**
+
 - Returns `{ cuisines: [] }` when no cuisines are found — does **not** throw.
 - Throws `SkillError('extractCuisines', cause)` on JSON parse failure.
 - Called with `withRetry` by `profileBuilder.ts` before being caught as a `SkillError`.
@@ -93,21 +99,23 @@ listSkills(): string[]
 
 **Purpose**: Multimodal analysis of a dining photo to infer food categories and restaurant ambiance.
 
-| Field | Value |
-| :--- | :--- |
-| **File** | `src/skills/analyzeFoodPhoto.ts` |
-| **Model** | `gemini-2.0-flash` (Vision) |
+| Field        | Value                                        |
+| :----------- | :------------------------------------------- |
+| **File**     | `src/skills/analyzeFoodPhoto.ts`             |
+| **Model**    | `gemini-2.0-flash` (Vision)                  |
 | **Strategy** | Inline image data + structured output prompt |
 
 **Input**
+
 ```typescript
 {
-  mimeType: string;   // e.g. "image/jpeg" — one of jpeg, png, webp, gif
-  data: string;       // base64-encoded image bytes
+  mimeType: string; // e.g. "image/jpeg" — one of jpeg, png, webp, gif
+  data: string; // base64-encoded image bytes
 }
 ```
 
 **Output**
+
 ```typescript
 {
   cuisines: string[];    // inferred cuisine types
@@ -117,6 +125,7 @@ listSkills(): string[]
 ```
 
 **Behaviour**
+
 - Throws `SkillError('analyzeFoodPhoto', cause)` on parse failure.
 - Only invoked when an image file is present in the request; skipped silently otherwise.
 
@@ -126,23 +135,28 @@ listSkills(): string[]
 
 **Purpose**: Generates a high-dimensional vector representation of a text string for semantic search.
 
-| Field | Value |
-| :--- | :--- |
-| **File** | `src/skills/generateEmbedding.ts` |
-| **Model** | `text-embedding-004` |
-| **Dimensions** | 768 |
+| Field          | Value                             |
+| :------------- | :-------------------------------- |
+| **File**       | `src/skills/generateEmbedding.ts` |
+| **Model**      | `text-embedding-004`              |
+| **Dimensions** | 768                               |
 
 **Input**
+
 ```typescript
-{ text: string }
+{
+  text: string;
+}
 ```
 
 **Output**
+
 ```typescript
 { embedding: number[] }   // length 768, normalised by LocalVectorDB before storage
 ```
 
 **Behaviour**
+
 - Throws `SkillError('generateEmbedding', 'Empty embedding received from API')` if the API returns an empty or missing `values` array.
 - Used by both `ingestRestaurants.ts` (offline, with SQLite cache) and `ragRecommender.ts` (online, per query).
 - The embedding cache (`embeddings_cache.db`) is keyed by `name-neighborhood` slug to avoid redundant API calls on restart.
@@ -153,13 +167,14 @@ listSkills(): string[]
 
 **Purpose**: A deterministic heuristic engine that computes a normalised match score and a human-readable rationale for a restaurant against a user taste profile.
 
-| Field | Value |
-| :--- | :--- |
-| **File** | `src/skills/scoreRestaurant.ts` |
-| **Model** | None — fully deterministic |
-| **Test** | `src/skills/__tests__/scoreRestaurant.test.ts` |
+| Field     | Value                                          |
+| :-------- | :--------------------------------------------- |
+| **File**  | `src/skills/scoreRestaurant.ts`                |
+| **Model** | None — fully deterministic                     |
+| **Test**  | `src/skills/__tests__/scoreRestaurant.test.ts` |
 
 **Input**
+
 ```typescript
 {
   profile: UserTasteProfile;
@@ -169,34 +184,36 @@ listSkills(): string[]
 ```
 
 **Output**
+
 ```typescript
 {
-  matchScore: number;   // clamped to [0.0, 1.0]
-  rationale: string;    // natural-language explanation of contributing factors
+  matchScore: number; // clamped to [0.0, 1.0]
+  rationale: string; // natural-language explanation of contributing factors
 }
 ```
 
 **Scoring — without `similarity`** (pure heuristic mode)
 
-| Signal | Weight | Condition |
-| :--- | :--- | :--- |
-| Cuisine match | `+0.4` | Profile cuisine matches restaurant cuisine (case-insensitive) |
-| Price — exact | `+0.3` | `profile.price_range === restaurant.price_tier` |
-| Price — adjacent | `+0.15` | Price tier differs by 1 level |
-| Ambiance overlap | `+0.2` | Any profile ambiance value found in restaurant tags |
-| Dietary compatibility | `+0.1` | Dietary note found in restaurant tags (substring match) |
-| Neighborhood match | `+0.1` | Bonus boost if neighborhood matches |
+| Signal                | Weight  | Condition                                                     |
+| :-------------------- | :------ | :------------------------------------------------------------ |
+| Cuisine match         | `+0.4`  | Profile cuisine matches restaurant cuisine (case-insensitive) |
+| Price — exact         | `+0.3`  | `profile.price_range === restaurant.price_tier`               |
+| Price — adjacent      | `+0.15` | Price tier differs by 1 level                                 |
+| Ambiance overlap      | `+0.2`  | Any profile ambiance value found in restaurant tags           |
+| Dietary compatibility | `+0.1`  | Dietary note found in restaurant tags (substring match)       |
+| Neighborhood match    | `+0.1`  | Bonus boost if neighborhood matches                           |
 
 Maximum raw score: **1.1** → clamped to **1.0**.
 
 **Scoring — with `similarity`** (vector + heuristic hybrid mode)
 
-| Signal | Weight | Condition |
-| :--- | :--- | :--- |
-| Vector similarity | `sim × 0.5` | Base semantic score (50%) |
-| Heuristic blend | `heur × 0.5` | Weighted heuristics (50%) |
+| Signal            | Weight       | Condition                 |
+| :---------------- | :----------- | :------------------------ |
+| Vector similarity | `sim × 0.5`  | Base semantic score (50%) |
+| Heuristic blend   | `heur × 0.5` | Weighted heuristics (50%) |
 
 **Heuristic Weights (sum to 1.0):**
+
 - Cuisine: 0.4
 - Price: 0.3
 - Ambiance: 0.2
@@ -206,6 +223,7 @@ Maximum raw score: **1.1** → clamped to **1.0**.
 Maximum raw score: **1.0** (50/50 blend).
 
 **Behaviour**
+
 - Always returns a valid `{ matchScore, rationale }` — never throws.
 - `rationale` is a period-joined list of natural-language reasons (e.g. `"Matches your craving for Italian. Fits your preferred price point perfectly."`). Falls back to `"A general match for your profile."` when no signals fire.
 - Score is computed with `Math.max(0, Math.min(1, score))` before return.
@@ -216,20 +234,22 @@ Maximum raw score: **1.0** (50/50 blend).
 
 **Purpose**: Synthesises raw Google Search output into a structured set of culinary trends for a given city.
 
-| Field | Value |
-| :--- | :--- |
-| **File** | `src/skills/extractTrendsFromSearchResults.ts` |
-| **Model** | `gemini-2.0-flash` |
+| Field     | Value                                          |
+| :-------- | :--------------------------------------------- |
+| **File**  | `src/skills/extractTrendsFromSearchResults.ts` |
+| **Model** | `gemini-2.0-flash`                             |
 
 **Input**
+
 ```typescript
 {
-  searchResults: string;   // raw text from Google Search grounding response
-  city: string;            // e.g. "New York City"
+  searchResults: string; // raw text from Google Search grounding response
+  city: string; // e.g. "New York City"
 }
 ```
 
 **Output**
+
 ```typescript
 {
   trendingCuisines: string[];   // cuisines gaining visible momentum
@@ -240,6 +260,7 @@ Maximum raw score: **1.0** (50/50 blend).
 ```
 
 **Behaviour**
+
 - Returns empty arrays for any category when the search results contain insufficient signal — does **not** hallucinate trends.
 - Throws `SkillError('extractTrendsFromSearchResults', cause)` on parse failure.
 - Called inside `trendAnalyst.ts` after the Google Search grounding call, with `withRetry` wrapping applied externally.
@@ -250,12 +271,13 @@ Maximum raw score: **1.0** (50/50 blend).
 
 **Purpose**: Evaluates which subset of current food trends a specific user would actually care about, and scores overall relevance.
 
-| Field | Value |
-| :--- | :--- |
-| **File** | `src/skills/classifyTrendRelevanceToProfile.ts` |
-| **Model** | `gemini-1.5-pro` |
+| Field     | Value                                           |
+| :-------- | :---------------------------------------------- |
+| **File**  | `src/skills/classifyTrendRelevanceToProfile.ts` |
+| **Model** | `gemini-1.5-pro`                                |
 
 **Input**
+
 ```typescript
 {
   profile: UserTasteProfile;
@@ -268,6 +290,7 @@ Maximum raw score: **1.0** (50/50 blend).
 ```
 
 **Output**
+
 ```typescript
 {
   relevantCuisines: string[];     // subset of trendingCuisines that match the profile
@@ -279,6 +302,7 @@ Maximum raw score: **1.0** (50/50 blend).
 ```
 
 **Behaviour**
+
 - Returns empty arrays (not nulls) when no trends match the profile.
 - `overallRelevanceScore` is rendered in the trend report as a percentage (e.g. `42%`).
 - Throws `SkillError('classifyTrendRelevanceToProfile', cause)` on parse failure.
@@ -302,7 +326,7 @@ error.statusCode           // 500
 
 **Three-tier error contract:**
 
-1. **Transient failures** (`429`, `5xx`, network errors) — handled by `withRetry` wrapping at the call site, **not** inside the skill. The `.catch()` converting to `SkillError` must be placed *outside* the `withRetry` callback so retries can fire before the error is reclassified.
+1. **Transient failures** (`429`, `5xx`, network errors) — handled by `withRetry` wrapping at the call site, **not** inside the skill. The `.catch()` converting to `SkillError` must be placed _outside_ the `withRetry` callback so retries can fire before the error is reclassified.
 
 2. **Terminal failures** (persistent API error, parse failure) — skill throws `SkillError` with full context.
 
@@ -317,9 +341,11 @@ withRetry(() => skill.run(input)).catch((e) => {
 });
 
 // ❌ Wrong — catch intercepts retryable errors, preventing retry
-withRetry(() => skill.run(input).catch((e) => {
-  throw new SkillError('skillName', e);
-}));
+withRetry(() =>
+  skill.run(input).catch((e) => {
+    throw new SkillError('skillName', e);
+  }),
+);
 ```
 
 ---
@@ -348,31 +374,31 @@ npm test
 
 The test file (`src/skills/__tests__/scoreRestaurant.test.ts`) covers these cases without `similarity`:
 
-| Test case | Expected `matchScore` |
-| :--- | :--- |
-| Perfect match (cuisine + price + neighborhood + ambiance + dietary) | `1.0` |
-| Cuisine mismatch only | `0.7` |
-| Price mismatch only (adjacent tier) | `~0.85` |
-| Neighborhood mismatch only | `0.8` |
-| Ambiance mismatch only | `0.8` |
-| Dietary mismatch only | `~0.9` |
+| Test case                                                           | Expected `matchScore` |
+| :------------------------------------------------------------------ | :-------------------- |
+| Perfect match (cuisine + price + neighborhood + ambiance + dietary) | `1.0`                 |
+| Cuisine mismatch only                                               | `0.7`                 |
+| Price mismatch only (adjacent tier)                                 | `~0.85`               |
+| Neighborhood mismatch only                                          | `0.8`                 |
+| Ambiance mismatch only                                              | `0.8`                 |
+| Dietary mismatch only                                               | `~0.9`                |
 
 ---
 
 ## 📁 File Reference
 
-| File | Purpose |
-| :--- | :--- |
-| `src/skills/types.ts` | `AgentSkill<I,O>` and `SkillContext` interfaces |
-| `src/skills/registry.ts` | `registerSkill`, `getSkill`, `listSkills` |
-| `src/skills/bootstrap.ts` | Registers all six skills at server startup |
-| `src/skills/extractCuisines.ts` | Skill 1 — text cuisine extraction |
-| `src/skills/analyzeFoodPhoto.ts` | Skill 2 — vision-based profile enrichment |
-| `src/skills/generateEmbedding.ts` | Skill 3 — semantic vector generation |
-| `src/skills/scoreRestaurant.ts` | Skill 4 — deterministic heuristic scorer |
-| `src/skills/extractTrendsFromSearchResults.ts` | Skill 5 — trend structuring from search |
-| `src/skills/classifyTrendRelevanceToProfile.ts` | Skill 6 — profile-trend relevance scoring |
-| `src/skills/__tests__/scoreRestaurant.test.ts` | Deterministic scorer test suite |
-| `src/services/ragRecommender.ts` | Exports `RestaurantCandidate` type |
-| `src/lib/errors.ts` | `SkillError`, `AgentServiceError`, `AppError` |
-| `src/lib/utils.ts` | `withRetry`, `cleanJson`, `cn` |
+| File                                            | Purpose                                         |
+| :---------------------------------------------- | :---------------------------------------------- |
+| `src/skills/types.ts`                           | `AgentSkill<I,O>` and `SkillContext` interfaces |
+| `src/skills/registry.ts`                        | `registerSkill`, `getSkill`, `listSkills`       |
+| `src/skills/bootstrap.ts`                       | Registers all six skills at server startup      |
+| `src/skills/extractCuisines.ts`                 | Skill 1 — text cuisine extraction               |
+| `src/skills/analyzeFoodPhoto.ts`                | Skill 2 — vision-based profile enrichment       |
+| `src/skills/generateEmbedding.ts`               | Skill 3 — semantic vector generation            |
+| `src/skills/scoreRestaurant.ts`                 | Skill 4 — deterministic heuristic scorer        |
+| `src/skills/extractTrendsFromSearchResults.ts`  | Skill 5 — trend structuring from search         |
+| `src/skills/classifyTrendRelevanceToProfile.ts` | Skill 6 — profile-trend relevance scoring       |
+| `src/skills/__tests__/scoreRestaurant.test.ts`  | Deterministic scorer test suite                 |
+| `src/services/ragRecommender.ts`                | Exports `RestaurantCandidate` type              |
+| `src/lib/errors.ts`                             | `SkillError`, `AgentServiceError`, `AppError`   |
+| `src/lib/utils.ts`                              | `withRetry`, `cleanJson`, `cn`                  |

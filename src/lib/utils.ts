@@ -11,11 +11,7 @@ export function cleanJson(str: string): string {
   return cleaned.trim();
 }
 
-export async function withRetry<T>(
-  fn: () => Promise<T>,
-  retries = 3,
-  delay = 1000,
-): Promise<T> {
+export async function withRetry<T>(fn: () => Promise<T>, retries = 3, delay = 1000): Promise<T> {
   try {
     return await fn();
   } catch (error: any) {
@@ -23,22 +19,24 @@ export async function withRetry<T>(
 
     // Check for 429 Too Many Requests, transient server errors (5xx), or network issues
     const is429 = error.message?.includes('429') || error.status === 429;
-    const isTransient = (error.status >= 500 && error.status <= 599) || 
-                       (error.response?.status >= 500 && error.response?.status <= 599);
-    
+    const isTransient =
+      (error.status >= 500 && error.status <= 599) ||
+      (error.response?.status >= 500 && error.response?.status <= 599);
+
     const networkErrorKeywords = [
-      'fetch failed', 
-      'ECONNRESET', 
-      'ETIMEDOUT', 
-      'EPIPE', 
-      'ENOTFOUND', 
-      'socket hang up', 
+      'fetch failed',
+      'ECONNRESET',
+      'ETIMEDOUT',
+      'EPIPE',
+      'ENOTFOUND',
+      'socket hang up',
       'network error',
-      'timeout'
+      'timeout',
     ];
-    const isNetworkError = networkErrorKeywords.some(keyword => 
-      error.message?.toLowerCase().includes(keyword.toLowerCase()) ||
-      error.code?.toLowerCase().includes(keyword.toLowerCase())
+    const isNetworkError = networkErrorKeywords.some(
+      (keyword) =>
+        error.message?.toLowerCase().includes(keyword.toLowerCase()) ||
+        error.code?.toLowerCase().includes(keyword.toLowerCase()),
     );
 
     if (is429 || isTransient || isNetworkError) {

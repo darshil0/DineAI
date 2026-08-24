@@ -5,6 +5,16 @@ All notable changes to this project will be documented in this file.
 ## [Unreleased]
 
 ### Fixed
+
+- **ESM Relative Imports**: Fixed missing `.js` extensions in relative module imports across `src/App.tsx` and `src/main.tsx` for standard ECMAScript Module resolution compliance.
+
+### Changed
+
+- **Dependencies Updated**: Upgraded core project libraries in `package.json` to their latest non-breaking compatible versions, including `@google/genai` (2.8.0 → 2.18.0), `react` / `react-dom` (19.2.7 → 19.2.8), `vite` (8.0.16 → 8.2.2), `motion` (12.40.0 → 12.43.0), `lucide-react` (1.17.0 → 1.34.0), `@tailwindcss/vite` / `tailwindcss` (4.3.0 → 4.3.3), `tsx` (4.22.4 → 4.23.12), and `prettier` (3.8.3 → 3.9.6).
+- **Documentation Synchronized**: Updated `README.md` technology stack tables and verified dependency versions to reflect the updated package manifests.
+
+### Fixed
+
 - **TypeScript Errors in Frontend Components**: Fixed multiple TypeScript errors across `ChatInterface.tsx`, `ChatMessage.tsx`, `FilterControls.tsx`, `RecommendationCard.tsx`, `TasteProfileBadge.tsx`, and `OnboardingTutorial.tsx`. Resolved issues including implicit `any` types, missing prop interfaces, and type mismatches.
 - **Missing `SpeechRecognition` Ambient Types**: Added `src/types/speech-recognition.d.ts` to provide necessary ambient type definitions for the Web Speech API, enabling type-safe voice input functionality.
 - **Hardcoded PORT** (`server.ts`): The server always listened on port `3000` regardless of the `PORT` environment variable, contradicting `.env.example`'s documented "Defaults to 3000 if not specified" behavior. Changed to `Number(process.env.PORT) || 3000`.
@@ -15,7 +25,7 @@ All notable changes to this project will be documented in this file.
 - **Missing `SpeechRecognition` Ambient Types** (`ChatInterface.tsx`): `useRef<SpeechRecognition | null>(null)` referenced a type not present in TypeScript's built-in `DOM` lib (per `tsconfig.json`'s `lib` array) and not provided by any installed package, despite an inline comment claiming "the browser already provides these types." This would fail `tsc --noEmit` (the `lint` script) with "Cannot find name 'SpeechRecognition'". Added a minimal ambient declaration file (`src/types/speech-recognition.d.ts`) covering only the members the app actually uses.
 - **`UserTasteProfileSchema` Contradicts Its Own Prompt** (`schemas/userTasteProfile.ts`): The Gemini structured-output schema set `minItems: 1` on every optional array field (`cuisines`, `disliked_cuisines`, `ambiance`, `avoid_patterns`, `special_occasions`, `neighborhoods`), while `PROFILE_BUILDER_SYSTEM` explicitly instructs the model to return an empty array when a field is unknown rather than guess. Since Gemini enforces schema constraints on structured output, this would either reject a legitimately empty profile field or force the model to fabricate an entry to satisfy the constraint. Removed `minItems: 1` from all six optional array properties.
 
-*Correction: an earlier entry in this section removed the `microphone` permission from `metadata.json`, believing it unused. That was a mistake made before `ChatInterface.tsx` had been reviewed — the file implements a full voice-input feature via the Web Speech API that requires microphone access. The permission has been restored.*
+_Correction: an earlier entry in this section removed the `microphone` permission from `metadata.json`, believing it unused. That was a mistake made before `ChatInterface.tsx` had been reviewed — the file implements a full voice-input feature via the Web Speech API that requires microphone access. The permission has been restored._
 
 - **Gemini SDK Request Format**: Standardized all model interactions to use the strictly required `{ contents: [{ parts: [...] }], systemInstruction: { parts: [...] } }` structure, resolving intermittent API failures and vision processing errors.
 - **Chat API Validation Crash**: Fixed a server-side crash in `src/api/chat.ts` caused by attempting to call `.parse()` on a TypeScript interface. Introduced `UserTasteProfileZodSchema` for proper Zod-based runtime validation of incoming taste profiles.
@@ -25,60 +35,67 @@ All notable changes to this project will be documented in this file.
 - **Type Safety Hardening**: Resolved over 50 TypeScript errors in core logic by adding missing type definitions, fixing generic constraints on `AgentSkill`, and ensuring proper casting for SDK responses.
 
 ### Added
+
 - **UserTasteProfileZodSchema**: A dedicated Zod schema for validating taste profiles in API requests, exported from `src/schemas/userTasteProfile.ts`.
 
 ## [2.3.0] - 2026-06-07
 
 ### Fixed
+
 - **Missing `cleanJson` Import** (`profileBuilder.ts`): `cleanJson` was called on every profile-building response but never imported from `utils.ts`, causing a `ReferenceError` at runtime that broke every chat request. Added `cleanJson` to the import alongside `withRetry`.
 - **`whyMatch` Type Erasure in RAG Pipeline** (`ragRecommender.ts`, `finalizer.ts`): The `recommendCandidates` function returned `Promise<Restaurant[]>`, silently stripping the `whyMatch` and `match_score` fields that `scoreRestaurant` computed and attached to each candidate. Introduced the exported `RestaurantCandidate` type (`Restaurant & { match_score?: number; whyMatch?: string }`) and updated `finalizer.ts` to accept it, ensuring heuristic rationales flow through to the finalizer prompt and recommendation cards correctly.
 - **Partial Vector Index Not Re-Ingested** (`ingestRestaurants.ts`): The early-return guard used `existingCount > 0`, which silently skipped re-ingestion whenever even a single record was present. A partial index (caused by a previous interrupted run) would produce incomplete semantic search results with no warning. Changed the guard to `existingCount >= restaurants.length` so only a fully populated index is skipped; partial indexes are detected, logged, and completed.
 - **Express v5 Wildcard Route Syntax** (`server.ts`): Express v5 no longer accepts bare `*` wildcards in route paths. The production SPA fallback `app.get('*', ...)` would silently fail to match any route, returning 404 for all non-API paths. Updated to the Express v5 named-parameter syntax: `app.get('/{*splat}', ...)`.
 
 ### Changed
+
 - **Dependency Upgrades**: Updated all dependencies to their latest compatible versions (see table below). The `@google/genai` v1 → v2 major bump introduces breaking changes only in the Interactions API; the `generateContent` and `embedContent` calls used throughout DineAI are unaffected.
 
-| Package | From | To | Type |
-| --- | --- | --- | --- |
-| `@google/genai` | `^1.51.0` | `^2.8.0` | Major |
-| `express` | `^4.21.2` | `^5.2.1` | Major |
-| `@vitejs/plugin-react` | `^5.0.4` | `^6.0.2` | Major |
-| `@types/express` | `^4.17.21` | `^5.0.6` | Major |
-| `@types/node` | `^22.14.0` | `^25.9.2` | Major |
-| `@tailwindcss/vite` | `^4.1.14` | `^4.3.0` | Minor |
-| `tailwindcss` | `^4.1.14` | `^4.3.0` | Minor |
-| `dotenv` | `^17.2.3` | `^17.4.2` | Minor |
-| `lucide-react` | `^1.14.0` | `^1.17.0` | Minor |
-| `@types/multer` | `^2.0.0` | `^2.1.0` | Minor |
-| `autoprefixer` | `^10.4.21` | `^10.5.0` | Minor |
-| `better-sqlite3` | `^12.4.1` | `^12.10.0` | Patch |
-| `motion` | `^12.38.0` | `^12.40.0` | Patch |
-| `multer` | `^2.1.0` | `^2.1.1` | Patch |
-| `react` | `^19.2.5` | `^19.2.7` | Patch |
-| `react-dom` | `^19.2.5` | `^19.2.7` | Patch |
-| `tsx` | `^4.21.0` | `^4.22.4` | Patch |
-| `typescript` | `~5.8.2` | `~5.9.3` | Patch |
-| `vite` | `^8.0.10` | `^8.0.16` | Patch |
-| `zod` | `^4.4.2` | `^4.4.3` | Patch |
+| Package                | From       | To         | Type  |
+| ---------------------- | ---------- | ---------- | ----- |
+| `@google/genai`        | `^1.51.0`  | `^2.8.0`   | Major |
+| `express`              | `^4.21.2`  | `^5.2.1`   | Major |
+| `@vitejs/plugin-react` | `^5.0.4`   | `^6.0.2`   | Major |
+| `@types/express`       | `^4.17.21` | `^5.0.6`   | Major |
+| `@types/node`          | `^22.14.0` | `^25.9.2`  | Major |
+| `@tailwindcss/vite`    | `^4.1.14`  | `^4.3.0`   | Minor |
+| `tailwindcss`          | `^4.1.14`  | `^4.3.0`   | Minor |
+| `dotenv`               | `^17.2.3`  | `^17.4.2`  | Minor |
+| `lucide-react`         | `^1.14.0`  | `^1.17.0`  | Minor |
+| `@types/multer`        | `^2.0.0`   | `^2.1.0`   | Minor |
+| `autoprefixer`         | `^10.4.21` | `^10.5.0`  | Minor |
+| `better-sqlite3`       | `^12.4.1`  | `^12.10.0` | Patch |
+| `motion`               | `^12.38.0` | `^12.40.0` | Patch |
+| `multer`               | `^2.1.0`   | `^2.1.1`   | Patch |
+| `react`                | `^19.2.5`  | `^19.2.7`  | Patch |
+| `react-dom`            | `^19.2.5`  | `^19.2.7`  | Patch |
+| `tsx`                  | `^4.21.0`  | `^4.22.4`  | Patch |
+| `typescript`           | `~5.8.2`   | `~5.9.3`   | Patch |
+| `vite`                 | `^8.0.10`  | `^8.0.16`  | Patch |
+| `zod`                  | `^4.4.2`   | `^4.4.3`   | Patch |
 
 ---
 
 ## [2.2.9] - 2026-06-07
 
 ### Added
+
 - **Contributing Guidelines**: Created `CONTRIBUTING.md` to establish clear contribution standards, coding practices, and testing workflows.
 - **Security Policy**: Added `SECURITY.md` to provide a clear process for reporting vulnerabilities and document security best practices.
 
 ### Changed
+
 - **Documentation Overhaul**: Extensively rewrote `README.md` for better clarity, improved project overview, and detailed setup/development guidance.
 - **Workflow Improvements**: Synchronized all documentation with the latest technology stack (React 19, Tailwind CSS 4, Vite 8).
 
 ## [2.2.8] - 2026-05-07
 
 ### Added
+
 - **Enhanced Data Persistence**: Integrated `saveToIndex()` into the `ingestRestaurants` script to ensure that embedded restaurant data is persisted to disk immediately after ingestion.
 
 ### Changed
+
 - **Model Alignment**: Upgraded the `classifyTrendRelevanceToProfile` skill to use the Reasoning Tier model (`gemini-1.5-pro`) as per the architectural specification.
 - **Deduplication Strategy**: Updated restaurant ingestion to use a `name-neighborhood` keying strategy for deduplication, ensuring more robust record management.
 - **Documentation Synchronization**: Updated `SKILLS.md` to perfectly align with the actual implementation's field names (camelCase) and schema definitions.
@@ -86,14 +103,17 @@ All notable changes to this project will be documented in this file.
 ## [2.2.7] - 2026-05-07
 
 ### Added
+
 - **Standardized Config Templates**: Updated `.env.example` and `.prettierrc` to follow professional industry standards.
 
 ### Fixed
+
 - **Documentation Polish**: Standardized `AGENTS.md` and finalized all project guides to meet high-level technical documentation standards.
 
 ## [2.2.6] - 2026-05-07
 
 ### Added
+
 - **Architecture Diagrams**: Integrated Mermaid.js diagrams into `DESIGN.md` for better system visualization.
 - **Technical Specifications**: Converted `SKILLS.md` into a formal technical spec with detailed input/output schemas.
 
@@ -112,7 +132,6 @@ All notable changes to this project will be documented in this file.
 
 ## [2.2.4] - 2026-05-07
 
-
 ### Fixed
 
 - **Restaurant Duplication on Startup** (`VectorDb.ts`, `server.ts`): Converted `VectorDb.add` into an upsert operation and added an `isEmpty()` check in `server.ts` to prevent the ingestion script from duplicating restaurant records in the vector index upon every server restart.
@@ -122,18 +141,16 @@ All notable changes to this project will be documented in this file.
 
 ## [2.2.3] - 2026-05-07
 
-
 ### Changed
 
 - **Comprehensive Documentation Hardening** (`AGENTS.md`, `SKILLS.md`, `DESIGN.md`): Synchronized all architecture and design documents with the current production baseline.
-    - Updated tech stack versions (React 19, Vite 8, Motion 12).
-    - Documented Model Selection Strategy (Dual-model Flash/Pro approach).
-    - Codified internal skill resilience rules and structured error propagation.
-    - Detailed the restaurant scoring heuristic weights and vector similarity integration.
-    - Added security invariants and TypeScript development standards.
+  - Updated tech stack versions (React 19, Vite 8, Motion 12).
+  - Documented Model Selection Strategy (Dual-model Flash/Pro approach).
+  - Codified internal skill resilience rules and structured error propagation.
+  - Detailed the restaurant scoring heuristic weights and vector similarity integration.
+  - Added security invariants and TypeScript development standards.
 
 ## [2.2.2] - 2026-05-07
-
 
 ### Fixed
 
@@ -156,12 +173,14 @@ All notable changes to this project will be documented in this file.
 ## [2.2.0] - 2026-05-01
 
 ### Added
+
 - **Interactive Onboarding Tutorial**: A multi-step guide explaining the "Multi-Agent" orchestrator, Taste Profiles, and Trend Analysis.
 - **Favorites Management**: Users can now "Heart" restaurants to save them to a persistent favorites list.
 - **Conversation Persistence**: Chat history is now automatically saved and restored from `localStorage`.
 - **Per-Agent Telemetry**: Added server-side latency logging for each stage of the agent pipeline.
 
 ### Fixed
+
 - **Critical Hoisting Bug**: Fixed `setInitialMessage` being undefined on mount in `ChatInterface.tsx` by converting it to a `useCallback` and hoisting its definition.
 - **Profile Serialization Bug**: Fixed `[object Object]` interpolation in `ProfileBuilder` prompt by correctly typing and stringifying the `currentProfile` object.
 - **Missing Retry Logic**: Comprehensive application of `withRetry` wrappers to all critical skill calls including `generateEmbedding`, `extractCuisines`, `analyzeFoodPhoto`, `extractTrendsFromSearchResults`, and `classifyTrendRelevanceToProfile`.
@@ -170,6 +189,7 @@ All notable changes to this project will be documented in this file.
 - **Cold-Start Optimization**: Restricted `ingestRestaurants` to run only if the vector index is empty or corrupted.
 
 ### Changed
+
 - **Persistence Strategy**: Vector index now serializes to `vector_index.json` on graceful shutdown and loads on startup.
 - **History Sanitization**: Enforced a 10-exchange depth limit and assistant-role verification before processing.
 - **Code Cleanup**: Removed multiple unused imports and variables across the codebase (`ChatInterface.tsx`, `profileBuilder.ts`, `finalizer.ts`, `ragRecommender.ts`, etc.).
@@ -177,6 +197,7 @@ All notable changes to this project will be documented in this file.
 ## [2.1.0] - 2026-05-01
 
 ### Added
+
 - **Advanced Multi-Select Filtering**: Refined recommendation interaction with a new dropdown-based filtering system.
 - **Custom FilterControls Component**: Dedicated UI for managing multiple intersecting facets (Cuisines, Prices, Neighborhoods).
 - **Persistent Selection Logic**: Filter bar now supports multiple concurrent selections with instant UI feedback.
@@ -184,9 +205,11 @@ All notable changes to this project will be documented in this file.
 ## [2.0.0] - 2026-05-01
 
 ### Added
+
 - **Code Prettification**: integrated Prettier with Tailwind CSS plugin for consistent codebase styling.
 
 ### Changed
+
 - **Dependency Refresh**: Updated core libraries including React 19, Vite 6, and Gemini SDK to their latest stable versions.
 - **Global Formatting**: Applied uniform formatting rules across all source files and markdown documentation.
 

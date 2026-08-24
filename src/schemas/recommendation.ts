@@ -5,19 +5,19 @@ import { Type } from '@google/genai';
  * and trend-based context.
  */
 export interface Recommendation {
-  rank: number;                          // Rank of the recommendation (1 is best)
-  name: string;                          // Name of the restaurant
-  rationale: string;                     // Detailed explanation of why recommended
-  match_score: number;                   // 0.0 to 1.0 matching score
-  trend_relevance: string;               // Specific trend associated (e.g., 'Viral dish: Spicy Vodka Rigatoni')
-  trend_connection: string;              // Why this trend relates to user's tastes
-  address?: string;                      // Physical address of the restaurant
-  phone?: string;                        // Contact phone number
-  hours?: string;                        // Operating hours
-  cuisine?: string;                      // Primary cuisine type
-  price_level?: string;                  // Price level ($, $$, $$$, $$$$)
-  neighborhood?: string;                 // Neighborhood location
-  whyMatch?: string;                     // Underlying heuristic match rationale
+  rank: number; // Rank of the recommendation (1 is best)
+  name: string; // Name of the restaurant
+  rationale: string; // Detailed explanation of why recommended
+  match_score: number; // 0.0 to 1.0 matching score
+  trend_relevance: string; // Specific trend associated (e.g., 'Viral dish: Spicy Vodka Rigatoni')
+  trend_connection: string; // Why this trend relates to user's tastes
+  address?: string; // Physical address of the restaurant
+  phone?: string; // Contact phone number
+  hours?: string; // Operating hours
+  cuisine?: string; // Primary cuisine type
+  price_level?: string; // Price level ($, $$, $$$, $$$$)
+  neighborhood?: string; // Neighborhood location
+  whyMatch?: string; // Underlying heuristic match rationale
 }
 
 /**
@@ -32,13 +32,13 @@ export const FinalRecommendationsSchema = {
       items: {
         type: Type.OBJECT,
         properties: {
-          rank: { 
-            type: Type.INTEGER, 
+          rank: {
+            type: Type.INTEGER,
             description: 'Rank of the recommendation (1 is best)',
             minimum: 1,
           },
-          name: { 
-            type: Type.STRING, 
+          name: {
+            type: Type.STRING,
             description: 'Name of the restaurant',
             minLength: 1,
           },
@@ -67,32 +67,32 @@ export const FinalRecommendationsSchema = {
               "A detailed explanation of why this identified trend specifically relates to the user's tastes and dining habits.",
             minLength: 1,
           },
-          address: { 
-            type: Type.STRING, 
+          address: {
+            type: Type.STRING,
             description: 'Physical address of the restaurant',
           },
-          phone: { 
-            type: Type.STRING, 
+          phone: {
+            type: Type.STRING,
             description: 'Contact phone number',
           },
-          hours: { 
-            type: Type.STRING, 
+          hours: {
+            type: Type.STRING,
             description: 'Operating hours',
           },
-          cuisine: { 
-            type: Type.STRING, 
+          cuisine: {
+            type: Type.STRING,
             description: 'Primary cuisine type',
           },
-          price_level: { 
-            type: Type.STRING, 
+          price_level: {
+            type: Type.STRING,
             description: 'Price level ($, $$, $$$, $$$$)',
           },
-          neighborhood: { 
-            type: Type.STRING, 
+          neighborhood: {
+            type: Type.STRING,
             description: 'Neighborhood location',
           },
-          whyMatch: { 
-            type: Type.STRING, 
+          whyMatch: {
+            type: Type.STRING,
             description: 'Underlying heuristic match rationale',
           },
         },

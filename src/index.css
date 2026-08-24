@@ -9,9 +9,12 @@
   --color-text-main: #fdfcf0;
   --color-text-muted: #a0a0a0;
 
-  --utility-glass-card: bg-[var(--glass-bg)] border border-[var(--glass-border)] backdrop-blur-md rounded-2xl shadow-xl;
-  --utility-bubble-user: bg-gradient-to-br from-[var(--color-brand-primary)] to-[var(--color-brand-secondary)] text-black rounded-2xl rounded-tr-none shadow-lg px-4 py-2;
-  --utility-bubble-assistant: bg-[var(--glass-bg)] border border-[var(--glass-border)] backdrop-blur-md rounded-2xl shadow-xl rounded-tl-none px-4 py-2;
+  --utility-glass-card: bg-[var(--glass-bg)] border border-[var(--glass-border)] backdrop-blur-md
+    rounded-2xl shadow-xl;
+  --utility-bubble-user: bg-gradient-to-br from-[var(--color-brand-primary)]
+    to-[var(--color-brand-secondary)] text-black rounded-2xl rounded-tr-none shadow-lg px-4 py-2;
+  --utility-bubble-assistant: bg-[var(--glass-bg)] border border-[var(--glass-border)]
+    backdrop-blur-md rounded-2xl shadow-xl rounded-tl-none px-4 py-2;
 }
 
 /* Custom Culinary Theme Variables */
@@ -32,7 +35,10 @@
     font-family: 'Inter', system-ui, sans-serif;
   }
 
-  h1, h2, h3, h4 {
+  h1,
+  h2,
+  h3,
+  h4 {
     font-family: 'Playfair Display', serif;
     @apply tracking-tight;
   }
@@ -40,11 +46,11 @@
 
 @layer components {
   .glass-card {
-    @apply bg-[var(--glass-bg)] border border-[var(--glass-border)] backdrop-blur-md rounded-2xl shadow-xl;
+    @apply rounded-2xl border border-[var(--glass-border)] bg-[var(--glass-bg)] shadow-xl backdrop-blur-md;
   }
 
   .bubble-user {
-    @apply bg-gradient-to-br from-[var(--color-brand-primary)] to-[var(--color-brand-secondary)] text-black rounded-2xl rounded-tr-none shadow-lg px-4 py-2;
+    @apply rounded-2xl rounded-tr-none bg-gradient-to-br from-[var(--color-brand-primary)] to-[var(--color-brand-secondary)] px-4 py-2 text-black shadow-lg;
   }
 
   .bubble-assistant {
@@ -64,8 +70,12 @@
 }
 
 @keyframes shimmer {
-  0% { background-position: -200% 0; }
-  100% { background-position: 200% 0; }
+  0% {
+    background-position: -200% 0;
+  }
+  100% {
+    background-position: 200% 0;
+  }
 }
 
 /* Custom Scrollbar */
@@ -76,5 +86,5 @@
   @apply bg-transparent;
 }
 ::-webkit-scrollbar-thumb {
-  @apply bg-stone-700 rounded-full hover:bg-stone-600 transition-colors;
+  @apply rounded-full bg-stone-700 transition-colors hover:bg-stone-600;
 }

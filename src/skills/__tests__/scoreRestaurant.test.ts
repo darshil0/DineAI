@@ -24,8 +24,8 @@ async function testScoreRestaurant() {
 
   try {
     // 1. Perfect match (with similarity)
-    const { matchScore: score1, rationale: rationale1 } = await scoreRestaurantSkill.run({ 
-      profile, 
+    const { matchScore: score1, rationale: rationale1 } = await scoreRestaurantSkill.run({
+      profile,
       restaurant,
       similarity: 0.9,
     });
@@ -84,7 +84,13 @@ async function testScoreRestaurant() {
     // 8. Error handling test - empty profile
     try {
       const { matchScore: score8 } = await scoreRestaurantSkill.run({
-        profile: { cuisines: [], price_range: undefined, ambiance: [], dietary_notes: '', neighborhoods: [] },
+        profile: {
+          cuisines: [],
+          price_range: undefined,
+          ambiance: [],
+          dietary_notes: '',
+          neighborhoods: [],
+        },
         restaurant,
       });
       console.log(`✅ Empty profile score: ${score8.toFixed(2)} (Expected: 0.0)`);

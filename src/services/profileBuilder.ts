@@ -16,9 +16,7 @@ export async function buildProfile(
 
   // 1. Run Skills in parallel to gather insights
   const extractCuisines = getSkill<any, any>('extractCuisines');
-  const analyzeFoodPhoto = getSkill<any, any>(
-    'analyzeFoodPhoto',
-  );
+  const analyzeFoodPhoto = getSkill<any, any>('analyzeFoodPhoto');
 
   if (!extractCuisines || !analyzeFoodPhoto) {
     throw new Error('Required skills are not registered.');
@@ -70,7 +68,7 @@ export async function buildProfile(
   ];
 
   try {
-    const profileResponse = await withRetry(() =>
+    const profileResponse = (await withRetry(() =>
       ai.models.generateContent({
         model: 'gemini-2.0-flash',
         contents: [{ parts: profileParts }],
@@ -80,7 +78,7 @@ export async function buildProfile(
           systemInstruction: { parts: [{ text: PROFILE_BUILDER_SYSTEM }] },
         },
       }),
-    ) as any;
+    )) as any;
 
     let userTasteProfile: UserTasteProfile = {};
     try {

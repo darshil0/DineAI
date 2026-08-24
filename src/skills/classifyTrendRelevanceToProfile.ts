@@ -18,18 +18,23 @@ export interface ClassifyTrendOutput {
   overallRelevanceScore: number;
 }
 
-export const classifyTrendRelevanceToProfileSkill: AgentSkill<ClassifyTrendInput, ClassifyTrendOutput> = {
+export const classifyTrendRelevanceToProfileSkill: AgentSkill<
+  ClassifyTrendInput,
+  ClassifyTrendOutput
+> = {
   name: 'classifyTrendRelevanceToProfile',
-  description:
-    "Determines which food trends are most relevant to a user's specific taste profile.",
+  description: "Determines which food trends are most relevant to a user's specific taste profile.",
   run: async (input) => {
     const ai = getGeminiClient();
 
-    const response = await withRetry(() => ai.models.generateContent({
-      model: 'gemini-1.5-pro',
-      contents: [{
-        parts: [{
-          text: `Compare the user's taste profile with these food trends.
+    const response = (await withRetry(() =>
+      ai.models.generateContent({
+        model: 'gemini-1.5-pro',
+        contents: [
+          {
+            parts: [
+              {
+                text: `Compare the user's taste profile with these food trends.
       
       User Taste Profile:
       ${JSON.stringify(input.profile, null, 2)}
@@ -37,30 +42,33 @@ export const classifyTrendRelevanceToProfileSkill: AgentSkill<ClassifyTrendInput
       Food Trends:
       ${JSON.stringify(input.trends, null, 2)}
       
-      Identify which trends the user would likely be interested in based on their preferred cuisines, price range, ambiance, and dietary notes.`
-        }]
-      }],
-      config: {
-        responseMimeType: 'application/json',
-        responseSchema: {
-          type: Type.OBJECT,
-          properties: {
-            relevantCuisines: { type: Type.ARRAY, items: { type: Type.STRING } },
-            relevantOpenings: { type: Type.ARRAY, items: { type: Type.STRING } },
-            relevantDishes: { type: Type.ARRAY, items: { type: Type.STRING } },
-            overallRelevanceScore: { type: Type.NUMBER },
-            rationale: { type: Type.STRING },
+      Identify which trends the user would likely be interested in based on their preferred cuisines, price range, ambiance, and dietary notes.`,
+              },
+            ],
           },
-          required: [
-            'relevantCuisines',
-            'relevantOpenings',
-            'relevantDishes',
-            'overallRelevanceScore',
-            'rationale',
-          ],
+        ],
+        config: {
+          responseMimeType: 'application/json',
+          responseSchema: {
+            type: Type.OBJECT,
+            properties: {
+              relevantCuisines: { type: Type.ARRAY, items: { type: Type.STRING } },
+              relevantOpenings: { type: Type.ARRAY, items: { type: Type.STRING } },
+              relevantDishes: { type: Type.ARRAY, items: { type: Type.STRING } },
+              overallRelevanceScore: { type: Type.NUMBER },
+              rationale: { type: Type.STRING },
+            },
+            required: [
+              'relevantCuisines',
+              'relevantOpenings',
+              'relevantDishes',
+              'overallRelevanceScore',
+              'rationale',
+            ],
+          },
         },
-      },
-    })) as any;
+      }),
+    )) as any;
 
     try {
       return JSON.parse(cleanJson(response.text || '{}'));

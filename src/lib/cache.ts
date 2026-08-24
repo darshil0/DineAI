@@ -14,7 +14,9 @@ db.exec(`
 
 export const embeddingCache = {
   get(id: string): number[] | null {
-    const row = db.prepare('SELECT embedding FROM embedding_cache WHERE id = ?').get(id) as { embedding: string } | undefined;
+    const row = db.prepare('SELECT embedding FROM embedding_cache WHERE id = ?').get(id) as
+      | { embedding: string }
+      | undefined;
     if (row) {
       return JSON.parse(row.embedding);
     }

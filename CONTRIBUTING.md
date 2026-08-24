@@ -22,13 +22,13 @@ Thank you for your interest in contributing to DineAI! We welcome contributions 
 
 ## 💻 Coding Standards
 
--   **TypeScript**: Use TypeScript for all new code. Ensure your code passes `npm run lint`. Ambient types for the Web Speech API are managed in `src/types/speech-recognition.d.ts`.
+- **TypeScript**: Use TypeScript for all new code. Ensure your code passes `npm run lint`. Ambient types for the Web Speech API are managed in `src/types/speech-recognition.d.ts`.
 - **ESM Modules**: We use ESM. All internal imports must include the `.js` extension (e.g., `import { x } from './utils.js'`).
--   **Modular Agent Skills**: If adding new AI capabilities, follow the `AgentSkill` interface defined in `SKILLS.md`.
--   **Resilience**: Wrap all Gemini API calls in the `withRetry` utility from `src/lib/utils.ts`.
--   **Error Handling**: Use the custom error classes from `src/lib/errors.ts` (`AppError`, `SkillError`, etc.).
--   **Formatting**: We use Prettier for code formatting. Run `npx prettier --write .` before committing.
--   **Documentation**: Update `CHANGELOG.md` for any notable changes and keep architecture docs (`AGENTS.md`, `DESIGN.md`, `SKILLS.md`) in sync.
+- **Modular Agent Skills**: If adding new AI capabilities, follow the `AgentSkill` interface defined in `SKILLS.md`.
+- **Resilience**: Wrap all Gemini API calls in the `withRetry` utility from `src/lib/utils.ts`.
+- **Error Handling**: Use the custom error classes from `src/lib/errors.ts` (`AppError`, `SkillError`, etc.).
+- **Formatting**: We use Prettier for code formatting. Run `npx prettier --write .` before committing.
+- **Documentation**: Update `CHANGELOG.md` for any notable changes and keep architecture docs (`AGENTS.md`, `DESIGN.md`, `SKILLS.md`) in sync.
 
 ## 🧪 Testing & Verification
 
@@ -57,8 +57,9 @@ To add a new capability to DineAI:
 ## 🤖 Agent-Specific Guidelines
 
 If you are working on the agent orchestration or specific skills, please refer to:
--   `AGENTS.md`: For overall agent architecture and reliability standards.
--   `SKILLS.md`: For technical specifications of individual skills.
+
+- `AGENTS.md`: For overall agent architecture and reliability standards.
+- `SKILLS.md`: For technical specifications of individual skills.
 
 ## 💾 Working with Vector DB
 
