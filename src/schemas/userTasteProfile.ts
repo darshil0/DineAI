@@ -6,14 +6,14 @@ import { z } from 'zod';
  * for restaurant recommendation matching.
  */
 export interface UserTasteProfile {
-  cuisines?: string[];              // Preferred cuisines
-  disliked_cuisines?: string[];     // Cuisines to avoid
-  price_range?: string;             // Preferred price range ($, $$, $$$, $$$$)
-  ambiance?: string[];              // Preferred ambiance or vibe
-  dietary_notes?: string;           // Dietary restrictions or preferences
-  avoid_patterns?: string[];        // Specific patterns/ingredients to avoid
-  special_occasions?: string[];     // Any special occasions mentioned
-  neighborhoods?: string[];         // Preferred neighborhoods or areas
+  cuisines?: string[]; // Preferred cuisines
+  disliked_cuisines?: string[]; // Cuisines to avoid
+  price_range?: string; // Preferred price range ($, $$, $$$, $$$$)
+  ambiance?: string[]; // Preferred ambiance or vibe
+  dietary_notes?: string; // Dietary restrictions or preferences
+  avoid_patterns?: string[]; // Specific patterns/ingredients to avoid
+  special_occasions?: string[]; // Any special occasions mentioned
+  neighborhoods?: string[]; // Preferred neighborhoods or areas
 }
 
 /**
@@ -23,9 +23,9 @@ export interface UserTasteProfile {
 export const UserTasteProfileSchema = {
   type: Type.OBJECT,
   properties: {
-    cuisines: { 
-      type: Type.ARRAY, 
-      items: { type: Type.STRING }, 
+    cuisines: {
+      type: Type.ARRAY,
+      items: { type: Type.STRING },
       description: 'Preferred cuisines',
     },
     disliked_cuisines: {
@@ -43,8 +43,8 @@ export const UserTasteProfileSchema = {
       items: { type: Type.STRING },
       description: 'Preferred ambiance or vibe',
     },
-    dietary_notes: { 
-      type: Type.STRING, 
+    dietary_notes: {
+      type: Type.STRING,
       description: 'Any dietary restrictions or preferences',
     },
     avoid_patterns: {

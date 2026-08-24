@@ -8,10 +8,13 @@ interface TasteProfileBadgeProps {
   loading?: boolean;
 }
 
-export const TasteProfileBadge: React.FC<TasteProfileBadgeProps> = ({ profile, loading = false }) => {
+export const TasteProfileBadge: React.FC<TasteProfileBadgeProps> = ({
+  profile,
+  loading = false,
+}) => {
   if (loading) {
     return (
-      <div className="mx-auto mb-6 max-w-2xl animate-pulse glass-card p-4">
+      <div className="glass-card mx-auto mb-6 max-w-2xl animate-pulse p-4">
         <div className="mb-3 flex items-center gap-2">
           <div className="h-4 w-4 rounded-full bg-[var(--color-brand-primary)]/20" />
           <div className="h-4 w-32 rounded bg-white/5" />
@@ -35,7 +38,7 @@ export const TasteProfileBadge: React.FC<TasteProfileBadgeProps> = ({ profile, l
   const hasAvoidPatterns = profile.avoid_patterns && profile.avoid_patterns.length > 0;
 
   return (
-    <div className="mx-auto mb-6 max-w-2xl glass-card p-5">
+    <div className="glass-card mx-auto mb-6 max-w-2xl p-5">
       <div className="mb-4 flex items-center justify-between border-b border-white/10 pb-3">
         <div className="flex items-center gap-2">
           <Sparkles className="h-4 w-4 text-[var(--color-brand-primary)]" />
@@ -43,7 +46,7 @@ export const TasteProfileBadge: React.FC<TasteProfileBadgeProps> = ({ profile, l
             Taste Profile
           </h4>
         </div>
-        <div className="flex items-center gap-1.5 rounded-full bg-[var(--color-brand-primary)]/10 px-2 py-0.5 text-[10px] font-bold tracking-wider text-[var(--color-brand-primary)] uppercase border border-[var(--color-brand-primary)]/20">
+        <div className="flex items-center gap-1.5 rounded-full border border-[var(--color-brand-primary)]/20 bg-[var(--color-brand-primary)]/10 px-2 py-0.5 text-[10px] font-bold tracking-wider text-[var(--color-brand-primary)] uppercase">
           <Heart className="h-3 w-3 fill-current" />
           Refined
         </div>
@@ -60,14 +63,14 @@ export const TasteProfileBadge: React.FC<TasteProfileBadgeProps> = ({ profile, l
                 profile.cuisines?.map((cuisine) => (
                   <span
                     key={cuisine}
-                    className="inline-flex items-center gap-1 rounded-full bg-white/5 border border-white/10 px-2.5 py-0.5 text-[11px] font-medium text-[var(--color-text-main)]"
+                    className="inline-flex items-center gap-1 rounded-full border border-white/10 bg-white/5 px-2.5 py-0.5 text-[11px] font-medium text-[var(--color-text-main)]"
                   >
                     {cuisine}
                   </span>
                 ))}
 
               {profile.price_range && (
-                <span className="inline-flex items-center gap-1 rounded-full bg-[var(--color-brand-primary)]/10 border border-[var(--color-brand-primary)]/20 px-2.5 py-0.5 text-[11px] font-medium text-[var(--color-brand-primary)]">
+                <span className="inline-flex items-center gap-1 rounded-full border border-[var(--color-brand-primary)]/20 bg-[var(--color-brand-primary)]/10 px-2.5 py-0.5 text-[11px] font-medium text-[var(--color-brand-primary)]">
                   {profile.price_range}
                 </span>
               )}
@@ -83,7 +86,7 @@ export const TasteProfileBadge: React.FC<TasteProfileBadgeProps> = ({ profile, l
                 {profile.neighborhoods?.map((nb) => (
                   <span
                     key={nb}
-                    className="inline-flex items-center gap-1 rounded-full bg-white/5 border border-white/10 px-2.5 py-0.5 text-[11px] font-medium text-[var(--color-text-main)]"
+                    className="inline-flex items-center gap-1 rounded-full border border-white/10 bg-white/5 px-2.5 py-0.5 text-[11px] font-medium text-[var(--color-text-main)]"
                   >
                     <MapPin className="h-2.5 w-2.5 text-[var(--color-text-muted)]" />
                     {nb}
@@ -104,7 +107,7 @@ export const TasteProfileBadge: React.FC<TasteProfileBadgeProps> = ({ profile, l
                 profile.ambiance?.map((amb) => (
                   <span
                     key={amb}
-                    className="inline-flex items-center gap-1 rounded-full bg-white/5 border border-white/10 px-2.5 py-0.5 text-[11px] font-medium text-[var(--color-text-main)]"
+                    className="inline-flex items-center gap-1 rounded-full border border-white/10 bg-white/5 px-2.5 py-0.5 text-[11px] font-medium text-[var(--color-text-main)]"
                   >
                     {amb}
                   </span>
@@ -113,7 +116,7 @@ export const TasteProfileBadge: React.FC<TasteProfileBadgeProps> = ({ profile, l
                 profile.special_occasions?.map((occ) => (
                   <span
                     key={occ}
-                    className="inline-flex items-center gap-1 rounded-full bg-[var(--color-brand-primary)]/5 border border-[var(--color-brand-primary)]/10 px-2.5 py-0.5 text-[11px] font-medium text-[var(--color-brand-primary)]"
+                    className="inline-flex items-center gap-1 rounded-full border border-[var(--color-brand-primary)]/10 bg-[var(--color-brand-primary)]/5 px-2.5 py-0.5 text-[11px] font-medium text-[var(--color-brand-primary)]"
                   >
                     <CalendarHeart className="h-2.5 w-2.5" />
                     {occ}
@@ -129,7 +132,7 @@ export const TasteProfileBadge: React.FC<TasteProfileBadgeProps> = ({ profile, l
               </p>
               <div className="flex flex-wrap gap-1.5">
                 {profile.dietary_notes && profile.dietary_notes.toLowerCase() !== 'none' && (
-                  <span className="inline-flex items-center gap-1 rounded-full bg-red-500/10 border border-red-500/20 px-2.5 py-0.5 text-[11px] font-medium text-red-400">
+                  <span className="inline-flex items-center gap-1 rounded-full border border-red-500/20 bg-red-500/10 px-2.5 py-0.5 text-[11px] font-medium text-red-400">
                     <AlertCircle className="h-2.5 w-2.5" />
                     {profile.dietary_notes}
                   </span>
@@ -138,7 +141,7 @@ export const TasteProfileBadge: React.FC<TasteProfileBadgeProps> = ({ profile, l
                   profile.avoid_patterns?.map((pattern) => (
                     <span
                       key={pattern}
-                      className="inline-flex items-center gap-1 rounded-full bg-white/5 border border-white/10 px-2.5 py-0.5 text-[11px] font-medium text-[var(--color-text-muted)]"
+                      className="inline-flex items-center gap-1 rounded-full border border-white/10 bg-white/5 px-2.5 py-0.5 text-[11px] font-medium text-[var(--color-text-muted)]"
                     >
                       <Ban className="h-2.5 w-2.5" />
                       {pattern}

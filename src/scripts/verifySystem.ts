@@ -20,9 +20,7 @@ async function runVerification() {
 
     // 2. Test extractCuisines skill
     console.log('Testing extractCuisines skill...');
-    const extractCuisines = getSkill<any, any>(
-      'extractCuisines',
-    );
+    const extractCuisines = getSkill<any, any>('extractCuisines');
     if (!extractCuisines) throw new Error('extractCuisines skill not registered');
     const cuisinesResult = await extractCuisines.run({
       text: 'I love Italian pasta and spicy Mexican food.',
@@ -37,9 +35,7 @@ async function runVerification() {
 
     // 3. Test generateEmbedding skill
     console.log('\nTesting generateEmbedding skill...');
-    const generateEmbedding = getSkill<any, any>(
-      'generateEmbedding',
-    );
+    const generateEmbedding = getSkill<any, any>('generateEmbedding');
     if (!generateEmbedding) throw new Error('generateEmbedding skill not registered');
     const embeddingResult = await generateEmbedding.run({ text: 'Checking if embedding works.' });
     console.log('Embedding length:', embeddingResult.embedding.length);

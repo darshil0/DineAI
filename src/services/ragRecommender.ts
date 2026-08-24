@@ -13,18 +13,17 @@ export type RestaurantCandidate = Restaurant & {
   whyMatch?: string;
 };
 
-export async function recommendCandidates(profile: UserTasteProfile): Promise<RestaurantCandidate[]> {
+export async function recommendCandidates(
+  profile: UserTasteProfile,
+): Promise<RestaurantCandidate[]> {
   console.log('Running RAG Recommender Agent...');
 
   try {
     // 1. Try Vector DB approach first
-    const generateEmbedding = getSkill<any, any>(
-      'generateEmbedding',
+    const generateEmbedding = getSkill<any, any>('generateEmbedding');
+    const scoreRestaurant = getSkill<any, { matchScore: number; rationale: string }>(
+      'scoreRestaurant',
     );
-    const scoreRestaurant = getSkill<
-      any,
-      { matchScore: number; rationale: string }
-    >('scoreRestaurant');
 
     if (generateEmbedding && scoreRestaurant && (await vectorDb.count()) > 0) {
       console.log('Using Vector DB for semantic search...');
@@ -41,11 +40,11 @@ export async function recommendCandidates(profile: UserTasteProfile): Promise<Re
 
       // NOTE: .catch() is placed OUTSIDE the withRetry callback so that transient 429/5xx errors
       // are retried before being converted to a SkillError.
-      const { embedding } = (await withRetry(() => generateEmbedding.run({ text: queryText })).catch(
-        (e) => {
-          throw new SkillError('generateEmbedding', e);
-        },
-      )) as any;
+      const { embedding } = (await withRetry(() =>
+        generateEmbedding.run({ text: queryText }),
+      ).catch((e) => {
+        throw new SkillError('generateEmbedding', e);
+      })) as any;
       const results = await vectorDb.query(embedding, 20); // Get top 20 to re-rank
 
       const filteredResults = results.filter((r) => r.score >= 0.1);
@@ -62,7 +61,12 @@ export async function recommendCandidates(profile: UserTasteProfile): Promise<Re
           ).catch((e) => {
             throw new SkillError('scoreRestaurant', e);
           });
-          return { ...restaurant, match_score: matchScore, whyMatch: rationale, embedding_score: r.score };
+          return {
+            ...restaurant,
+            match_score: matchScore,
+            whyMatch: rationale,
+            embedding_score: r.score,
+          };
         }),
       );
 
@@ -82,16 +86,20 @@ export async function recommendCandidates(profile: UserTasteProfile): Promise<Re
   console.log('Using fallback LLM filtering...');
   const ai = getGeminiClient();
   try {
-    const ragResponse = await withRetry(() =>
+    const ragResponse = (await withRetry(() =>
       ai.models.generateContent({
         model: 'gemini-1.5-pro',
-        contents: [{ parts: [{ text: buildRagPrompt(JSON.stringify(profile), JSON.stringify(restaurants)) }] }],
+        contents: [
+          {
+            parts: [{ text: buildRagPrompt(JSON.stringify(profile), JSON.stringify(restaurants)) }],
+          },
+        ],
         config: {
           responseMimeType: 'application/json',
           systemInstruction: { parts: [{ text: RAG_RECOMMENDER_SYSTEM }] },
         },
       }),
-    ) as any;
+    )) as any;
 
     let candidateList: RestaurantCandidate[] = [];
     try {

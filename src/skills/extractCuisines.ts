@@ -23,24 +23,26 @@ Return a JSON array of cuisine names only (strings), no explanation.
 User text:
 ${text}`;
 
-    const result = await withRetry(() => ai.models.generateContent({
-      model: 'gemini-2.0-flash',
-      contents: [{ parts: [{ text: prompt }] }],
-      config: {
-        responseMimeType: 'application/json',
-        responseSchema: {
-          type: Type.OBJECT,
-          properties: {
-            cuisines: {
-              type: Type.ARRAY,
-              items: { type: Type.STRING },
-              description: 'List of cuisines explicitly mentioned or strongly implied.',
+    const result = (await withRetry(() =>
+      ai.models.generateContent({
+        model: 'gemini-2.0-flash',
+        contents: [{ parts: [{ text: prompt }] }],
+        config: {
+          responseMimeType: 'application/json',
+          responseSchema: {
+            type: Type.OBJECT,
+            properties: {
+              cuisines: {
+                type: Type.ARRAY,
+                items: { type: Type.STRING },
+                description: 'List of cuisines explicitly mentioned or strongly implied.',
+              },
             },
+            required: ['cuisines'],
           },
-          required: ['cuisines'],
         },
-      },
-    })) as any;
+      }),
+    )) as any;
 
     try {
       const data = JSON.parse(cleanJson(result.text || '{"cuisines":[]}'));

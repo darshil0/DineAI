@@ -66,10 +66,10 @@ export default function ChatInterface() {
   const fileInputRef = useRef<HTMLInputElement>(null);
   const textareaRef = useRef<HTMLTextAreaElement>(null);
   const recognitionRef = useRef<SpeechRecognition | null>(null);
-  
+
   // FIX 2: Replace NodeJS.Timeout with browser-compatible type
   const loadingTimeoutsRef = useRef<ReturnType<typeof setTimeout>[]>([]);
-  
+
   const setInitialMessage = useCallback(() => {
     setMessages([
       {
@@ -86,7 +86,7 @@ export default function ChatInterface() {
     if (!completed) {
       setShowOnboarding(true);
     }
-    
+
     const savedFavorites = localStorage.getItem(FAVORITES_STORAGE_KEY);
     if (savedFavorites) {
       try {
@@ -287,7 +287,9 @@ export default function ChatInterface() {
     if (!fullMessage && !selectedImage) return;
 
     const finalContent =
-      !fullMessage && selectedImage ? 'Identify these dishes and find similar restaurants' : fullMessage;
+      !fullMessage && selectedImage
+        ? 'Identify these dishes and find similar restaurants'
+        : fullMessage;
 
     const userMessage: Message = {
       id: Date.now().toString(),
@@ -350,7 +352,8 @@ export default function ChatInterface() {
       const assistantMessage: Message = {
         id: (Date.now() + 1).toString(),
         role: 'assistant',
-        content: 'I have curated these selections based on your evolving taste profile and real-time culinary trends in the city:',
+        content:
+          'I have curated these selections based on your evolving taste profile and real-time culinary trends in the city:',
         recommendations: data.recommendations,
         profile: data.profile,
         trends: data.trends,
@@ -384,16 +387,20 @@ export default function ChatInterface() {
   return (
     <div className="mx-auto flex h-screen max-w-4xl flex-col overflow-hidden bg-[var(--color-bg-deep)] shadow-[0_0_100px_-20px_rgba(0,0,0,0.5)]">
       {showOnboarding && <OnboardingTutorial onComplete={handleOnboardingComplete} />}
-      
+
       {/* Header */}
-      <header className="z-10 flex items-center justify-between border-b border-white/5 bg-black/40 backdrop-blur-2xl px-6 py-5">
+      <header className="z-10 flex items-center justify-between border-b border-white/5 bg-black/40 px-6 py-5 backdrop-blur-2xl">
         <div className="flex items-center gap-4">
-          <div className="rounded-2xl bg-gradient-to-br from-[var(--color-brand-primary)] to-[var(--color-brand-secondary)] p-2.5 shadow-lg shadow-[var(--color-brand-primary)]/20">
+          <div className="rounded-2xl bg-gradient-to-br from-[var(--color-brand-primary)] to-[var(--color-brand-secondary)] p-2.5 shadow-[var(--color-brand-primary)]/20 shadow-lg">
             <ChefHat className="h-6 w-6 text-black" />
           </div>
           <div>
-            <h1 className="text-2xl font-bold text-[var(--color-text-main)] font-serif tracking-tight">DineAI</h1>
-            <p className="text-[10px] font-bold tracking-[0.2em] text-[var(--color-text-muted)] uppercase">Concierge Service</p>
+            <h1 className="font-serif text-2xl font-bold tracking-tight text-[var(--color-text-main)]">
+              DineAI
+            </h1>
+            <p className="text-[10px] font-bold tracking-[0.2em] text-[var(--color-text-muted)] uppercase">
+              Concierge Service
+            </p>
           </div>
         </div>
         <div className="flex items-center gap-3">
@@ -402,8 +409,8 @@ export default function ChatInterface() {
             className={cn(
               'flex items-center gap-2 rounded-xl px-4 py-2.5 text-xs font-bold tracking-widest uppercase transition-all',
               showFavorites
-                ? 'bg-rose-500/10 text-rose-500 border border-rose-500/20'
-                : 'text-[var(--color-text-muted)] hover:bg-white/5 hover:text-white'
+                ? 'border border-rose-500/20 bg-rose-500/10 text-rose-500'
+                : 'text-[var(--color-text-muted)] hover:bg-white/5 hover:text-white',
             )}
           >
             <Heart className={cn('h-4 w-4', showFavorites && 'fill-current')} />
@@ -422,7 +429,7 @@ export default function ChatInterface() {
       </header>
 
       {/* Main Content Area */}
-      <div className="flex-1 overflow-y-auto p-6 space-y-10 custom-scrollbar">
+      <div className="custom-scrollbar flex-1 space-y-10 overflow-y-auto p-6">
         {showFavorites ? (
           <motion.div
             initial={{ opacity: 0, x: 20 }}
@@ -430,20 +437,26 @@ export default function ChatInterface() {
             className="h-full"
           >
             <div className="mb-8 flex items-center justify-between">
-              <h2 className="text-2xl font-bold text-[var(--color-text-main)] font-serif">Your Culinary Collection</h2>
-              <p className="text-xs font-bold tracking-widest text-[var(--color-text-muted)] uppercase">{favorites.length} Saved</p>
+              <h2 className="font-serif text-2xl font-bold text-[var(--color-text-main)]">
+                Your Culinary Collection
+              </h2>
+              <p className="text-xs font-bold tracking-widest text-[var(--color-text-muted)] uppercase">
+                {favorites.length} Saved
+              </p>
             </div>
 
             {favorites.length === 0 ? (
               <div className="flex h-80 flex-col items-center justify-center rounded-[2.5rem] border border-dashed border-white/10 bg-white/[0.02] p-12 text-center">
                 <Heart className="mb-6 h-16 w-16 text-white/5" />
-                <h3 className="text-xl font-bold text-[var(--color-text-main)] font-serif">Empty Collection</h3>
-                <p className="mt-3 max-w-xs text-sm text-[var(--color-text-muted)] leading-relaxed">
+                <h3 className="font-serif text-xl font-bold text-[var(--color-text-main)]">
+                  Empty Collection
+                </h3>
+                <p className="mt-3 max-w-xs text-sm leading-relaxed text-[var(--color-text-muted)]">
                   Bookmark the restaurants you love to build your personalized NYC dining map.
                 </p>
                 <button
                   onClick={() => setShowFavorites(false)}
-                  className="mt-8 text-[11px] font-black text-[var(--color-brand-primary)] uppercase tracking-[0.2em] hover:brightness-125"
+                  className="mt-8 text-[11px] font-black tracking-[0.2em] text-[var(--color-brand-primary)] uppercase hover:brightness-125"
                 >
                   Start Discovery
                 </button>
@@ -462,7 +475,7 @@ export default function ChatInterface() {
             )}
           </motion.div>
         ) : (
-          <div className="max-w-3xl mx-auto w-full">
+          <div className="mx-auto w-full max-w-3xl">
             <AnimatePresence initial={false}>
               {messages.map((msg) => (
                 <motion.div
@@ -495,7 +508,7 @@ export default function ChatInterface() {
                   )}
 
                   {msg.role === 'assistant' && msg.recommendations && (
-                    <div className="space-y-6 mt-8">
+                    <div className="mt-8 space-y-6">
                       {msg.id === messages[messages.length - 1]?.id && (
                         <FilterControls
                           recommendations={msg.recommendations}
@@ -540,10 +553,14 @@ export default function ChatInterface() {
                             {filteredRecommendations.length === 0 && (
                               <div className="rounded-[2rem] border border-dashed border-white/10 bg-white/[0.02] p-10 text-center">
                                 <Filter className="mx-auto mb-4 h-10 w-10 text-white/5" />
-                                <p className="text-sm text-[var(--color-text-muted)]">No selections match your current refinement.</p>
+                                <p className="text-sm text-[var(--color-text-muted)]">
+                                  No selections match your current refinement.
+                                </p>
                                 <button
-                                  onClick={() => setFilters({ cuisines: [], prices: [], neighborhoods: [] })}
-                                  className="mt-4 text-[10px] font-black text-[var(--color-brand-primary)] uppercase tracking-widest hover:underline"
+                                  onClick={() =>
+                                    setFilters({ cuisines: [], prices: [], neighborhoods: [] })
+                                  }
+                                  className="mt-4 text-[10px] font-black tracking-widest text-[var(--color-brand-primary)] uppercase hover:underline"
                                 >
                                   Reset Refinements
                                 </button>
@@ -561,7 +578,7 @@ export default function ChatInterface() {
             {isLoading && (
               <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="mb-12">
                 <ChatMessage role="assistant" content={loadingStep} isLoading={true} />
-                <div className="space-y-8 mt-6">
+                <div className="mt-6 space-y-8">
                   <TasteProfileBadge loading={true} />
                   <div className="space-y-6">
                     <RecommendationCard loading={true} />
@@ -576,14 +593,14 @@ export default function ChatInterface() {
       </div>
 
       {/* Input Area */}
-      <div className="border-t border-white/5 bg-black/60 backdrop-blur-3xl p-6 shadow-[0_-20px_50px_-10px_rgba(0,0,0,0.5)]">
+      <div className="border-t border-white/5 bg-black/60 p-6 shadow-[0_-20px_50px_-10px_rgba(0,0,0,0.5)] backdrop-blur-3xl">
         <AnimatePresence>
           {imagePreview && (
             <motion.div
               initial={{ opacity: 0, y: 10, height: 0 }}
               animate={{ opacity: 1, y: 0, height: 'auto' }}
               exit={{ opacity: 0, y: 10, height: 0 }}
-              className="relative mb-5 inline-block group"
+              className="group relative mb-5 inline-block"
             >
               <img
                 src={imagePreview}
@@ -592,7 +609,7 @@ export default function ChatInterface() {
               />
               <button
                 onClick={removeImage}
-                className="absolute -top-2 -right-2 rounded-full bg-black border border-white/20 p-1.5 text-white shadow-xl transition-all hover:scale-110"
+                className="absolute -top-2 -right-2 rounded-full border border-white/20 bg-black p-1.5 text-white shadow-xl transition-all hover:scale-110"
                 aria-label="Remove image"
               >
                 <X className="h-3 w-3" />
@@ -602,14 +619,14 @@ export default function ChatInterface() {
         </AnimatePresence>
 
         {/* FIX 5: Fix form structure - remove extra closing div */}
-        <form onSubmit={handleSubmit} className="flex items-end gap-3 max-w-3xl mx-auto">
+        <form onSubmit={handleSubmit} className="mx-auto flex max-w-3xl items-end gap-3">
           <div className="flex flex-1 flex-col rounded-[2rem] border border-white/10 bg-white/5 p-2 transition-all focus-within:border-[var(--color-brand-primary)]/50 focus-within:bg-white/[0.08] focus-within:shadow-[0_0_30px_-5px_rgba(212,175,55,0.1)]">
             {queuedFeedback.length > 0 && (
               <div className="flex flex-wrap gap-1.5 px-3 pt-3 pb-2">
                 {queuedFeedback.map((fb, idx) => (
                   <span
                     key={idx}
-                    className="inline-flex items-center gap-1.5 rounded-full bg-[var(--color-brand-primary)]/10 border border-[var(--color-brand-primary)]/20 px-2.5 py-1 text-[9px] font-bold text-[var(--color-brand-primary)] uppercase tracking-wider"
+                    className="inline-flex items-center gap-1.5 rounded-full border border-[var(--color-brand-primary)]/20 bg-[var(--color-brand-primary)]/10 px-2.5 py-1 text-[9px] font-bold tracking-wider text-[var(--color-brand-primary)] uppercase"
                   >
                     {fb}
                     <button
@@ -638,7 +655,7 @@ export default function ChatInterface() {
                   'relative rounded-2xl p-4 transition-all',
                   isListening
                     ? 'bg-rose-500/20 text-rose-500 shadow-[0_0_20px_rgba(244,63,94,0.3)]'
-                    : 'text-white/20 hover:text-[var(--color-brand-primary)] hover:bg-white/5'
+                    : 'text-white/20 hover:bg-white/5 hover:text-[var(--color-brand-primary)]',
                 )}
               >
                 {isListening ? <MicOff className="h-5 w-5" /> : <Mic className="h-5 w-5" />}
@@ -653,8 +670,8 @@ export default function ChatInterface() {
                 className={cn(
                   'rounded-2xl p-4 transition-all',
                   isLocating
-                    ? 'text-[var(--color-brand-primary)] animate-pulse'
-                    : 'text-white/20 hover:text-[var(--color-brand-primary)] hover:bg-white/5'
+                    ? 'animate-pulse text-[var(--color-brand-primary)]'
+                    : 'text-white/20 hover:bg-white/5 hover:text-[var(--color-brand-primary)]',
                 )}
               >
                 <MapPin className="h-5 w-5" />
@@ -662,7 +679,7 @@ export default function ChatInterface() {
               <button
                 type="button"
                 onClick={() => fileInputRef.current?.click()}
-                className="rounded-2xl p-4 text-white/20 transition-all hover:text-[var(--color-brand-primary)] hover:bg-white/5"
+                className="rounded-2xl p-4 text-white/20 transition-all hover:bg-white/5 hover:text-[var(--color-brand-primary)]"
               >
                 <ImageIcon className="h-5 w-5" />
               </button>
@@ -681,7 +698,7 @@ export default function ChatInterface() {
                   }
                 }}
                 placeholder="Tell me what you're craving..."
-                className="max-h-40 min-h-[56px] flex-1 resize-none border-none bg-transparent px-4 py-4 text-sm text-[var(--color-text-main)] placeholder-white/20 outline-none focus:ring-0 leading-relaxed"
+                className="max-h-40 min-h-[56px] flex-1 resize-none border-none bg-transparent px-4 py-4 text-sm leading-relaxed text-[var(--color-text-main)] placeholder-white/20 outline-none focus:ring-0"
                 rows={1}
               />
             </div>
@@ -689,7 +706,7 @@ export default function ChatInterface() {
           <button
             type="submit"
             disabled={(!input.trim() && !selectedImage) || isLoading}
-            className="flex-shrink-0 rounded-[2rem] bg-[var(--color-brand-primary)] p-5 text-black shadow-xl shadow-[var(--color-brand-primary)]/20 transition-all hover:brightness-110 active:scale-95 disabled:cursor-not-allowed disabled:opacity-30 disabled:grayscale"
+            className="flex-shrink-0 rounded-[2rem] bg-[var(--color-brand-primary)] p-5 text-black shadow-[var(--color-brand-primary)]/20 shadow-xl transition-all hover:brightness-110 active:scale-95 disabled:cursor-not-allowed disabled:opacity-30 disabled:grayscale"
           >
             <Send className="h-5 w-5" />
           </button>

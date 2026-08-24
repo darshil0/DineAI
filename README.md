@@ -34,7 +34,9 @@ DineAI employs a tiered model strategy to balance reasoning depth with execution
 - **Embedding Tier (`text-embedding-004`)**: Generates semantic vectors for RAG.
 
 ### Resilience Contract
+
 Every AI interaction is protected by a multi-layered resilience strategy:
+
 1. **Exponential Backoff**: All calls are wrapped in `withRetry`, specifically targeting `429 Too Many Requests` errors.
 2. **Schema Validation**: Outgoing profiles are validated at runtime via `UserTasteProfileZodSchema` to prevent pipeline crashes.
 3. **Structured Error Handling**: Failures are wrapped in specialized `SkillError` or `AgentServiceError` classes, providing both technical logs and user-friendly feedback.
@@ -79,36 +81,36 @@ User Request
 
 Each skill is a composable, independently testable TypeScript function registered at startup via `bootstrapSkills()`.
 
-| Skill | Model | Purpose |
-|---|---|---|
-| `extractCuisines` | `gemini-2.0-flash` | Parses cuisine names from user text |
-| `analyzeFoodPhoto` | `gemini-2.0-flash` | Infers cuisines and ambiance from a photo |
-| `generateEmbedding` | `text-embedding-004` | Produces semantic vectors for search |
-| `scoreRestaurant` | Heuristic | Weighted match score (cuisine 0.4, price 0.3, ambiance 0.2, dietary 0.1) |
-| `extractTrendsFromSearchResults` | `gemini-2.0-flash` | Structures raw search snippets into trend data |
-| `classifyTrendRelevanceToProfile` | `gemini-1.5-pro` | Scores trend relevance against the user's profile |
+| Skill                             | Model                | Purpose                                                                  |
+| --------------------------------- | -------------------- | ------------------------------------------------------------------------ |
+| `extractCuisines`                 | `gemini-2.0-flash`   | Parses cuisine names from user text                                      |
+| `analyzeFoodPhoto`                | `gemini-2.0-flash`   | Infers cuisines and ambiance from a photo                                |
+| `generateEmbedding`               | `text-embedding-004` | Produces semantic vectors for search                                     |
+| `scoreRestaurant`                 | Heuristic            | Weighted match score (cuisine 0.4, price 0.3, ambiance 0.2, dietary 0.1) |
+| `extractTrendsFromSearchResults`  | `gemini-2.0-flash`   | Structures raw search snippets into trend data                           |
+| `classifyTrendRelevanceToProfile` | `gemini-1.5-pro`     | Scores trend relevance against the user's profile                        |
 
 ---
 
 ## 🛠️ Technology Stack
 
-| Category | Technology | Version |
-|---|---|---|
-| **Frontend** | React + Tailwind CSS | 19.2.7 (Verified) / 4.3.0 |
-| **Build** | Vite | 8.0.16 (Verified) |
-| **Backend** | Node.js + Express | ≥18.0.0 / 5.2.1 (Verified) |
-| **AI SDK** | `@google/genai` | 2.8.0 (Verified) |
-| **Performance Tier** | `gemini-2.0-flash` | Text, vision, extraction |
-| **Reasoning Tier** | `gemini-1.5-pro` | Synthesis, trend classification |
-| **Embeddings** | `text-embedding-004` | Semantic vectors |
-| **Vector DB** | Custom `LocalVectorDB` | In-memory, persisted to `vector_index.json` |
-| **Embedding Cache** | `better-sqlite3` | `embeddings_cache.db` — zero API cost on restart |
-| **Validation** | Zod | 4.4.3 (Verified) |
-| **Animation** | Motion | 12.40.0 (Verified) |
-| **Icons** | Lucide React | 1.17.0 (Verified) |
-| **TypeScript** | TypeScript | 5.9.3 (Verified) |
-| **File Uploads** | Multer | 2.1.1 |
-| **Markdown Rendering** | react-markdown + remark-gfm | 10.1.0 / 4.0.1 |
+| Category               | Technology                  | Version                                          |
+| ---------------------- | --------------------------- | ------------------------------------------------ |
+| **Frontend**           | React + Tailwind CSS        | 19.2.8 (Verified) / 4.3.3                        |
+| **Build**              | Vite                        | 8.2.2 (Verified)                                 |
+| **Backend**            | Node.js + Express           | ≥18.0.0 / 5.2.1 (Verified)                       |
+| **AI SDK**             | `@google/genai`             | 2.18.0 (Verified)                                |
+| **Performance Tier**   | `gemini-2.0-flash`          | Text, vision, extraction                         |
+| **Reasoning Tier**     | `gemini-1.5-pro`            | Synthesis, trend classification                  |
+| **Embeddings**         | `text-embedding-004`        | Semantic vectors                                 |
+| **Vector DB**          | Custom `LocalVectorDB`      | In-memory, persisted to `vector_index.json`      |
+| **Embedding Cache**    | `better-sqlite3`            | `embeddings_cache.db` — zero API cost on restart |
+| **Validation**         | Zod                         | 4.4.3 (Verified)                                 |
+| **Animation**          | Motion                      | 12.43.0 (Verified)                               |
+| **Icons**              | Lucide React                | 1.34.0 (Verified)                                |
+| **TypeScript**         | TypeScript                  | 5.9.3 (Verified)                                 |
+| **File Uploads**       | Multer                      | 2.1.1                                            |
+| **Markdown Rendering** | react-markdown + remark-gfm | 10.1.0 / 4.0.1                                   |
 
 ---
 
@@ -123,12 +125,14 @@ Each skill is a composable, independently testable TypeScript function registere
 ### Installation
 
 1. Clone the repository:
+
    ```bash
    git clone https://github.com/darshil0/DineAI.git
    cd DineAI
    ```
 
 2. Install dependencies:
+
    ```bash
    npm install --legacy-peer-deps
    ```
@@ -157,18 +161,19 @@ On first start, if no `vector_index.json` is found, DineAI automatically embeds 
 
 ### Available Scripts
 
-| Script | Command | Description |
-|---|---|---|
-| `dev` | `tsx server.ts` | Start backend + Vite dev server |
-| `start` | `tsx server.ts` | Start server in production mode |
-| `build` | `vite build` | Build production frontend to `dist/` |
-| `preview` | `vite preview` | Preview the production build locally |
-| `lint` | `tsc --noEmit` | Run TypeScript type checking |
-| `test` | see below | Run all unit test suites |
-| `verify` | `tsx src/scripts/verifySystem.ts` | Full end-to-end system check |
-| `clean` | `rm -rf dist` | Remove build output |
+| Script    | Command                           | Description                          |
+| --------- | --------------------------------- | ------------------------------------ |
+| `dev`     | `tsx server.ts`                   | Start backend + Vite dev server      |
+| `start`   | `tsx server.ts`                   | Start server in production mode      |
+| `build`   | `vite build`                      | Build production frontend to `dist/` |
+| `preview` | `vite preview`                    | Preview the production build locally |
+| `lint`    | `tsc --noEmit`                    | Run TypeScript type checking         |
+| `test`    | see below                         | Run all unit test suites             |
+| `verify`  | `tsx src/scripts/verifySystem.ts` | Full end-to-end system check         |
+| `clean`   | `rm -rf dist`                     | Remove build output                  |
 
 The `test` script runs three suites in sequence, executed directly with `tsx` (no separate test runner is used):
+
 ```bash
 npx tsx src/lib/__tests__/utils.test.ts
 npx tsx src/lib/__tests__/vectorDb.test.ts

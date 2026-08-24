@@ -3,7 +3,7 @@
     "target": "ES2022",
     "module": "ESNext",
     "lib": ["ES2022", "DOM", "DOM.Iterable"],
-    
+
     "moduleResolution": "bundler",
     "moduleDetection": "force",
     "isolatedModules": true,
@@ -11,17 +11,17 @@
     "noEmit": true,
     "skipLibCheck": true,
     "allowJs": true,
-    
+
     "jsx": "react-jsx",
     "paths": {
       "@/*": ["./*"]
     },
-    
+
     "strict": true,
     "esModuleInterop": true,
     "forceConsistentCasingInFileNames": true,
     "resolveJsonModule": true,
-    
+
     "experimentalDecorators": true,
     "useDefineForClassFields": true
   },

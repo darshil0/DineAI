@@ -16,18 +16,24 @@ export interface ExtractTrendsOutput {
   summary: string;
 }
 
-export const extractTrendsFromSearchResultsSkill: AgentSkill<ExtractTrendsInput, ExtractTrendsOutput> = {
+export const extractTrendsFromSearchResultsSkill: AgentSkill<
+  ExtractTrendsInput,
+  ExtractTrendsOutput
+> = {
   name: 'extractTrendsFromSearchResults',
   description:
     'Extracts structured food trends, new openings, and viral dishes from raw search results.',
   run: async (input) => {
     const ai = getGeminiClient();
 
-    const response = await withRetry(() => ai.models.generateContent({
-      model: 'gemini-2.0-flash',
-      contents: [{
-        parts: [{
-          text: `Analyze these search results for food trends in ${input.city}.
+    const response = (await withRetry(() =>
+      ai.models.generateContent({
+        model: 'gemini-2.0-flash',
+        contents: [
+          {
+            parts: [
+              {
+                text: `Analyze these search results for food trends in ${input.city}.
       
       Search Results:
       ${input.searchResults}
@@ -36,23 +42,26 @@ export const extractTrendsFromSearchResultsSkill: AgentSkill<ExtractTrendsInput,
       1. Trending Cuisines: Specific cuisines gaining popularity.
       2. New Openings: Notable restaurants that recently opened.
       3. Viral Dishes: Specific dishes people are talking about.
-      4. A brief summary of the overall food scene.`
-        }]
-      }],
-      config: {
-        responseMimeType: 'application/json',
-        responseSchema: {
-          type: Type.OBJECT,
-          properties: {
-            trendingCuisines: { type: Type.ARRAY, items: { type: Type.STRING } },
-            newOpenings: { type: Type.ARRAY, items: { type: Type.STRING } },
-            viralDishes: { type: Type.ARRAY, items: { type: Type.STRING } },
-            summary: { type: Type.STRING },
+      4. A brief summary of the overall food scene.`,
+              },
+            ],
           },
-          required: ['trendingCuisines', 'newOpenings', 'viralDishes', 'summary'],
+        ],
+        config: {
+          responseMimeType: 'application/json',
+          responseSchema: {
+            type: Type.OBJECT,
+            properties: {
+              trendingCuisines: { type: Type.ARRAY, items: { type: Type.STRING } },
+              newOpenings: { type: Type.ARRAY, items: { type: Type.STRING } },
+              viralDishes: { type: Type.ARRAY, items: { type: Type.STRING } },
+              summary: { type: Type.STRING },
+            },
+            required: ['trendingCuisines', 'newOpenings', 'viralDishes', 'summary'],
+          },
         },
-      },
-    })) as any;
+      }),
+    )) as any;
 
     try {
       return JSON.parse(cleanJson(response.text || '{}'));

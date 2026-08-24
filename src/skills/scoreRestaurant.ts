@@ -78,8 +78,10 @@ export const scoreRestaurantSkill: AgentSkill<ScoreInput, ScoreOutput> = {
     ) {
       const lowerTags = restaurant.tags.map((t) => t.toLowerCase());
       const dietaryNote = profile.dietary_notes.toLowerCase().trim();
-      const hasMatch = lowerTags.some((tag) => tag.includes(dietaryNote) || dietaryNote.includes(tag));
-      
+      const hasMatch = lowerTags.some(
+        (tag) => tag.includes(dietaryNote) || dietaryNote.includes(tag),
+      );
+
       if (hasMatch) {
         heuristicScore += heuristicWeights.dietary;
         reasons.push(`Accommodates your ${dietaryNote} needs`);
@@ -103,7 +105,8 @@ export const scoreRestaurantSkill: AgentSkill<ScoreInput, ScoreOutput> = {
     } else {
       matchScore = Math.min(1, heuristicScore);
     }
-    const rationale = reasons.length > 0 ? reasons.join('. ') + '.' : 'A general match for your profile.';
+    const rationale =
+      reasons.length > 0 ? reasons.join('. ') + '.' : 'A general match for your profile.';
     return { matchScore, rationale };
   },
 };

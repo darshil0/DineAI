@@ -1,42 +1,47 @@
 import React, { useState } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
-import { 
-  Sparkles, 
-  ChefHat, 
-  Camera, 
-  TrendingUp, 
-  X, 
-  ChevronRight, 
+import {
+  Sparkles,
+  ChefHat,
+  Camera,
+  TrendingUp,
+  X,
+  ChevronRight,
   ChevronLeft,
-  UtensilsCrossed
+  UtensilsCrossed,
 } from 'lucide-react';
 
 const steps = [
   {
-    title: "Welcome to DineAI",
-    description: "Your intelligent culinary companion. We don't just find food; we discover experiences tailored specifically to your soul.",
-    icon: <ChefHat className="w-12 h-12" />,
+    title: 'Welcome to DineAI',
+    description:
+      "Your intelligent culinary companion. We don't just find food; we discover experiences tailored specifically to your soul.",
+    icon: <ChefHat className="h-12 w-12" />,
   },
   {
-    title: "Deep Personalization",
-    description: "Our Profile Builder analyzes your preferences, history, and even 'vibes' to create a unique Taste Profile that evolves with you.",
-    icon: <Sparkles className="w-12 h-12" />,
+    title: 'Deep Personalization',
+    description:
+      "Our Profile Builder analyzes your preferences, history, and even 'vibes' to create a unique Taste Profile that evolves with you.",
+    icon: <Sparkles className="h-12 w-12" />,
   },
   {
-    title: "Visual Intelligence",
-    description: "Got a photo of a dish you loved? Upload it. Our AI identifies ingredients and styles to find similar culinary gems nearby.",
-    icon: <Camera className="w-12 h-12" />,
+    title: 'Visual Intelligence',
+    description:
+      'Got a photo of a dish you loved? Upload it. Our AI identifies ingredients and styles to find similar culinary gems nearby.',
+    icon: <Camera className="h-12 w-12" />,
   },
   {
-    title: "Trend-Aware Discovery",
-    description: "We cross-reference local restaurant data with real-time Google Search trends to ensure your recommendations are always 'of the moment'.",
-    icon: <TrendingUp className="w-12 h-12" />,
+    title: 'Trend-Aware Discovery',
+    description:
+      "We cross-reference local restaurant data with real-time Google Search trends to ensure your recommendations are always 'of the moment'.",
+    icon: <TrendingUp className="h-12 w-12" />,
   },
   {
-    title: "Ready to Explore?",
-    description: "Tell us what you're craving, upload a photo, or just say hello. Your next favorite meal is one message away.",
-    icon: <UtensilsCrossed className="w-12 h-12" />,
-  }
+    title: 'Ready to Explore?',
+    description:
+      "Tell us what you're craving, upload a photo, or just say hello. Your next favorite meal is one message away.",
+    icon: <UtensilsCrossed className="h-12 w-12" />,
+  },
 ];
 
 interface OnboardingTutorialProps {
@@ -69,19 +74,19 @@ export const OnboardingTutorial: React.FC<OnboardingTutorialProps> = ({ onComple
   return (
     <AnimatePresence>
       {isVisible && (
-        <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-black/80 backdrop-blur-md">
+        <div className="fixed inset-0 z-[100] flex items-center justify-center bg-black/80 p-4 backdrop-blur-md">
           <motion.div
             initial={{ opacity: 0, scale: 0.9, y: 20 }}
             animate={{ opacity: 1, scale: 1, y: 0 }}
             exit={{ opacity: 0, scale: 0.9, y: 20 }}
-            className="relative w-full max-w-lg overflow-hidden glass-card shadow-[0_0_50px_-12px_rgba(212,175,55,0.2)]"
+            className="glass-card relative w-full max-w-lg overflow-hidden shadow-[0_0_50px_-12px_rgba(212,175,55,0.2)]"
           >
             {/* Top Bar / Close */}
-            <button 
+            <button
               onClick={handleClose}
-              className="absolute top-6 right-6 p-2 text-white/20 hover:text-white hover:bg-white/5 rounded-full transition-colors z-10"
+              className="absolute top-6 right-6 z-10 rounded-full p-2 text-white/20 transition-colors hover:bg-white/5 hover:text-white"
             >
-              <X className="w-5 h-5" />
+              <X className="h-5 w-5" />
             </button>
 
             {/* Content Area */}
@@ -95,26 +100,26 @@ export const OnboardingTutorial: React.FC<OnboardingTutorialProps> = ({ onComple
                   transition={{ duration: 0.3 }}
                   className="flex flex-col items-center"
                 >
-                  <div className="p-6 rounded-3xl bg-[var(--color-brand-primary)]/10 text-[var(--color-brand-primary)] mb-8 shadow-xl border border-[var(--color-brand-primary)]/20">
+                  <div className="mb-8 rounded-3xl border border-[var(--color-brand-primary)]/20 bg-[var(--color-brand-primary)]/10 p-6 text-[var(--color-brand-primary)] shadow-xl">
                     {steps[currentStep].icon}
                   </div>
-                  
-                  <h2 className="text-4xl font-bold text-[var(--color-text-main)] mb-4 tracking-tight leading-tight font-serif">
+
+                  <h2 className="mb-4 font-serif text-4xl leading-tight font-bold tracking-tight text-[var(--color-text-main)]">
                     {steps[currentStep].title}
                   </h2>
-                  
-                  <p className="text-lg text-[var(--color-text-muted)] mb-10 leading-relaxed px-4">
+
+                  <p className="mb-10 px-4 text-lg leading-relaxed text-[var(--color-text-muted)]">
                     {steps[currentStep].description}
                   </p>
                 </motion.div>
               </AnimatePresence>
 
               {/* Progress Dots */}
-              <div className="flex justify-center gap-2.5 mb-10">
+              <div className="mb-10 flex justify-center gap-2.5">
                 {steps.map((_, i) => (
-                  <div 
+                  <div
                     key={i}
-                    className={`h-1.5 transition-all duration-300 rounded-full ${
+                    className={`h-1.5 rounded-full transition-all duration-300 ${
                       i === currentStep ? 'w-10 bg-[var(--color-brand-primary)]' : 'w-2 bg-white/10'
                     }`}
                   />
@@ -126,22 +131,22 @@ export const OnboardingTutorial: React.FC<OnboardingTutorialProps> = ({ onComple
                 <button
                   onClick={prevStep}
                   disabled={currentStep === 0}
-                  className={`flex items-center gap-2 px-6 py-3 rounded-2xl font-bold text-[11px] uppercase tracking-widest transition-all ${
-                    currentStep === 0 
-                      ? 'opacity-0 cursor-default' 
-                      : 'text-[var(--color-text-muted)] hover:text-white hover:bg-white/5'
+                  className={`flex items-center gap-2 rounded-2xl px-6 py-3 text-[11px] font-bold tracking-widest uppercase transition-all ${
+                    currentStep === 0
+                      ? 'cursor-default opacity-0'
+                      : 'text-[var(--color-text-muted)] hover:bg-white/5 hover:text-white'
                   }`}
                 >
-                  <ChevronLeft className="w-4 h-4" />
+                  <ChevronLeft className="h-4 w-4" />
                   Back
                 </button>
 
                 <button
                   onClick={nextStep}
-                  className="flex items-center gap-2 px-8 py-4 bg-[var(--color-brand-primary)] text-black rounded-2xl font-black text-xs uppercase tracking-widest shadow-xl shadow-[var(--color-brand-primary)]/20 hover:brightness-110 hover:-translate-y-0.5 active:translate-y-0 transition-all"
+                  className="flex items-center gap-2 rounded-2xl bg-[var(--color-brand-primary)] px-8 py-4 text-xs font-black tracking-widest text-black uppercase shadow-[var(--color-brand-primary)]/20 shadow-xl transition-all hover:-translate-y-0.5 hover:brightness-110 active:translate-y-0"
                 >
-                  {currentStep === steps.length - 1 ? "Let's Begin" : "Next Step"}
-                  <ChevronRight className="w-4 h-4" />
+                  {currentStep === steps.length - 1 ? "Let's Begin" : 'Next Step'}
+                  <ChevronRight className="h-4 w-4" />
                 </button>
               </div>
             </div>

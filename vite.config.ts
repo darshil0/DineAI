@@ -9,19 +9,19 @@ const __dirname = path.dirname(fileURLToPath(import.meta.url));
 
 export default defineConfig({
   plugins: [react(), tailwindcss()],
-  
+
   resolve: {
     alias: {
       '@': path.resolve(__dirname, 'src'),
     },
   },
-  
+
   server: {
     hmr: process.env.DISABLE_HMR !== 'true',
     // Optional: specify port if needed
     // port: 3000,
   },
-  
+
   build: {
     outDir: 'dist',
     sourcemap: true,
@@ -36,7 +36,7 @@ export default defineConfig({
       },
     },
   },
-  
+
   // Optional: optimize dependencies
   optimizeDeps: {
     include: ['react', 'react-dom'],
