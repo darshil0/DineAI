@@ -118,9 +118,11 @@ To achieve sub-millisecond similarity search without cloud database overhead, Di
 
 ## 🛡️ Security, Privacy & Guardrails
 
-1. **Origin Isolation**: Strict Cross-Origin Resource Sharing (CORS) policies restrict API access strictly to designated, trusted domain origins.
-2. **Key Protection**: Zero client-side LLM orchestration. All API keys, database credentials, and model endpoints reside in secure server-side environment variables (`process.env`).
-3. **Payload Sanitization & Validation**:
+1. **Origin Isolation**: Strict Cross-Origin Resource Sharing (CORS) policies restrict API access strictly to designated, trusted domain origins with explicit 403 Forbidden responses for unauthorized origins.
+2. **API Authentication Middleware**: Endpoints are optionally protected by Bearer token authentication (`API_KEY` or `AUTH_TOKEN`) with fail-closed production rules.
+3. **Sliding-Window Rate Limiting**: In-memory rate limiting Throttles requests to `/api/chat` per IP/Key with `Retry-After` headers on 429 status responses.
+4. **Key Protection**: Zero client-side LLM orchestration. All API keys, database credentials, and model endpoints reside in secure server-side environment variables (`process.env`).
+5. **Payload Sanitization & Validation**:
 
 - **Inbound**: Multi-layer `Zod` validation schemas sanitize all user inputs before ingestion into the pipeline.
 - **Prompt Injection Mitigation**: Strict system prompting, input string escaping, and LLM-based preprocessing filters separate untrusted user input from structural instructions.

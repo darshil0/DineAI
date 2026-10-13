@@ -24,14 +24,21 @@ To handle transient `429 Too Many Requests` or `5xx` errors from the Gemini API,
 - **Implementation**: Use exponential backoff (starting at 1s) with a maximum of 3 retries.
 - **Scope**: Includes both top-level agent services and individual skill executions.
 
-### 2. Dual-Model Selection Strategy
+### 2. Tiered Model Selection Strategy
 
-We balance speed and reasoning depth through a tiered model approach:
+We balance speed, cost, and reasoning depth through a tiered model approach defined in `src/config/models.ts`:
 
-- **Performance Tier (`gemini-2.5-flash`)**: Used for text extraction, vision analysis, and intermediate classification.
-- **Reasoning Tier (`gemini-2.5-pro`)**: Reserved for high-complexity tasks like final recommendation synthesis and Google Search grounding.
+- **Performance Tier (`gemini-2.5-flash`)**: Used for text extraction (`extractCuisines`), vision analysis (`analyzeFoodPhoto`), and profile building (`src/services/profileBuilder.ts`).
+- **Reasoning Tier (`gemini-2.5-pro`)**: Reserved for high-complexity synthesis tasks (`src/services/finalizer.ts`) and search-grounded trend classification (`src/services/trendAnalyst.ts`).
+- **Embedding Tier (`gemini-embedding-001`)**: Generates 768-dimensional dense vectors for semantic retrieval (`generateEmbedding`).
 
-### 3. Parsing Robustness
+### 3. Security & Rate Limiting
+
+- **API Key & Bearer Token Authentication**: Optional token protection handled in `src/api/middleware/auth.ts`.
+- **Sliding-Window Rate Limiting**: Request throttling enforced via `src/api/middleware/rateLimit.ts` on `/api/chat`.
+- **System Health Checks**: Connectivity and model verification provided by `src/scripts/healthCheck.ts` and `verifyGeminiHealth()`.
+
+### 4. Parsing Robustness
 
 To handle non-deterministic LLM output (e.g., markdown-wrapped JSON), all parsing MUST use the `cleanJson` utility before calling `JSON.parse`.
 
