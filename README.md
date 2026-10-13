@@ -161,16 +161,17 @@ On first start, if no `vector_index.json` is found, DineAI automatically embeds 
 
 ### Available Scripts
 
-| Script    | Command                           | Description                          |
-| --------- | --------------------------------- | ------------------------------------ |
-| `dev`     | `tsx server.ts`                   | Start backend + Vite dev server      |
-| `start`   | `tsx server.ts`                   | Start server in production mode      |
-| `build`   | `vite build`                      | Build production frontend to `dist/` |
-| `preview` | `vite preview`                    | Preview the production build locally |
-| `lint`    | `tsc --noEmit`                    | Run TypeScript type checking         |
-| `test`    | see below                         | Run all unit test suites             |
-| `verify`  | `tsx src/scripts/verifySystem.ts` | Full end-to-end system check         |
-| `clean`   | `rm -rf dist`                     | Remove build output                  |
+| Script          | Command                                          | Description                                |
+| --------------- | ------------------------------------------------ | ------------------------------------------ |
+| `dev`           | `tsx server.ts`                                  | Start backend + Vite dev server            |
+| `start`         | `tsx server.ts`                                  | Start server in production mode            |
+| `build`         | `vite build`                                     | Build production frontend to `dist/`       |
+| `preview`       | `vite preview`                                   | Preview the production build locally       |
+| `lint`          | `prettier --check . && tsc --noEmit`             | Check code formatting and TypeScript types |
+| `rebuild-index` | `tsx src/scripts/ingestRestaurants.ts --rebuild` | Force rebuild vector index from scratch    |
+| `test`          | see below                                        | Run all unit test suites                   |
+| `verify`        | `tsx src/scripts/verifySystem.ts`                | Full end-to-end system check               |
+| `clean`         | `rm -rf dist`                                    | Remove build output                        |
 
 The `test` script runs three suites in sequence, executed directly with `tsx` (no separate test runner is used):
 
@@ -187,7 +188,10 @@ DineAI/
 ├── server.ts                     # Express 5 entry point + Vite middleware
 ├── src/
 │   ├── api/
-│   │   └── chat.ts               # POST /api/chat — orchestrates the full pipeline
+│   │   ├── chat.ts               # POST /api/chat — orchestrates the full pipeline
+│   │   └── middleware/
+│   │       ├── auth.ts           # API key / Bearer token authentication middleware
+│   │       └── rateLimit.ts      # Sliding-window rate limiting middleware
 │   ├── components/
 │   │   ├── ChatInterface.tsx      # Main shell: state, input, history, favorites
 │   │   ├── ChatMessage.tsx        # Markdown-rendered message bubbles
@@ -195,12 +199,14 @@ DineAI/
 │   │   ├── OnboardingTutorial.tsx # First-visit five-step modal
 │   │   ├── RecommendationCard.tsx # Card with heuristic + narrative rationale
 │   │   └── TasteProfileBadge.tsx  # Live taste profile display
+│   ├── config/
+│   │   └── models.ts              # Centralized Gemini model identifiers
 │   ├── data/
 │   │   └── restaurants.ts         # 120-restaurant knowledge base with full metadata
 │   ├── lib/
 │   │   ├── cache.ts               # SQLite-backed embedding cache
 │   │   ├── errors.ts              # AppError / AgentServiceError / SkillError / ValidationError
-│   │   ├── geminiClient.ts        # Singleton GoogleGenAI client
+│   │   ├── geminiClient.ts        # Singleton GoogleGenAI client + verifyGeminiHealth
 │   │   ├── utils.ts               # cleanJson, withRetry (exponential backoff), cn
 │   │   ├── vectorDb.ts            # LocalVectorDB: upsert, cosine query, JSON persistence
 │   │   └── __tests__/             # utils.test.ts, vectorDb.test.ts
@@ -210,6 +216,7 @@ DineAI/
 │   │   ├── recommendation.ts      # Recommendation interface + FinalRecommendationsSchema
 │   │   └── userTasteProfile.ts    # UserTasteProfile interface + UserTasteProfileSchema
 │   ├── scripts/
+│   │   ├── healthCheck.ts         # System health & API verification script
 │   │   ├── ingestRestaurants.ts   # Batch-embed catalog → VectorDB + cache
 │   │   └── verifySystem.ts        # End-to-end smoke test
 │   ├── services/
@@ -243,7 +250,7 @@ DineAI/
 
 ### Key Design Decisions
 
-**Tiered model orchestration** — Balancing throughput and reasoning by routing extraction/vision to `gemini-2.0-flash` and complex synthesis to `gemini-1.5-pro`.
+**Tiered model orchestration** — Balancing throughput and reasoning by routing extraction/vision to `gemini-2.5-flash` and complex synthesis to `gemini-2.5-pro`.
 
 **`RestaurantCandidate` type** — `recommendCandidates()` returns `Restaurant & { match_score?: number; whyMatch?: string }` rather than bare `Restaurant[]`. This ensures the heuristic rationale computed by `scoreRestaurant` flows through to the Finalizer's prompt and is rendered on every recommendation card.
 
@@ -257,11 +264,13 @@ DineAI/
 
 ## 🔒 Security
 
-- API key is consumed server-side only — never exposed to the browser.
-- CORS is restricted to `localhost` origins only; `GET` and `POST` methods only.
-- All incoming payloads are validated with Zod before entering the agent pipeline.
-- Conversation history is truncated to 10 exchanges to limit PII persistence.
-- File uploads are capped at 5 MB and restricted to `image/jpeg`, `image/png`, `image/webp`, and `image/gif`.
+- **Server-Side Key Isolation** — Gemini API keys are consumed server-side only and never exposed to the browser client.
+- **API Authentication Middleware** — Protects API endpoints using optional `API_KEY` or `AUTH_TOKEN` header validation with fail-closed production rules.
+- **Sliding-Window Rate Limiting** — Enforces per-IP / per-key request limits on `/api/chat` to protect against abuse and resource exhaustion.
+- **Strict CORS Isolation** — Browser requests are strictly restricted to allowed origins with non-permitted origins receiving an explicit `403 Forbidden` response.
+- **Payload Validation** — Incoming requests and taste profiles are validated using Zod schemas (`UserTasteProfileZodSchema`) before reaching the agent pipeline.
+- **Data Minimization** — Conversation history is capped at the 10 most recent exchanges to limit PII exposure and context window overhead.
+- **File Upload Limits** — Photos are restricted to `image/jpeg`, `image/png`, `image/webp`, and `image/gif` with a hard limit of 5 MB per upload.
 
 See [SECURITY.md](./SECURITY.md) for the vulnerability reporting process.
 

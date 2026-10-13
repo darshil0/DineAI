@@ -9,7 +9,7 @@ Thank you for your interest in contributing to DineAI! We welcome contributions 
     ```bash
     git clone https://github.com/YOUR_USERNAME/DineAI.git
     cd DineAI
-    npm install --legacy-peer-deps
+    npm install
     ```
 3.  **Create a new branch** for your feature or bugfix:
     ```bash
