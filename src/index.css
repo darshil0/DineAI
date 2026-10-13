@@ -54,7 +54,7 @@
   }
 
   .bubble-assistant {
-    @apply glass-card rounded-2xl rounded-tl-none px-4 py-2;
+    @apply rounded-2xl rounded-tl-none border border-[var(--glass-border)] bg-[var(--glass-bg)] px-4 py-2 shadow-xl backdrop-blur-md;
   }
 
   .shimmer {

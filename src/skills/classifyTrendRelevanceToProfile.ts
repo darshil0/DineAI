@@ -4,6 +4,7 @@ import { Type } from '@google/genai';
 import { UserTasteProfile } from '../schemas/userTasteProfile.js';
 import { cleanJson, withRetry } from '../lib/utils.js';
 import { SkillError } from '../lib/errors.js';
+import { MODELS } from '../config/models.js';
 
 export interface ClassifyTrendInput {
   profile: UserTasteProfile;
@@ -29,7 +30,7 @@ export const classifyTrendRelevanceToProfileSkill: AgentSkill<
 
     const response = (await withRetry(() =>
       ai.models.generateContent({
-        model: 'gemini-1.5-pro',
+        model: MODELS.REASONING,
         contents: [
           {
             parts: [

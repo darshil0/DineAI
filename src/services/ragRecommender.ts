@@ -7,6 +7,7 @@ import { getSkill } from '../skills/registry.js';
 import { vectorDb } from '../lib/vectorDb.js';
 import { AgentServiceError, SkillError } from '../lib/errors.js';
 import { withRetry } from '../lib/utils.js';
+import { MODELS } from '../config/models.js';
 
 export type RestaurantCandidate = Restaurant & {
   match_score?: number;
@@ -88,7 +89,7 @@ export async function recommendCandidates(
   try {
     const ragResponse = (await withRetry(() =>
       ai.models.generateContent({
-        model: 'gemini-1.5-pro',
+        model: MODELS.REASONING,
         contents: [
           {
             parts: [{ text: buildRagPrompt(JSON.stringify(profile), JSON.stringify(restaurants)) }],

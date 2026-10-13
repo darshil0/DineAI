@@ -28,8 +28,8 @@ To handle transient `429 Too Many Requests` or `5xx` errors from the Gemini API,
 
 We balance speed and reasoning depth through a tiered model approach:
 
-- **Performance Tier (`gemini-2.0-flash`)**: Used for text extraction, vision analysis, and intermediate classification.
-- **Reasoning Tier (`gemini-1.5-pro`)**: Reserved for high-complexity tasks like final recommendation synthesis and Google Search grounding.
+- **Performance Tier (`gemini-2.5-flash`)**: Used for text extraction, vision analysis, and intermediate classification.
+- **Reasoning Tier (`gemini-2.5-pro`)**: Reserved for high-complexity tasks like final recommendation synthesis and Google Search grounding.
 
 ### 3. Parsing Robustness
 

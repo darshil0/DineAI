@@ -70,7 +70,7 @@ listSkills(): string[]
 | Field        | Value                                               |
 | :----------- | :-------------------------------------------------- |
 | **File**     | `src/skills/extractCuisines.ts`                     |
-| **Model**    | `gemini-2.0-flash`                                  |
+| **Model**    | `gemini-2.5-flash`                                  |
 | **Strategy** | Zero-shot extraction with Gemini Structured Outputs |
 
 **Input**
@@ -102,7 +102,7 @@ listSkills(): string[]
 | Field        | Value                                        |
 | :----------- | :------------------------------------------- |
 | **File**     | `src/skills/analyzeFoodPhoto.ts`             |
-| **Model**    | `gemini-2.0-flash` (Vision)                  |
+| **Model**    | `gemini-2.5-flash` (Vision)                  |
 | **Strategy** | Inline image data + structured output prompt |
 
 **Input**
@@ -138,7 +138,7 @@ listSkills(): string[]
 | Field          | Value                             |
 | :------------- | :-------------------------------- |
 | **File**       | `src/skills/generateEmbedding.ts` |
-| **Model**      | `text-embedding-004`              |
+| **Model**      | `gemini-embedding-001`            |
 | **Dimensions** | 768                               |
 
 **Input**
@@ -237,7 +237,7 @@ Maximum raw score: **1.0** (50/50 blend).
 | Field     | Value                                          |
 | :-------- | :--------------------------------------------- |
 | **File**  | `src/skills/extractTrendsFromSearchResults.ts` |
-| **Model** | `gemini-2.0-flash`                             |
+| **Model** | `gemini-2.5-flash`                             |
 
 **Input**
 
@@ -274,7 +274,7 @@ Maximum raw score: **1.0** (50/50 blend).
 | Field     | Value                                           |
 | :-------- | :---------------------------------------------- |
 | **File**  | `src/skills/classifyTrendRelevanceToProfile.ts` |
-| **Model** | `gemini-1.5-pro`                                |
+| **Model** | `gemini-2.5-pro`                                |
 
 **Input**
 

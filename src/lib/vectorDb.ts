@@ -1,6 +1,7 @@
 // A simple in-memory Vector DB to simulate a real service like Pinecone or Qdrant
 import fs from 'fs';
 import path from 'path';
+import { MODELS } from '../config/models.js';
 
 const INDEX_FILE = path.join(process.cwd(), 'vector_index.json');
 
@@ -9,6 +10,11 @@ export interface VectorRecord {
   embedding: number[];
   metadata: any;
   score?: number;
+}
+
+interface IndexFilePayload {
+  embeddingModel: string;
+  records: VectorRecord[];
 }
 
 class LocalVectorDB {
@@ -70,7 +76,7 @@ class LocalVectorDB {
 
   dotProduct(vecA: number[], vecB: number[]) {
     let dotProduct = 0;
-    for (let i = 0; i < vecA.length; i++) {
+    for (let i = 0; i < Math.min(vecA.length, vecB.length); i++) {
       dotProduct += vecA[i] * vecB[i];
     }
     return dotProduct;
@@ -80,10 +86,20 @@ class LocalVectorDB {
     return this.records.length;
   }
 
+  clear() {
+    this.records = [];
+  }
+
   saveToIndex() {
     try {
-      fs.writeFileSync(INDEX_FILE, JSON.stringify(this.records), 'utf8');
-      console.log(`Vector index saved to ${INDEX_FILE} (${this.records.length} records)`);
+      const payload: IndexFilePayload = {
+        embeddingModel: MODELS.EMBEDDING,
+        records: this.records,
+      };
+      fs.writeFileSync(INDEX_FILE, JSON.stringify(payload, null, 2), 'utf8');
+      console.log(
+        `Vector index saved to ${INDEX_FILE} (${this.records.length} records, model=${MODELS.EMBEDDING})`,
+      );
     } catch (e) {
       console.error('Failed to save vector index:', e);
     }
@@ -92,8 +108,27 @@ class LocalVectorDB {
   loadFromIndex() {
     try {
       if (fs.existsSync(INDEX_FILE)) {
-        const data = fs.readFileSync(INDEX_FILE, 'utf8');
-        this.records = JSON.parse(data);
+        const raw = fs.readFileSync(INDEX_FILE, 'utf8');
+        const parsed = JSON.parse(raw);
+
+        if (Array.isArray(parsed)) {
+          // Old format without model metadata: clear records to ensure re-embedding with active model
+          console.log(
+            'Legacy vector index format detected without model version. Invalidating index...',
+          );
+          this.records = [];
+          return;
+        }
+
+        if (parsed.embeddingModel !== MODELS.EMBEDDING) {
+          console.log(
+            `Embedding model changed (${parsed.embeddingModel || 'unknown'} -> ${MODELS.EMBEDDING}). Invalidating existing index...`,
+          );
+          this.records = [];
+          return;
+        }
+
+        this.records = parsed.records || [];
         console.log(`Vector index loaded from ${INDEX_FILE} (${this.records.length} records)`);
       }
     } catch (e) {

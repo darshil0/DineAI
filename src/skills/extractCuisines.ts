@@ -3,6 +3,7 @@ import { getGeminiClient } from '../lib/geminiClient.js';
 import { cleanJson, withRetry } from '../lib/utils.js';
 import { Type } from '@google/genai';
 import { SkillError } from '../lib/errors.js';
+import { MODELS } from '../config/models.js';
 
 export interface ExtractCuisinesInput {
   text: string;
@@ -25,7 +26,7 @@ ${text}`;
 
     const result = (await withRetry(() =>
       ai.models.generateContent({
-        model: 'gemini-2.0-flash',
+        model: MODELS.PERFORMANCE,
         contents: [{ parts: [{ text: prompt }] }],
         config: {
           responseMimeType: 'application/json',

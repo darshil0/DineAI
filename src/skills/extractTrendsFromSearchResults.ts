@@ -3,6 +3,7 @@ import { AgentSkill } from './types.js';
 import { Type } from '@google/genai';
 import { cleanJson, withRetry } from '../lib/utils.js';
 import { SkillError } from '../lib/errors.js';
+import { MODELS } from '../config/models.js';
 
 export interface ExtractTrendsInput {
   searchResults: string;
@@ -28,7 +29,7 @@ export const extractTrendsFromSearchResultsSkill: AgentSkill<
 
     const response = (await withRetry(() =>
       ai.models.generateContent({
-        model: 'gemini-2.0-flash',
+        model: MODELS.PERFORMANCE,
         contents: [
           {
             parts: [

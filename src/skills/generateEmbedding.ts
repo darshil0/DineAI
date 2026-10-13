@@ -2,6 +2,7 @@ import { AgentSkill } from './types.js';
 import { getGeminiClient } from '../lib/geminiClient.js';
 import { withRetry } from '../lib/utils.js';
 import { SkillError } from '../lib/errors.js';
+import { MODELS } from '../config/models.js';
 
 export interface GenerateEmbeddingInput {
   text: string;
@@ -23,7 +24,7 @@ export const generateEmbeddingSkill: AgentSkill<GenerateEmbeddingInput, Generate
     const ai = getGeminiClient();
     const response = (await withRetry(() =>
       ai.models.embedContent({
-        model: 'text-embedding-004',
+        model: MODELS.EMBEDDING,
         contents: [{ parts: [{ text }] }],
         taskType: 'RETRIEVAL_QUERY',
       } as any),
