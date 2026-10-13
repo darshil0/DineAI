@@ -29,9 +29,9 @@ DineAI orchestrates four specialized AI agents to deliver personalized, real-tim
 
 DineAI employs a tiered model strategy to balance reasoning depth with execution speed:
 
-- **Reasoning Tier (`gemini-1.5-pro`)**: Reserved for high-complexity synthesis tasks (Finalizer), search-grounded trend analysis (Trend Analyst), and fallback RAG filtering.
-- **Performance Tier (`gemini-2.0-flash`)**: Used for high-throughput extraction (Profile Builder, `extractCuisines`) and multimodal vision analysis (`analyzeFoodPhoto`).
-- **Embedding Tier (`text-embedding-004`)**: Generates semantic vectors for RAG.
+- **Reasoning Tier (`gemini-2.5-pro`)**: Reserved for high-complexity synthesis tasks (Finalizer), search-grounded trend analysis (Trend Analyst), and fallback RAG filtering.
+- **Performance Tier (`gemini-2.5-flash`)**: Used for high-throughput extraction (Profile Builder, `extractCuisines`) and multimodal vision analysis (`analyzeFoodPhoto`).
+- **Embedding Tier (`gemini-embedding-001`)**: Generates semantic vectors for text-only RAG.
 
 ### Resilience Contract
 
@@ -53,16 +53,16 @@ User Request
      │
      ▼
 ┌─────────────────────┐
-│  Profile Builder    │  gemini-2.0-flash
-│  extractCuisines    │  gemini-2.0-flash
-│  analyzeFoodPhoto   │  gemini-2.0-flash  (if image uploaded)
+│  Profile Builder    │  gemini-2.5-flash
+│  extractCuisines    │  gemini-2.5-flash
+│  analyzeFoodPhoto   │  gemini-2.5-flash  (if image uploaded)
 └────────┬────────────┘
          │ UserTasteProfile
     ┌────┴────┐
     │         │  (parallel)
     ▼         ▼
 ┌───────┐  ┌──────────────┐
-│  RAG  │  │ Trend Analyst│  gemini-1.5-pro
+│  RAG  │  │ Trend Analyst│  gemini-2.5-pro
 │Recom- │  │ + Google     │  + extractTrendsFromSearchResults (flash)
 │mender │  │   Search     │  + classifyTrendRelevanceToProfile (pro)
 └───┬───┘  └──────┬───────┘
@@ -71,7 +71,7 @@ User Request
            │ candidates + trend report
            ▼
 ┌─────────────────────┐
-│     Finalizer       │  gemini-1.5-pro
+│     Finalizer       │  gemini-2.5-pro
 │  Top 3–5 ranked     │
 │  recommendations    │
 └─────────────────────┘
@@ -81,14 +81,14 @@ User Request
 
 Each skill is a composable, independently testable TypeScript function registered at startup via `bootstrapSkills()`.
 
-| Skill                             | Model                | Purpose                                                                  |
-| --------------------------------- | -------------------- | ------------------------------------------------------------------------ |
-| `extractCuisines`                 | `gemini-2.0-flash`   | Parses cuisine names from user text                                      |
-| `analyzeFoodPhoto`                | `gemini-2.0-flash`   | Infers cuisines and ambiance from a photo                                |
-| `generateEmbedding`               | `text-embedding-004` | Produces semantic vectors for search                                     |
-| `scoreRestaurant`                 | Heuristic            | Weighted match score (cuisine 0.4, price 0.3, ambiance 0.2, dietary 0.1) |
-| `extractTrendsFromSearchResults`  | `gemini-2.0-flash`   | Structures raw search snippets into trend data                           |
-| `classifyTrendRelevanceToProfile` | `gemini-1.5-pro`     | Scores trend relevance against the user's profile                        |
+| Skill                             | Model                  | Purpose                                                                  |
+| --------------------------------- | ---------------------- | ------------------------------------------------------------------------ |
+| `extractCuisines`                 | `gemini-2.5-flash`     | Parses cuisine names from user text                                      |
+| `analyzeFoodPhoto`                | `gemini-2.5-flash`     | Infers cuisines and ambiance from a photo                                |
+| `generateEmbedding`               | `gemini-embedding-001` | Produces semantic vectors for search                                     |
+| `scoreRestaurant`                 | Heuristic              | Weighted match score (cuisine 0.4, price 0.3, ambiance 0.2, dietary 0.1) |
+| `extractTrendsFromSearchResults`  | `gemini-2.5-flash`     | Structures raw search snippets into trend data                           |
+| `classifyTrendRelevanceToProfile` | `gemini-2.5-pro`       | Scores trend relevance against the user's profile                        |
 
 ---
 
@@ -100,9 +100,9 @@ Each skill is a composable, independently testable TypeScript function registere
 | **Build**              | Vite                        | 8.2.2 (Verified)                                 |
 | **Backend**            | Node.js + Express           | ≥18.0.0 / 5.2.1 (Verified)                       |
 | **AI SDK**             | `@google/genai`             | 2.18.0 (Verified)                                |
-| **Performance Tier**   | `gemini-2.0-flash`          | Text, vision, extraction                         |
-| **Reasoning Tier**     | `gemini-1.5-pro`            | Synthesis, trend classification                  |
-| **Embeddings**         | `text-embedding-004`        | Semantic vectors                                 |
+| **Performance Tier**   | `gemini-2.5-flash`          | Text, vision, extraction                         |
+| **Reasoning Tier**     | `gemini-2.5-pro`            | Synthesis, trend classification                  |
+| **Embeddings**         | `gemini-embedding-001`      | Semantic vectors                                 |
 | **Vector DB**          | Custom `LocalVectorDB`      | In-memory, persisted to `vector_index.json`      |
 | **Embedding Cache**    | `better-sqlite3`            | `embeddings_cache.db` — zero API cost on restart |
 | **Validation**         | Zod                         | 4.4.3 (Verified)                                 |
@@ -134,7 +134,7 @@ Each skill is a composable, independently testable TypeScript function registere
 2. Install dependencies:
 
    ```bash
-   npm install --legacy-peer-deps
+   npm install
    ```
 
 3. Create a `.env` file in the project root:

@@ -1,5 +1,5 @@
-import { Router } from 'express';
-import multer from 'multer';
+import { Router, Request, Response, NextFunction } from 'express';
+import multer, { MulterError } from 'multer';
 import { z } from 'zod';
 import { buildProfile } from '../services/profileBuilder.js';
 import { recommendCandidates } from '../services/ragRecommender.js';
@@ -7,8 +7,15 @@ import { analyzeTrends } from '../services/trendAnalyst.js';
 import { finalizeRecommendations } from '../services/finalizer.js';
 import { handleApiError, ValidationError } from '../lib/errors.js';
 import { UserTasteProfile } from '../schemas/index.js';
+import { authenticateApiKey } from './middleware/auth.js';
+import { createRateLimiter } from './middleware/rateLimit.js';
 
 const router = Router();
+
+// Apply auth and rate limiting to chat router
+const chatRateLimiter = createRateLimiter({ windowMs: 60000, max: 20 });
+router.use(authenticateApiKey);
+router.use(chatRateLimiter);
 
 // Robust Multer configuration
 const upload = multer({
@@ -19,12 +26,29 @@ const upload = multer({
     if (allowedMimeTypes.includes(file.mimetype)) {
       cb(null, true);
     } else {
-      // FIX 1: Use regular Error instead of ValidationError in fileFilter
-      // Multer expects standard Error objects in fileFilter
       cb(new Error('Invalid file type. Only JPG, PNG, WEBP, and GIF are allowed.'));
     }
   },
 });
+
+// Middleware wrapper for Multer to catch upload size / type errors cleanly
+function handleUpload(req: Request, res: Response, next: NextFunction) {
+  upload.single('image')(req, res, (err: any) => {
+    if (err) {
+      if (err instanceof MulterError) {
+        if (err.code === 'LIMIT_FILE_SIZE') {
+          res.status(413).json({ error: 'File size exceeds the 5MB limit.' });
+          return;
+        }
+        res.status(400).json({ error: `Upload error: ${err.message}` });
+        return;
+      }
+      res.status(400).json({ error: err.message || 'Invalid upload request.' });
+      return;
+    }
+    next();
+  });
+}
 
 // Zod schemas for validation
 const HistorySchema = z.array(
@@ -34,7 +58,7 @@ const HistorySchema = z.array(
   }),
 );
 
-router.post('/', upload.single('image'), async (req, res) => {
+router.post('/', handleUpload, async (req: Request, res: Response) => {
   try {
     const { message, history: historyStr, currentProfile: profileStr } = req.body;
     const imageFile = req.file;
@@ -51,9 +75,7 @@ router.post('/', upload.single('image'), async (req, res) => {
     if (historyStr) {
       try {
         const parsed = JSON.parse(historyStr);
-        // Validating shape first
         const validated = HistorySchema.parse(parsed);
-        // Sanitization: last 10 exchanges only
         history = validated.slice(-10);
       } catch (e) {
         console.warn('Invalid history format provided, ignoring.', e);
@@ -80,7 +102,6 @@ router.post('/', upload.single('image'), async (req, res) => {
       imageFile,
     );
 
-    // FIX 3: Add null check for userTasteProfile
     if (!userTasteProfile) {
       throw new ValidationError('Failed to build user taste profile.');
     }

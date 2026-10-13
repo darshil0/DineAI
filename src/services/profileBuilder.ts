@@ -4,6 +4,7 @@ import { PROFILE_BUILDER_SYSTEM, buildProfilePrompt } from '../prompts/index.js'
 import { getSkill } from '../skills/registry.js';
 import { AgentServiceError, SkillError } from '../lib/errors.js';
 import { withRetry, cleanJson } from '../lib/utils.js';
+import { MODELS } from '../config/models.js';
 
 export async function buildProfile(
   message: string,
@@ -70,7 +71,7 @@ export async function buildProfile(
   try {
     const profileResponse = (await withRetry(() =>
       ai.models.generateContent({
-        model: 'gemini-2.0-flash',
+        model: MODELS.PERFORMANCE,
         contents: [{ parts: profileParts }],
         config: {
           responseMimeType: 'application/json',

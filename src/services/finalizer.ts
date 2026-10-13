@@ -4,6 +4,7 @@ import { FINALIZER_SYSTEM, buildFinalizerPrompt } from '../prompts/index.js';
 import { AgentServiceError } from '../lib/errors.js';
 import { withRetry, cleanJson } from '../lib/utils.js';
 import { RestaurantCandidate } from './ragRecommender.js';
+import { MODELS } from '../config/models.js';
 
 export async function finalizeRecommendations(
   profile: UserTasteProfile,
@@ -18,7 +19,7 @@ export async function finalizeRecommendations(
   try {
     const finalizerResponse = (await withRetry(() =>
       ai.models.generateContent({
-        model: 'gemini-1.5-pro',
+        model: MODELS.REASONING,
         contents: [
           {
             parts: [

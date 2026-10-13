@@ -4,6 +4,7 @@ import { TREND_ANALYST_SYSTEM, buildTrendPrompt } from '../prompts/index.js';
 import { getSkill } from '../skills/registry.js';
 import { AgentServiceError, SkillError } from '../lib/errors.js';
 import { withRetry, cleanJson } from '../lib/utils.js';
+import { MODELS } from '../config/models.js';
 
 export async function analyzeTrends(
   profile: UserTasteProfile,
@@ -20,7 +21,7 @@ export async function analyzeTrends(
     // 1. Get raw search results using Google Search
     const trendResponse = (await withRetry(() =>
       ai.models.generateContent({
-        model: 'gemini-1.5-pro',
+        model: MODELS.REASONING,
         contents: [{ parts: [{ text: buildTrendPrompt(cuisinesStr) }] }],
         config: {
           tools: [

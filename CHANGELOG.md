@@ -4,14 +4,23 @@ All notable changes to this project will be documented in this file.
 
 ## [Unreleased]
 
+### Added
+
+- **Centralized Model Configuration**: Introduced `src/config/models.ts` to centralize all Gemini model identifiers (`gemini-2.5-pro` for Reasoning, `gemini-2.5-flash` for Performance, and `gemini-embedding-001` for Embeddings).
+- **API Key & Auth Security Middleware**: Added `src/api/middleware/auth.ts` supporting `API_KEY` / `AUTH_TOKEN` authentication with production fail-closed protection and `ALLOW_UNAUTHENTICATED_LOCAL_DEV` opt-in.
+- **Sliding-Window Rate Limiting**: Added `src/api/middleware/rateLimit.ts` enforcing per-IP / per-key request rate limits with HTTP 429 status code.
+- **System Health Self-Test**: Added `src/scripts/healthCheck.ts` and `verifyGeminiHealth` utility in `src/lib/geminiClient.ts` to validate API key configuration and connectivity on startup.
+- **Automated CI Workflow**: Added `.github/workflows/ci.yml` to execute dependency installation (`npm ci`), typechecking/linting (`npm run lint`), tests (`npm test`), and production build (`npm run build`).
+
 ### Fixed
 
-- **ESM Relative Imports**: Fixed missing `.js` extensions in relative module imports across `src/App.tsx` and `src/main.tsx` for standard ECMAScript Module resolution compliance.
-
-### Changed
-
-- **Dependencies Updated**: Upgraded core project libraries in `package.json` to their latest non-breaking compatible versions, including `@google/genai` (2.8.0 → 2.18.0), `react` / `react-dom` (19.2.7 → 19.2.8), `vite` (8.0.16 → 8.2.2), `motion` (12.40.0 → 12.43.0), `lucide-react` (1.17.0 → 1.34.0), `@tailwindcss/vite` / `tailwindcss` (4.3.0 → 4.3.3), `tsx` (4.22.4 → 4.23.12), and `prettier` (3.8.3 → 3.9.6).
-- **Documentation Synchronized**: Updated `README.md` technology stack tables and verified dependency versions to reflect the updated package manifests.
+- **Tailwind CSS v4 Build Error**: Resolved CSS `@apply` compilation failure in `src/index.css` (`glass-card` utility mismatch) enabling clean `npm run build` client compilation.
+- **Production Mode Dependencies**: Updated `server.ts` to dynamically import `vite` only in development mode (`NODE_ENV !== 'production'`), ensuring `npm ci --omit=dev` production installs run without missing dev dependencies.
+- **Deprecated Gemini Models & Invalidation**: Replaced deprecated/retired Gemini models (`gemini-1.5-pro`, `gemini-2.0-flash`, `text-embedding-004`) across all skills, services, and documentation. Added model metadata validation to `LocalVectorDB` (`loadFromIndex`) to automatically invalidate old indexes on embedding model changes.
+- **CORS Handling**: Replaced generic exception callback in CORS middleware with explicit 403 Forbidden responses for unauthorized browser origins.
+- **Incremental Vector Ingestion & Cache Keys**: Enhanced `ingestRestaurants.ts` to detect existing records, process missing entries incrementally, and support explicit index rebuilding via `--rebuild` or `npm run rebuild-index`. Upgraded embedding cache keys to composite identifiers (`model:restaurantId:address:cuisine`) preventing cross-model collisions.
+- **Lifecycle & Process Safety**: Added global `uncaughtException` and `unhandledRejection` handlers and graceful shutdown handling for `SIGINT` and `SIGTERM` with a 5-second forced exit safety timer.
+- **Documentation & Spec Synchronization**: Synchronized parallel agent orchestration flow, server startup ports (`http://localhost:3000`), dependency tables, and model specs across `README.md`, `AGENTS.md`, `SKILLS.md`, and `DESIGN.md`. Removed `--legacy-peer-deps` from installation instructions.
 
 ### Fixed
 
