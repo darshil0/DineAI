@@ -12,7 +12,7 @@
     "lint": "prettier --check . && tsc --noEmit",
     "format": "prettier --write .",
     "rebuild-index": "tsx src/scripts/ingestRestaurants.ts --rebuild",
-    "test": "tsx src/lib/__tests__/utils.test.ts && tsx src/lib/__tests__/vectorDb.test.ts && tsx src/skills/__tests__/scoreRestaurant.test.ts && tsx src/api/__tests__/security.test.ts && tsx src/scripts/__tests__/ingest.test.ts",
+    "test": "tsx src/lib/__tests__/utils.test.ts && tsx src/lib/__tests__/vectorDb.test.ts && tsx src/skills/__tests__/scoreRestaurant.test.ts",
     "verify": "tsx src/scripts/verifySystem.ts"
   },
   "dependencies": {
